@@ -1,17 +1,35 @@
 // ================================
-// <DARKCODE> - lógica principal
+// <DARKCODE> - lógica principal con Firebase
 // ================================
 
-// --- 1. Service Worker ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+
+// --- 1. Configuración de Firebase ---
+const firebaseConfig = {
+  apiKey: "AIzaSyCJLUtvrmiCuGqFu4_gj5P9vH4kUhDa2yA",
+  authDomain: "darkcode-3691d.firebaseapp.com",
+  projectId: "darkcode-3691d",
+  storageBucket: "darkcode-3691d.firebasestorage.app",
+  messagingSenderId: "968623196225",
+  appId: "1:968623196225:web:e1d97a0d1bef93c34d9ec0",
+  measurementId: "G-Y0L9D69KJ7"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+// --- 2. Service Worker ---
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("sw.js").catch(() => {});
   });
 }
 
-// --- 2. Estado de la app ---
+// --- 3. Estado de la app ---
 const state = {
-  user: localStorage.getItem("dc_user") || null,
+  user: null,
   lenguaje: localStorage.getItem("dc_lang") || null,
   modo: localStorage.getItem("dc_modo") || "dark",
   sonidoBotones: localStorage.getItem("dc_sb") !== "0",
@@ -19,30 +37,43 @@ const state = {
   animaciones: localStorage.getItem("dc_anim") !== "0"
 };
 
-// --- 3. Login ---
+// --- 4. Login con Google (Firebase) ---
 const loginScreen = document.getElementById("login-screen");
 const btnGoogle = document.getElementById("btn-google");
 
-if (state.user) {
-  loginScreen.classList.add("oculto");
-}
+btnGoogle.addEventListener("click", async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    // El usuario se logueó correctamente.
+    // onAuthStateChanged se encargará de actualizar la UI.
+    reproducirSonido("ok");
+  } catch (error) {
+    console.error("Error en el login:", error);
+    alert("No se pudo iniciar sesión. Revisa la consola para más detalles.");
+  }
+});
 
-btnGoogle.addEventListener("click", () => {
-  const nombre = prompt("Tu nombre (solo local):", "Estudiante");
-  if (!nombre) return;
-  state.user = nombre;
-  localStorage.setItem("dc_user", nombre);
-  loginScreen.classList.add("oculto");
-  reproducirSonido("ok");
-  actualizarPerfil();
+// Escuchar cambios en el estado de autenticación
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    state.user = user;
+    loginScreen.classList.add("oculto");
+    actualizarPerfil();
+  } else {
+    state.user = null;
+    loginScreen.classList.remove("oculto");
+  }
 });
 
 function cerrarSesion() {
-  localStorage.removeItem("dc_user");
-  location.reload();
+  signOut(auth).then(() => {
+    location.reload();
+  }).catch((error) => {
+    console.error("Error al cerrar sesión:", error);
+  });
 }
 
-// --- 4. Navegación principal ---
+// --- 5. Navegación principal ---
 const botones = document.querySelectorAll("#menu button");
 const secciones = document.querySelectorAll(".seccion");
 
@@ -58,7 +89,7 @@ botones.forEach((b) => {
   });
 });
 
-// --- 5. Selección de lenguaje ---
+// --- 6. Selección de lenguaje ---
 document.querySelectorAll(".lang-card").forEach((card) => {
   card.addEventListener("click", () => {
     reproducirSonido("ok");
@@ -77,7 +108,6 @@ function entrarSalon(lang) {
   document.getElementById("perfil-lang").textContent = lang;
   actualizarPerfil();
 
-  // Cambiar a sección salón
   botones.forEach((x) => x.classList.remove("activo"));
   secciones.forEach((s) => s.classList.remove("activa"));
   document.getElementById("salon").classList.add("activa");
@@ -92,7 +122,7 @@ function salirSalon() {
   document.querySelector('#menu [data-seccion="inicio"]').classList.add("activo");
 }
 
-// --- 6. Tabs del salón ---
+// --- 7. Tabs del salón ---
 document.querySelectorAll(".salon-tabs button").forEach((b) => {
   b.addEventListener("click", () => {
     reproducirSonido("click");
@@ -104,7 +134,7 @@ document.querySelectorAll(".salon-tabs button").forEach((b) => {
   });
 });
 
-// --- 7. Modos de color ---
+// --- 8. Modos de color ---
 document.querySelectorAll(".modo-btn").forEach((b) => {
   b.addEventListener("click", () => {
     reproducirSonido("click");
@@ -129,7 +159,7 @@ document.querySelectorAll(".modo-btn").forEach((b) => {
   else b.classList.remove("activo");
 });
 
-// --- 8. Configuración (switches) ---
+// --- 9. Configuración (switches) ---
 const sonidoBotonesChk = document.getElementById("sonido-botones");
 const sonidoFondoChk = document.getElementById("sonido-fondo");
 const animacionesChk = document.getElementById("animaciones");
@@ -152,7 +182,7 @@ animacionesChk.addEventListener("change", (e) => {
   localStorage.setItem("dc_anim", state.animaciones ? "1" : "0");
 });
 
-// --- 9. Sonidos con Web Audio API ---
+// --- 10. Sonidos con Web Audio API ---
 let audioCtx = null;
 let fondoOsc = null;
 
@@ -198,7 +228,7 @@ function detenerSonidoFondo() {
   if (fondoOsc) { try { fondoOsc.stop(); } catch(e){} fondoOsc = null; }
 }
 
-// --- 10. Editores Ace ---
+// --- 11. Editores Ace ---
 let editorPractica, editorDepura, editorSalon;
 
 window.addEventListener("load", () => {
@@ -225,7 +255,7 @@ window.addEventListener("load", () => {
   editorSalon.setValue(`// Tu código aquí\nconsole.log("Hola <DARKCODE>");`);
 });
 
-// --- 11. Ejecutar código ---
+// --- 12. Ejecutar código ---
 function ejecutar(idEditor) {
   const idConsola = idEditor.replace("editor", "consola");
   const consola = document.getElementById(idConsola);
@@ -269,15 +299,20 @@ function formatear(args) {
   }).join(" ");
 }
 
-// --- 12. Perfil ---
+// --- 13. Perfil ---
 function actualizarPerfil() {
-  const el = document.getElementById("perfil-nombre");
-  if (el) el.textContent = state.user || "Invitado";
+  const elNombre = document.getElementById("perfil-nombre");
+  const elEmail = document.getElementById("perfil-email");
+  if (state.user) {
+    if (elNombre) elNombre.textContent = state.user.displayName || "Usuario";
+    if (elEmail) elEmail.textContent = state.user.email || "—";
+  } else {
+    if (elNombre) elNombre.textContent = "Invitado";
+    if (elEmail) elEmail.textContent = "—";
+  }
 }
 
-actualizarPerfil();
-
-// --- 13. Instalar PWA ---
+// --- 14. Instalar PWA ---
 let promptInstalacion = null;
 const btnInstalar = document.getElementById("btn-instalar");
 
