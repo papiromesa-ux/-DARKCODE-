@@ -1,1 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a0b2e" />
+  <meta name="color-scheme" content="dark" />
 
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.png" />
+  
+  <!-- iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="<DARKCODE>" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+  <link rel="stylesheet" href="styles.css" />
+  <title>&lt;DARKCODE&gt;</title>
+  
+  <!-- Ace Editor CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/ace.js"></script>
+</head>
+<body>
+
+  <!-- MODAL DE SELECCIÓN DE SISTEMA OPERATIVO -->
+  <div id="modal-so" class="modal">
+    <div class="modal-contenido">
+      <h2>¿En qué dispositivo estás?</h2>
+      <p>Para darte las mejores instrucciones de instalación.</p>
+      <div class="botones-so">
+        <button onclick="seleccionarSO('android')">🤖 Android</button>
+        <button onclick="seleccionarSO('ios')">🍏 iOS (iPhone)</button>
+        <button onclick="seleccionarSO('windows')">💻 Windows</button>
+      </div>
+    </div>
+  </div>
+
+  <header>
+    <h1>⌨ &lt;DARKCODE&gt;</h1>
+    <p class="sub">Aprende a programar y depurar sin pagar nada</p>
+  </header>
+
+  <nav id="menu">
+    <button data-seccion="inicio" class="activo">Inicio</button>
+    <button data-seccion="aprende">Aprende</button>
+    <button data-seccion="practica">Practica</button>
+    <button data-seccion="depura">Depura</button>
+    <button data-seccion="ia">IA</button>
+    <button data-seccion="diccionario">Diccionario</button>
+  </nav>
+
+  <main>
+
+    <!-- INICIO -->
+    <section id="inicio" class="seccion activa">
+      <h2>Bienvenido a &lt;DARKCODE&gt;</h2>
+      <p>Esta plataforma es <strong>gratuita</strong>, funciona <strong>sin registro</strong> y <strong>sin API externa</strong>. Puedes usarla sin conexión después de abrirla una vez.</p>
+
+      <div class="aviso" id="instrucciones-instalar">
+        <strong>Modo offline:</strong> Cargando instrucciones...
+      </div>
+
+      <div class="tarjetas">
+        <div class="tarjeta">
+          <h3>📚 Aprende</h3>
+          <p>HTML, CSS y JavaScript desde cero.</p>
+        </div>
+        <div class="tarjeta">
+          <h3>🛠 Practica</h3>
+          <p>Ejercicios con código listo para probar.</p>
+        </div>
+        <div class="tarjeta">
+          <h3>🐞 Depura</h3>
+          <p>Encuentra errores con la consola.</p>
+        </div>
+        <div class="tarjeta">
+          <h3>🤖 IA</h3>
+          <p>Aprende a pedir ayuda sin depender de ella.</p>
+        </div>
+      </div>
+
+      <button id="btn-instalar" class="boton" hidden>⬇ Instalar &lt;DARKCODE&gt;</button>
+    </section>
+
+    <!-- APRENDE -->
+    <section id="aprende" class="seccion">
+      <h2>Aprende</h2>
+
+      <details open>
+        <summary>¿Qué es HTML?</summary>
+        <p>HTML es el lenguaje que describe la <strong>estructura</strong> de una página. Usa etiquetas como <code>&lt;h1&gt;</code>, <code>&lt;p&gt;</code> y <code>&lt;div&gt;</code>.</p>
+        <pre><code>&lt;h1&gt;Hola mundo&lt;/h1&gt;
+&lt;p&gt;Mi primera página&lt;/p&gt;</code></pre>
+      </details>
+
+      <details>
+        <summary>¿Qué es CSS?</summary>
+        <p>CSS le da <strong>estilo</strong>: colores, tamaños, márgenes, fuentes.</p>
+        <pre><code>body {
+  background: #0a0a0a;
+  color: white;
+}</code></pre>
+      </details>
+
+      <details>
+        <summary>¿Qué es JavaScript?</summary>
+        <p>JavaScript le da <strong>comportamiento</strong>: reaccionar a clics, calcular, mostrar datos.</p>
+        <pre><code>const nombre = "Ana";
+console.log("Hola " + nombre);</code></pre>
+      </details>
+
+      <details>
+        <summary>¿Qué es una variable?</summary>
+        <p>Un espacio con nombre donde guardas un valor.</p>
+        <pre><code>let edad = 15;
+const nombre = "Luis";</code></pre>
+      </details>
+
+      <details>
+        <summary>¿Qué es una función?</summary>
+        <p>Un bloque de código que puedes reutilizar.</p>
+        <pre><code>function saludar(nombre) {
+  return "Hola " + nombre;
+}
+
+console.log(saludar("Ana"));</code></pre>
+      </details>
+
+      <details>
+        <summary>¿Qué es una API?</summary>
+        <p>Una API es un <strong>contrato</strong> para pedir datos o servicios a otro programa. Cuando escribes una dirección como <code>/api/saludo</code>, estás llamando a una ruta de una API.</p>
+      </details>
+
+      <details>
+        <summary>¿Qué es HTTP?</summary>
+        <p>Es el protocolo con el que tu navegador pide cosas al servidor. Métodos comunes: <code>GET</code> (pedir), <code>POST</code> (enviar), <code>PUT</code> (actualizar), <code>DELETE</code> (borrar).</p>
+      </details>
+    </section>
+
+    <!-- PRACTICA -->
+    <section id="practica" class="seccion">
+      <h2>Practica</h2>
+      <p>Edita el código, presiona <strong>Ejecutar</strong> y observa la consola.</p>
+
+      <label>Tu código:</label>
+      <div id="editor-practica" class="editor-ace"></div>
+
+      <button class="boton" onclick="ejecutar('editor-practica')">▶ Ejecutar</button>
+
+      <h3>Consola</h3>
+      <pre id="consola-practica" class="consola"></pre>
+
+      <h3>Retos</h3>
+      <ul>
+        <li>Haz una función que sume dos números.</li>
+        <li>Haz una función que cuente las letras de una palabra.</li>
+        <li>Haz una función que diga si un número es par.</li>
+      </ul>
+    </section>
+
+    <!-- DEPURA -->
+    <section id="depura" class="seccion">
+      <h2>Depura</h2>
+      <p>Este código tiene un error. Míralo, ejecútalo y encuentra el problema.</p>
+
+      <label>Código con error:</label>
+      <div id="editor-depura" class="editor-ace"></div>
+
+      <button class="boton" onclick="ejecutar('editor-depura')">▶ Ejecutar</button>
+
+      <h3>Consola</h3>
+      <pre id="consola-depura" class="consola"></pre>
+
+      <details>
+        <summary>💡 Ver pista</summary>
+        <p>Cuando sumas un número con un texto, JavaScript <strong>concatena</strong> en lugar de sumar. El resultado es <code>"52"</code>, no <code>7</code>.</p>
+      </details>
+
+      <details>
+        <summary>✅ Ver solución</summary>
+        <pre><code>function sumar(a, b) {
+  return Number(a) + Number(b);
+}
+
+console.log(sumar(5, "2")); // 7</code></pre>
+      </details>
+
+      <h3>Errores clásicos</h3>
+      <ul>
+        <li><code>TypeError: Cannot read properties of undefined</code> → intentas leer algo que no existe.</li>
+        <li><code>ReferenceError: x is not defined</code> → usaste una variable que no declaraste.</li>
+        <li><code>NaN</code> → intentaste hacer una operación matemática con algo que no es número.</li>
+      </ul>
+    </section>
+
+    <!-- IA -->
+    <section id="ia" class="seccion">
+      <h2>IA para programar</h2>
+      <p>La IA debe ayudarte a <strong>entender</strong>, no a copiar. Aquí tienes cómo pedir ayuda bien.</p>
+
+      <h3>Plantilla de prompt</h3>
+      <pre><code>Estoy aprendiendo JavaScript.
+
+Este es mi código:
+[pega tu código]
+
+Este es el error:
+[pega el mensaje exacto]
+
+Explícame:
+1. Qué significa el error.
+2. En qué línea ocurre.
+3. Cómo puedo investigarlo.
+4. Dame una pista antes de mostrarme la solución.
+5. No reescribas todo el programa.</code></pre>
+
+      <h3>Reglas de oro</h3>
+      <ul>
+        <li>Pide <strong>pistas</strong>, no respuestas completas.</li>
+        <li>Pide que te explique <strong>el código corregido</strong>, no solo que lo reemplace.</li>
+        <li>Nunca pegues datos personales ni contraseñas.</li>
+        <li>Si no entiendes la respuesta, pide que te la explique con una analogía.</li>
+      </ul>
+
+      <h3>Herramientas gratuitas</h3>
+      <ul>
+        <li><strong>Ollama</strong> → corre modelos de IA en tu computadora, sin enviar datos a servidores.</li>
+        <li><strong>ChatGPT / Gemini / Claude</strong> → gratis en su versión básica, pero envían tus datos a sus servidores.</li>
+        <li><strong>Copilot</strong> → sugerencias dentro del editor.</li>
+      </ul>
+      <p class="aviso">"Gratis" no siempre significa "sin internet". Una IA en línea es gratis pero envía tu consulta; una IA local (como Ollama) trabaja en tu equipo después de descargar el modelo.</p>
+    </section>
+
+    <!-- DICCIONARIO -->
+    <section id="diccionario" class="seccion">
+      <h2>Diccionario</h2>
+      <dl>
+        <dt>Variable</dt><dd>Espacio con nombre donde guardas un valor.</dd>
+        <dt>Función</dt><dd>Bloque de código reutilizable.</dd>
+        <dt>Error</dt><dd>Problema que impide que el código funcione como esperas.</dd>
+        <dt>Depurar</dt><dd>Encontrar y corregir errores en el código.</dd>
+        <dt>Consola</dt><dd>Herramienta donde ves mensajes del programa.</dd>
+        <dt>Endpoint</dt><dd>Dirección de una API donde pides algo.</dd>
+        <dt>API</dt><dd>Contrato para pedir datos o servicios.</dd>
+        <dt>PWA</dt><dd>Aplicación web instalable, con funciones parecidas a una app nativa.</dd>
+        <dt>Service Worker</dt><dd>Script que permite que la app funcione sin conexión.</dd>
+        <dt>Backend</dt><dd>Parte del sistema que corre en el servidor.</dd>
+      </dl>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>&lt;DARKCODE&gt; — sin registro, sin pagos, sin APIs externas.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
