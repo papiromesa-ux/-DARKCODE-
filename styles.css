@@ -6,22 +6,79 @@
 
 body {
   font-family: -apple-system, system-ui, sans-serif;
-  background: #0a0a0a;
+  background: #0d0614; /* Morado muy oscuro */
   color: #d4d4d8;
   line-height: 1.6;
   padding-bottom: 60px;
 }
 
+/* --- MODAL DE SISTEMA OPERATIVO --- */
+.modal {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-contenido {
+  background: #160a26;
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid #2b1248;
+  text-align: center;
+  max-width: 340px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(109, 40, 217, 0.4);
+}
+
+.modal-contenido h2 {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  color: #a855f7;
+}
+
+.modal-contenido p {
+  font-size: 0.85rem;
+  color: #a1a1aa;
+  margin-bottom: 20px;
+}
+
+.botones-so {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.botones-so button {
+  background: #1a0b2e;
+  color: #e4e4e7;
+  border: 1px solid #2b1248;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.botones-so button:hover {
+  background: #2b1248;
+  border-color: #6d28d9;
+}
+
 header {
-  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  background: linear-gradient(135deg, #2e1065, #4c1d95);
   color: white;
   padding: 22px 16px;
   text-align: center;
-  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.35);
+  box-shadow: 0 4px 20px rgba(76, 29, 149, 0.5);
 }
 
 header h1 {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   letter-spacing: 2px;
   font-weight: 800;
 }
@@ -37,17 +94,17 @@ header h1 {
   overflow-x: auto;
   gap: 6px;
   padding: 10px;
-  background: #111114;
+  background: #11081c;
   position: sticky;
   top: 0;
   z-index: 10;
-  border-bottom: 1px solid #27272a;
+  border-bottom: 1px solid #2b1248;
 }
 
 #menu button {
-  background: #18181b;
+  background: #1a0b2e;
   color: #d4d4d8;
-  border: 1px solid #27272a;
+  border: 1px solid #2b1248;
   padding: 8px 14px;
   border-radius: 999px;
   font-size: 0.85rem;
@@ -57,10 +114,10 @@ header h1 {
 }
 
 #menu button.activo {
-  background: #7c3aed;
+  background: #4c1d95;
   color: white;
-  border-color: #7c3aed;
-  box-shadow: 0 0 12px rgba(124, 58, 237, 0.5);
+  border-color: #6d28d9;
+  box-shadow: 0 0 12px rgba(109, 40, 217, 0.6);
 }
 
 main {
@@ -85,14 +142,14 @@ main {
 
 h2 {
   margin-bottom: 12px;
-  color: #a855f7;
+  color: #c084fc;
   font-size: 1.3rem;
   letter-spacing: 1px;
 }
 
 h3 {
   margin: 16px 0 8px;
-  color: #c084fc;
+  color: #a855f7;
   font-size: 1rem;
 }
 
@@ -108,21 +165,21 @@ p {
 }
 
 .tarjeta {
-  background: #18181b;
+  background: #160a26;
   padding: 12px;
   border-radius: 10px;
-  border: 1px solid #27272a;
+  border: 1px solid #2b1248;
   transition: border 0.15s ease;
 }
 
 .tarjeta:active {
-  border-color: #7c3aed;
+  border-color: #6d28d9;
 }
 
 .tarjeta h3 {
   margin-top: 0;
   font-size: 0.95rem;
-  color: #d4d4d8;
+  color: #e4e4e7;
 }
 
 .tarjeta p {
@@ -132,11 +189,11 @@ p {
 }
 
 details {
-  background: #18181b;
+  background: #160a26;
   padding: 10px 14px;
   border-radius: 8px;
   margin-bottom: 10px;
-  border: 1px solid #27272a;
+  border: 1px solid #2b1248;
 }
 
 summary {
@@ -155,8 +212,8 @@ pre, code {
 }
 
 pre {
-  background: #050505;
-  border: 1px solid #27272a;
+  background: #050108;
+  border: 1px solid #2b1248;
   border-radius: 8px;
   padding: 10px;
   overflow-x: auto;
@@ -167,28 +224,39 @@ pre {
 }
 
 code {
-  background: #050505;
+  background: #050108;
   padding: 2px 5px;
   border-radius: 4px;
   color: #c084fc;
 }
 
-textarea {
+/* --- ACE EDITOR --- */
+.editor-ace {
   width: 100%;
-  min-height: 140px;
-  background: #050505;
-  color: #e4e4e7;
-  border: 1px solid #27272a;
+  min-height: 180px;
+  border: 1px solid #2b1248;
   border-radius: 8px;
-  padding: 10px;
-  font-family: "Courier New", monospace;
+  overflow: hidden;
+  margin-bottom: 10px;
   font-size: 0.85rem;
-  resize: vertical;
 }
 
-textarea:focus {
-  outline: none;
-  border-color: #7c3aed;
+.ace_editor {
+  background: #050108 !important;
+  color: #e4e4e7 !important;
+}
+
+.ace_gutter {
+  background: #11081c !important;
+  color: #71717a !important;
+}
+
+.ace_active-line {
+  background: #1a0b2e !important;
+}
+
+.ace_cursor {
+  color: #a855f7 !important;
 }
 
 label {
@@ -199,7 +267,7 @@ label {
 }
 
 .boton {
-  background: #7c3aed;
+  background: #4c1d95;
   color: white;
   border: none;
   padding: 10px 18px;
@@ -208,24 +276,25 @@ label {
   font-weight: 600;
   margin-top: 8px;
   cursor: pointer;
-  box-shadow: 0 0 12px rgba(124, 58, 237, 0.35);
+  box-shadow: 0 0 12px rgba(109, 40, 217, 0.5);
+  transition: background 0.2s;
 }
 
 .boton:active {
-  background: #6d28d9;
+  background: #2e1065;
 }
 
 .consola {
   background: #000;
   color: #4ade80;
-  border: 1px solid #27272a;
+  border: 1px solid #2b1248;
   min-height: 60px;
   font-family: "Courier New", monospace;
 }
 
 .aviso {
-  background: #18181b;
-  border-left: 4px solid #7c3aed;
+  background: #160a26;
+  border-left: 4px solid #6d28d9;
   padding: 10px 12px;
   border-radius: 6px;
   font-size: 0.9rem;
