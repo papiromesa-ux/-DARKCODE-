@@ -2,7 +2,16 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebas
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
-const firebaseConfig = { /* Tus credenciales de Firebase */ };
+const firebaseConfig = {
+  apiKey: "AIzaSyCJLUtvrmiCuGqFu4_gj5P9vH4kUhDa2yA",
+  authDomain: "darkcode-3691d.firebaseapp.com",
+  projectId: "darkcode-3691d",
+  storageBucket: "darkcode-3691d.firebasestorage.app",
+  messagingSenderId: "968623196225",
+  appId: "1:968623196225:web:e1d97a0d1bef93c34d9ec0",
+  measurementId: "G-Y0L9D69KJ7"
+};
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -15,29 +24,36 @@ const state = {
 };
 
 const TODOS_LOS_LOGROS = [
-  { id: "hola_clase", titulo: "Hola Clase", fase: 0, icono: "👋" },
-  { id: "esqueletico", titulo: "Esquelético", fase: 1, icono: "🦴" },
-  { id: "decorista", titulo: "Decorista", fase: 2, icono: "🎨" },
-  { id: "experto", titulo: "Experto", fase: 3, icono: "🧠" },
-  { id: "sin_conexion", titulo: "Sin conexión", fase: 4, icono: "📴" },
-  { id: "manifestante", titulo: "Manifestante", fase: 5, icono: "📄" },
-  { id: "conciencia", titulo: "Conciencia", fase: 6, icono: "🔌" },
-  { id: "caja_fuerte", titulo: "Caja Fuerte", fase: 7, icono: "🔒" },
-  { id: "policia", titulo: "Policía", fase: 8, icono: "👮" },
-  { id: "compañero", titulo: "Compañero Electrónico", fase: 9, icono: "🤖" },
-  { id: "instalable", titulo: "Instalable", fase: 10, icono: "📲" }
+  { id: "hola_clase", titulo: "Hola Clase", fase: 0, icono: "👋", desc: "Entrar a una clase" },
+  { id: "esqueletico", titulo: "Esquelético", fase: 1, icono: "🦴", desc: "Fase 1: HTML" },
+  { id: "decorista", titulo: "Decorista", fase: 2, icono: "🎨", desc: "Fase 2: CSS" },
+  { id: "experto", titulo: "Experto", fase: 3, icono: "🧠", desc: "Fase 3: Lenguaje" },
+  { id: "sin_conexion", titulo: "Sin conexión", fase: 4, icono: "📴", desc: "Fase 4: Service Worker" },
+  { id: "manifestante", titulo: "Manifestante", fase: 5, icono: "📄", desc: "Fase 5: Manifest" },
+  { id: "conciencia", titulo: "Conciencia", fase: 6, icono: "🔌", desc: "Fase 6: API" },
+  { id: "caja_fuerte", titulo: "Caja Fuerte", fase: 7, icono: "🔒", desc: "Fase 7: Backend" },
+  { id: "policia", titulo: "Policía", fase: 8, icono: "👮", desc: "Fase 8: Ciberseguridad" },
+  { id: "compañero", titulo: "Compañero Electrónico", fase: 9, icono: "🤖", desc: "Fase 9: IA" },
+  { id: "instalable", titulo: "Instalable", fase: 10, icono: "📲", desc: "Fase 10: PWA" }
 ];
 
+// --- SISTEMA DE NOTIFICACIONES ---
 function mostrarToast(titulo, mensaje, tipo = "error") {
   const container = document.getElementById("notificaciones-container");
   const toast = document.createElement("div");
   toast.className = `toast ${tipo}`;
   let icono = tipo === "error" ? "🚫" : tipo === "exito" ? "✅" : "🏆";
-  toast.innerHTML = `<div style="font-size:1.5rem; margin-right:10px;">${icono}</div><div><div style="font-weight:bold;">${titulo}</div><div style="font-size:0.8rem;">${mensaje}</div></div>`;
+  toast.innerHTML = `<div style="font-size:1.5rem; margin-right:10px;">${icono}</div><div><div style="font-weight:bold; font-size:0.9rem;">${titulo}</div><div style="font-size:0.8rem; opacity:0.9;">${mensaje}</div></div>`;
   container.appendChild(toast);
   setTimeout(() => { toast.style.opacity = "0"; setTimeout(() => toast.remove(), 300); }, 4000);
 }
 
+function lanzarError(codigo, mensaje) {
+  mostrarToast(`Error ${codigo}`, mensaje, "error");
+  reproducirSonido("error");
+}
+
+// --- LOGROS Y CONFETI ---
 function desbloquearLogro(idLogro) {
   if (state.logros.includes(idLogro)) return;
   state.logros.push(idLogro);
@@ -45,16 +61,40 @@ function desbloquearLogro(idLogro) {
   const logro = TODOS_LOS_LOGROS.find(l => l.id === idLogro);
   if (logro) {
     mostrarToast("¡Misión Completada!", logro.titulo, "logro");
-    lanzarConfeti(); // Solo aquí se celebra con confeti
+    lanzarConfeti();
     guardarDatosNube();
   }
   renderizarLogros();
-  dibujarMapaMisiones(); // Actualizar el mapa visualmente
+  dibujarMapaMisiones();
 }
 
-function renderizarLogros() { /* ... igual que antes ... */ }
-function lanzarConfeti() { /* ... igual que antes ... */ }
+function renderizarLogros() {
+  const container = document.getElementById("lista-logros");
+  if (!container) return;
+  container.innerHTML = "";
+  TODOS_LOS_LOGROS.forEach(logro => {
+    const obtenido = state.logros.includes(logro.id);
+    const div = document.createElement("div");
+    div.className = `logro-card ${obtenido ? 'obtenido' : 'bloqueado'}`;
+    div.innerHTML = `<div class="logro-icono">${logro.icono}</div><div class="logro-info"><strong>${logro.titulo}</strong><small>${logro.desc}</small></div>`;
+    container.appendChild(div);
+  });
+}
 
+function lanzarConfeti() {
+  const container = document.getElementById("confetti-container");
+  for (let i = 0; i < 50; i++) {
+    const confeti = document.createElement("div");
+    confeti.classList.add("confeti-pieza");
+    confeti.style.left = Math.random() * 100 + "vw";
+    confeti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+    confeti.style.animationDelay = Math.random() * 0.5 + "s";
+    container.appendChild(confeti);
+    setTimeout(() => confeti.remove(), 3000);
+  }
+}
+
+// --- FIRESTORE ---
 async function cargarDatosNube(uid) {
   try {
     const docSnap = await getDoc(doc(db, "usuarios", uid));
@@ -62,20 +102,96 @@ async function cargarDatosNube(uid) {
       const data = docSnap.data();
       state.xp = data.xp || 0; state.nivel = data.nivel || 1;
       state.logros = data.logros || []; state.modo = data.modo || "dark";
+      localStorage.setItem("dc_logros", JSON.stringify(state.logros));
       aplicarModo(state.modo); actualizarPerfil(); dibujarMapaMisiones();
     }
-  } catch (e) { mostrarToast("Error", "No se pudo conectar", "error"); }
+  } catch (e) { lanzarError(500, "Fallo al conectar con el servidor."); }
 }
 
-async function guardarDatosNube() { /* ... igual que antes ... */ }
+async function guardarDatosNube() {
+  if (!state.user) return;
+  try {
+    await setDoc(doc(db, "usuarios", state.user.uid), {
+      xp: state.xp, nivel: state.nivel, lenguaje: state.lenguaje,
+      modo: state.modo, logros: state.logros, fechaActualizacion: new Date()
+    }, { merge: true });
+  } catch (e) { lanzarError(101, "No se pudo guardar el progreso. Estás sin conexión."); }
+}
 
-// --- DIBUJAR MAPA DE MISIONES ---
+// --- LOGIN ---
+document.getElementById("btn-google").addEventListener("click", async () => {
+  try { await signInWithPopup(auth, provider); reproducirSonido("ok"); } 
+  catch (error) { lanzarError(403, "Acceso denegado. No se pudo iniciar sesión."); }
+});
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    state.user = user;
+    document.getElementById("login-screen").classList.add("oculto");
+    cargarDatosNube(user.uid);
+  } else {
+    state.user = null;
+    document.getElementById("login-screen").classList.remove("oculto");
+  }
+});
+
+// --- NAVEGACIÓN ---
+document.querySelectorAll("#menu button").forEach((b) => {
+  b.addEventListener("click", () => {
+    reproducirSonido("click");
+    const destino = b.dataset.seccion;
+    document.querySelectorAll("#menu button").forEach((x) => x.classList.remove("activo"));
+    document.querySelectorAll(".seccion").forEach((s) => s.classList.remove("activa"));
+    b.classList.add("activo");
+    document.getElementById(destino).classList.add("activa");
+  });
+});
+
+// --- SALÓN ---
+document.querySelectorAll(".lang-card").forEach((card) => {
+  card.addEventListener("click", () => {
+    reproducirSonido("ok");
+    entrarSalon(card.dataset.lang);
+  });
+});
+
+function entrarSalon(lang) {
+  state.lenguaje = lang;
+  document.getElementById("salon-lenguaje").textContent = `<<< ${lang.toUpperCase()} >>>`;
+  document.getElementById("main-header").style.display = "none";
+  document.getElementById("menu").style.display = "none";
+  document.querySelectorAll(".seccion").forEach((s) => s.classList.remove("activa"));
+  document.getElementById("salon").classList.add("activa");
+  desbloquearLogro("hola_clase");
+  guardarDatosNube();
+}
+
+function salirSalon() {
+  reproducirSonido("click");
+  document.getElementById("main-header").style.display = "block";
+  document.getElementById("menu").style.display = "flex";
+  document.querySelectorAll(".seccion").forEach((s) => s.classList.remove("activa"));
+  document.getElementById("inicio").classList.add("activa");
+  document.querySelectorAll("#menu button").forEach((x) => x.classList.remove("activo"));
+  document.querySelector('#menu [data-seccion="inicio"]').classList.add("activo");
+}
+
+document.querySelectorAll(".salon-tabs button").forEach((b) => {
+  b.addEventListener("click", () => {
+    reproducirSonido("click");
+    document.querySelectorAll(".salon-tabs button").forEach((x) => x.classList.remove("activo"));
+    document.querySelectorAll(".salon-tab").forEach((x) => x.classList.remove("activo"));
+    b.classList.add("activo");
+    document.getElementById("tab-" + b.dataset.tab).classList.add("activo");
+  });
+});
+
+// --- DIBUJAR MAPA ---
 function dibujarMapaMisiones() {
   const container = document.getElementById("mapa-misiones-container");
   if (!container) return;
   container.innerHTML = "";
 
-  // Encontrar cuál es la siguiente misión
   let siguienteFase = 1;
   for (let i = 1; i <= 10; i++) {
     const logroFase = TODOS_LOS_LOGROS.find(l => l.fase === i);
@@ -86,7 +202,6 @@ function dibujarMapaMisiones() {
     }
   }
 
-  // Crear los nodos del 1 al 10
   for (let i = 1; i <= 10; i++) {
     const mision = mapaMisiones[i];
     const logroFase = TODOS_LOS_LOGROS.find(l => l.fase === i);
@@ -114,12 +229,90 @@ function dibujarMapaMisiones() {
       div.style.opacity = "0.5";
       div.onclick = () => mostrarToast("Bloqueada", "Completa la misión anterior primero.", "error");
     }
-    
     container.appendChild(div);
   }
 }
 
-// --- LÓGICA DE LECCIÓN ---
+// --- AJUSTES Y MODOS ---
+document.querySelectorAll(".modo-btn").forEach((b) => {
+  b.addEventListener("click", () => {
+    reproducirSonido("click");
+    state.modo = b.dataset.modo;
+    localStorage.setItem("dc_modo", state.modo);
+    aplicarModo(state.modo);
+    document.querySelectorAll(".modo-btn").forEach((x) => x.classList.remove("activo"));
+    b.classList.add("activo");
+    guardarDatosNube();
+  });
+});
+
+function aplicarModo(modo) {
+  document.body.classList.remove("light", "dazer");
+  if (modo === "light") document.body.classList.add("light");
+  if (modo === "dazer") document.body.classList.add("dazer");
+  document.querySelectorAll(".modo-btn").forEach((b) => {
+    if (b.dataset.modo === modo) b.classList.add("activo");
+    else b.classList.remove("activo");
+  });
+}
+aplicarModo(state.modo);
+
+// --- MÚSICA ---
+let musicaFondo = new Audio();
+musicaFondo.loop = true;
+musicaFondo.volume = 0.3;
+let musicaActiva = false;
+
+const selectMusica = document.getElementById("select-musica");
+if (selectMusica) {
+  selectMusica.addEventListener("change", (e) => {
+    const nuevaCancion = e.target.value;
+    if (nuevaCancion === "") { musicaFondo.pause(); musicaActiva = false; } 
+    else {
+      musicaFondo.src = nuevaCancion;
+      musicaFondo.play().catch(() => lanzarError(400, "Haz clic para permitir el audio."));
+      musicaActiva = true;
+    }
+  });
+}
+
+function toggleMusica() {
+  if (!selectMusica || selectMusica.value === "") {
+    mostrarToast("Música", "Primero selecciona una canción.", "error");
+    return;
+  }
+  if (musicaActiva) { musicaFondo.pause(); } 
+  else { musicaFondo.play().catch(() => lanzarError(400, "Toca de nuevo para dar permiso al audio.")); }
+  musicaActiva = !musicaActiva;
+}
+
+// --- SONIDOS Y XP ---
+let audioCtx = null;
+function reproducirSonido(tipo) {
+  if (!state.sonidoBotones) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator(); const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    if (tipo === "error") { osc.frequency.value = 150; osc.type = "sawtooth"; } 
+    else { osc.frequency.value = tipo === "ok" ? 880 : 440; osc.type = "sine"; }
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    osc.start(); osc.stop(ctx.currentTime + 0.15);
+  } catch (e) {}
+}
+
+function ganarXP(cantidad) {
+  state.xp += cantidad;
+  if (state.xp >= 100) {
+    state.xp -= 100; state.nivel++;
+    reproducirSonido("ok"); lanzarConfeti();
+    setTimeout(() => mostrarToast("¡Nivel Arriba!", `Ahora eres Nivel ${state.nivel}`, "exito"), 500);
+  }
+  actualizarPerfil(); guardarDatosNube();
+}
+
+// --- LÓGICA DE LECCIONES ---
 let leccionActual = [], indicePregunta = 0, opcionSeleccionada = null, aciertosLeccion = 0, faseActual = 1;
 
 function iniciarLeccion(faseId) {
@@ -209,7 +402,6 @@ function terminarLeccion() {
   document.getElementById("pantalla-leccion").style.display = "none";
   document.getElementById("salon").style.display = "block";
   
-  // Si acertó al menos 2 de 3, desbloquea
   if (aciertosLeccion >= 2) {
     const logro = TODOS_LOS_LOGROS.find(l => l.fase === faseActual);
     if (logro) desbloquearLogro(logro.id);
@@ -220,16 +412,55 @@ function terminarLeccion() {
   dibujarMapaMisiones();
 }
 
-// --- INICIALIZACIÓN ---
+// --- EDITOR ---
+let editorSalon;
 window.addEventListener("load", () => {
-  // (Ace Editor y demás código igual que antes)
+  if (typeof ace === "undefined") return;
+  editorSalon = ace.edit("editor-salon");
+  editorSalon.setTheme("ace/theme/monokai");
+  editorSalon.session.setMode("ace/mode/html");
+  editorSalon.setValue(`<div style="text-align:center;">\n  <h1 style="color:purple;">¡Hola <DARKCODE>!</h1>\n  <button onclick="alert('Funciona!')">Probar</button>\n</div>`);
   dibujarMapaMisiones();
 });
 
-// Exponer funciones...
-window.salirSalon = () => { /* ... */ };
+function ejecutarSalon() {
+  const iframe = document.getElementById("preview-salon");
+  if (!editorSalon || !iframe) return;
+  const codigo = editorSalon.getValue();
+  const doc = iframe.contentWindow.document;
+  doc.open();
+  doc.write(`<!DOCTYPE html><html><head><style>body { font-family: sans-serif; padding: 10px; color: #333; background: #fff; margin: 0; }</style></head><body>${codigo}</body></html>`);
+  doc.close();
+  ganarXP(5);
+}
+
+// --- PERFIL Y GLOBALES ---
+function actualizarPerfil() {
+  document.getElementById("perfil-nombre").textContent = state.user ? (state.user.displayName || "Usuario") : "Invitado";
+  document.getElementById("perfil-email").textContent = state.user ? (state.user.email || "—") : "—";
+  document.getElementById("perfil-nivel").textContent = state.nivel;
+  document.getElementById("perfil-xp").textContent = state.xp;
+  document.getElementById("xp-bar-fill").style.width = `${state.xp}%`;
+  renderizarLogros();
+}
+
+function cerrarSesion() { signOut(auth).then(() => location.reload()); }
+
+async function borrarMisDatos() {
+  if (!state.user) return;
+  if (confirm("¿Seguro que quieres borrar TODO tu progreso?")) {
+    await deleteDoc(doc(db, "usuarios", state.user.uid));
+    localStorage.clear();
+    location.reload();
+  }
+}
+
+window.salirSalon = salirSalon;
+window.ejecutarSalon = ejecutarSalon;
+window.cerrarSesion = cerrarSesion;
+window.borrarMisDatos = borrarMisDatos;
+window.toggleMusica = toggleMusica;
 window.iniciarLeccion = iniciarLeccion;
 window.salirLeccion = salirLeccion;
 window.comprobarRespuesta = comprobarRespuesta;
 window.siguientePregunta = siguientePregunta;
-// (El resto de funciones como cerrarSesion, borrarMisDatos, etc. se mantienen igual)
