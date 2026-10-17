@@ -1,4 +1,4 @@
-const CACHE = "darkcode-R3-final-12fases";
+const CACHE = "darkcode-R3-fix-v3"; // Importante subir la versión para que limpie el caché viejo
 
 const LOCALES = [
   "./", "./index.html", "./styles.css", "./app.js", "./clases.js", "./manifest.json",
