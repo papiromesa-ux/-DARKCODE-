@@ -1,5 +1,5 @@
 // ================================
-// <DARKCODE> - lógica principal con Firebase
+// <DARKCODE> - lógica principal
 // ================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
@@ -34,26 +34,25 @@ const state = {
   modo: localStorage.getItem("dc_modo") || "dark",
   sonidoBotones: localStorage.getItem("dc_sb") !== "0",
   sonidoFondo: localStorage.getItem("dc_sf") === "1",
-  animaciones: localStorage.getItem("dc_anim") !== "0"
+  animaciones: localStorage.getItem("dc_anim") !== "0",
+  xp: parseInt(localStorage.getItem("dc_xp")) || 0,
+  nivel: parseInt(localStorage.getItem("dc_nivel")) || 1
 };
 
-// --- 4. Login con Google (Firebase) ---
+// --- 4. Login con Google ---
 const loginScreen = document.getElementById("login-screen");
 const btnGoogle = document.getElementById("btn-google");
 
 btnGoogle.addEventListener("click", async () => {
   try {
-    const result = await signInWithPopup(auth, provider);
-    // El usuario se logueó correctamente.
-    // onAuthStateChanged se encargará de actualizar la UI.
+    await signInWithPopup(auth, provider);
     reproducirSonido("ok");
   } catch (error) {
     console.error("Error en el login:", error);
-    alert("No se pudo iniciar sesión. Revisa la consola para más detalles.");
+    alert("No se pudo iniciar sesión.");
   }
 });
 
-// Escuchar cambios en el estado de autenticación
 onAuthStateChanged(auth, (user) => {
   if (user) {
     state.user = user;
@@ -66,11 +65,7 @@ onAuthStateChanged(auth, (user) => {
 });
 
 function cerrarSesion() {
-  signOut(auth).then(() => {
-    location.reload();
-  }).catch((error) => {
-    console.error("Error al cerrar sesión:", error);
-  });
+  signOut(auth).then(() => location.reload());
 }
 
 // --- 5. Navegación principal ---
@@ -101,7 +96,6 @@ document.querySelectorAll(".lang-card").forEach((card) => {
 function entrarSalon(lang) {
   state.lenguaje = lang;
   localStorage.setItem("dc_lang", lang);
-
   document.getElementById("salon-lenguaje").textContent = `<<< ${lang.toUpperCase()} >>>`;
   document.getElementById("salon-bienvenida").textContent = `Bienvenido a autoclase de ${lang}`;
   document.getElementById("salon-lang-text").textContent = lang;
@@ -152,7 +146,6 @@ function aplicarModo(modo) {
   if (modo === "light") document.body.classList.add("light");
   if (modo === "dazer") document.body.classList.add("dazer");
 }
-
 aplicarModo(state.modo);
 document.querySelectorAll(".modo-btn").forEach((b) => {
   if (b.dataset.modo === state.modo) b.classList.add("activo");
@@ -162,11 +155,9 @@ document.querySelectorAll(".modo-btn").forEach((b) => {
 // --- 9. Configuración (switches) ---
 const sonidoBotonesChk = document.getElementById("sonido-botones");
 const sonidoFondoChk = document.getElementById("sonido-fondo");
-const animacionesChk = document.getElementById("animaciones");
 
 sonidoBotonesChk.checked = state.sonidoBotones;
 sonidoFondoChk.checked = state.sonidoFondo;
-animacionesChk.checked = state.animaciones;
 
 sonidoBotonesChk.addEventListener("change", (e) => {
   state.sonidoBotones = e.target.checked;
@@ -177,12 +168,8 @@ sonidoFondoChk.addEventListener("change", (e) => {
   localStorage.setItem("dc_sf", state.sonidoFondo ? "1" : "0");
   if (state.sonidoFondo) iniciarSonidoFondo(); else detenerSonidoFondo();
 });
-animacionesChk.addEventListener("change", (e) => {
-  state.animaciones = e.target.checked;
-  localStorage.setItem("dc_anim", state.animaciones ? "1" : "0");
-});
 
-// --- 10. Sonidos con Web Audio API ---
+// --- 10. Sonidos ---
 let audioCtx = null;
 let fondoOsc = null;
 
@@ -199,8 +186,7 @@ function reproducirSonido(tipo) {
     const gain = ctx.createGain();
     osc.connect(gain);
     gain.connect(ctx.destination);
-    const frec = tipo === "ok" ? 880 : 440;
-    osc.frequency.value = frec;
+    osc.frequency.value = tipo === "ok" ? 880 : 440;
     osc.type = "sine";
     gain.gain.setValueAtTime(0.15, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
@@ -233,14 +219,13 @@ let editorPractica, editorDepura, editorSalon;
 
 window.addEventListener("load", () => {
   if (typeof ace === "undefined") return;
-
   const opts = { fontSize: "14px", showPrintMargin: false, useWorker: false };
 
   editorPractica = ace.edit("editor-practica");
   editorPractica.setTheme("ace/theme/monokai");
   editorPractica.session.setMode("ace/mode/javascript");
   editorPractica.setOptions(opts);
-  editorPractica.setValue(`function saludar(nombre) {\n  return "Hola, " + nombre + "!";\n}\n\nconsole.log(saludar("Ana"));`);
+  editorPractica.setValue(`console.log("Hola desde Practica");`);
 
   editorDepura = ace.edit("editor-depura");
   editorDepura.setTheme("ace/theme/monokai");
@@ -250,26 +235,54 @@ window.addEventListener("load", () => {
 
   editorSalon = ace.edit("editor-salon");
   editorSalon.setTheme("ace/theme/monokai");
-  editorSalon.session.setMode("ace/mode/javascript");
+  editorSalon.session.setMode("ace/mode/html"); // HTML para probar la vista previa
   editorSalon.setOptions(opts);
-  editorSalon.setValue(`// Tu código aquí\nconsole.log("Hola <DARKCODE>");`);
+  editorSalon.setValue(`<h1 style="color: purple;">¡Hola <DARKCODE>!</h1>\n<p>Este es un texto de prueba.</p>\n<script>\n  console.log("Ejecutando script en el navegador");\n</script>`);
 });
 
-// --- 12. Ejecutar código ---
+// --- 12. XP y Niveles ---
+function ganarXP(cantidad) {
+  state.xp += cantidad;
+  if (state.xp >= 100) {
+    state.xp -= 100;
+    state.nivel++;
+    reproducirSonido("ok");
+    setTimeout(() => alert("¡Felicidades! Has subido al Nivel " + state.nivel), 300);
+  }
+  localStorage.setItem("dc_xp", state.xp);
+  localStorage.setItem("dc_nivel", state.nivel);
+  actualizarPerfil();
+}
+
+// --- 13. Ejecutar código ---
 function ejecutar(idEditor) {
   const idConsola = idEditor.replace("editor", "consola");
   const consola = document.getElementById(idConsola);
-  const codigo = idEditor === "editor-practica"
-    ? editorPractica.getValue()
-    : editorDepura.getValue();
-
+  const codigo = idEditor === "editor-practica" ? editorPractica.getValue() : editorDepura.getValue();
   correrCodigo(codigo, consola);
+  ganarXP(5); // Gana 5 XP
 }
 
 function ejecutarSalon() {
   const consola = document.getElementById("consola-salon");
-  if (!editorSalon) return;
-  correrCodigo(editorSalon.getValue(), consola);
+  const iframe = document.getElementById("preview-salon");
+  if (!editorSalon || !iframe) return;
+  
+  const codigo = editorSalon.getValue();
+  
+  // Ejecutar en consola (por si usan console.log)
+  correrCodigo(codigo, consola);
+  
+  // Actualizar Vista Previa (HTML/CSS/JS)
+  const doc = iframe.contentWindow.document;
+  doc.open();
+  doc.write(`
+    <style>body { font-family: sans-serif; padding: 10px; color: #333; background: #fff; }</style>
+    ${codigo}
+  `);
+  doc.close();
+
+  ganarXP(5); // Gana 5 XP
 }
 
 function correrCodigo(codigo, consola) {
@@ -299,10 +312,14 @@ function formatear(args) {
   }).join(" ");
 }
 
-// --- 13. Perfil ---
+// --- 14. Perfil ---
 function actualizarPerfil() {
   const elNombre = document.getElementById("perfil-nombre");
   const elEmail = document.getElementById("perfil-email");
+  const elNivel = document.getElementById("perfil-nivel");
+  const elXp = document.getElementById("perfil-xp");
+  const elBarra = document.getElementById("xp-bar-fill");
+
   if (state.user) {
     if (elNombre) elNombre.textContent = state.user.displayName || "Usuario";
     if (elEmail) elEmail.textContent = state.user.email || "—";
@@ -310,17 +327,15 @@ function actualizarPerfil() {
     if (elNombre) elNombre.textContent = "Invitado";
     if (elEmail) elEmail.textContent = "—";
   }
+
+  if (elNivel) elNivel.textContent = state.nivel;
+  if (elXp) elXp.textContent = state.xp;
+  if (elBarra) elBarra.style.width = `${state.xp}%`;
 }
 
-// --- 14. Instalar PWA ---
-let promptInstalacion = null;
-const btnInstalar = document.getElementById("btn-instalar");
+actualizarPerfil();
 
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  promptInstalacion = e;
-});
-
+// Exponer funciones globales
 window.ejecutar = ejecutar;
 window.ejecutarSalon = ejecutarSalon;
 window.salirSalon = salirSalon;
