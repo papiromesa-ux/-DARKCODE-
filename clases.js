@@ -1,19 +1,17 @@
 // clases.js - Teoría y Preguntas completas
 window.teoria = {
-  html: `<h3>1. Cómo funciona HTML</h3><p>HTML es el lenguaje que estructura el contenido de una página web. Utiliza etiquetas para indicar qué es un título, un párrafo o una imagen. No es un lenguaje de programación, sino de marcado.</p><h3>2. Etiquetas y atributos</h3><p>Un elemento HTML tiene una etiqueta de apertura, contenido y una etiqueta de cierre. Los atributos dan información extra, como el enlace de una imagen o el destino de un link.</p>`,
-  css: `<h3>1. ¿Qué es CSS?</h3><p>CSS (Cascading Style Sheets) define la apariencia de la página. Mientras HTML es el esqueleto, CSS es la ropa y el maquillaje: colores, tamaños, márgenes y diseño.</p><h3>2. Selectores y modelo de caja</h3><p>Los selectores indican a qué elemento aplicar el estilo. Todo elemento es una caja con contenido, padding (relleno), borde y margen.</p>`,
-  js: `<h3>1. Variables con let y const</h3><p>Una variable guarda información. Usamos <b>let</b> si el valor puede cambiar y <b>const</b> si queremos que sea fijo.</p><h3>2. Tipos de datos y operadores</h3><p>Los tipos básicos son texto (en comillas), números y booleanos (true/false). Los operadores matemáticos (+, -, *, /, %) realizan cálculos. Usamos <b>if</b> y <b>else</b> para tomar decisiones.</p>`,
-  php: `<h3>1. Variables en PHP</h3><p>Las variables guardan datos y siempre comienzan con el símbolo <b>$</b>. PHP detecta el tipo de dato automáticamente.</p><h3>2. Sintaxis y Servidores</h3><p>El código PHP se escribe entre las etiquetas <b>&lt;?php y ?&gt;</b> y la mayoría de instrucciones terminan con punto y coma (;). PHP se ejecuta en el servidor, y el navegador solo recibe el resultado final.</p>`,
-  ruby: `<h3>1. Variables en Ruby</h3><p>Ruby es muy legible. Las variables locales empiezan con minúscula, las de instancia con <b>@</b>, las de clase con <b>@@</b> y las globales con <b>$</b>.</p><h3>2. Textos, Arreglos y Hashes</h3><p>Los textos van entre comillas. Los arreglos son listas que empiezan en el índice 0. Los hashes guardan datos en pares de "clave => valor".</p>`,
-  c: `<h3>1. Variables en C</h3><p>C es estricto y requiere indicar el tipo de dato. Usamos <b>int</b> para enteros y <b>char</b> para caracteres. Todo programa inicia en la función <b>main</b>.</p><h3>2. Sintaxis y Compilador</h3><p>Las instrucciones terminan en punto y coma (;). El compilador traduce el código a lenguaje máquina. Usamos <b>if/else</b> para condiciones y <b>for/while</b> para bucles.</p>`,
-  cpp: `<h3>1. Variables en C++</h3><p>C++ usa tipos estrictos como <b>int</b>, <b>char</b> y <b>bool</b> (verdadero/falso). Es un lenguaje de tipado fuerte y rápido.</p><h3>2. Clases y Objetos</h3><p>C++ añade Programación Orientada a Objetos. Una <b>clase</b> es un molde y un <b>objeto</b> es una instancia creada a partir de ese molde.</p>`,
-  sw: `<h3>1. ¿Qué es un Service Worker?</h3><p>Es un script que corre en segundo plano en el navegador. Actúa como intermediario entre la app, la red y la caché, permitiendo que la app funcione parcialmente sin internet.</p><h3>2. Ciclo de vida y Estrategias</h3><p>Se instala, se activa e intercepta las solicitudes (fetch). Podemos usar estrategias como "Caché primero" o "Red primero" dependiendo del recurso.</p>`,
-  manifest: `<h3>1. ¿Qué es el manifest.json?</h3><p>Es el documento de identidad de una PWA. Le dice al navegador cómo instalar la app: su nombre, iconos, colores y cómo debe abrirse (por ejemplo, en modo "standalone" sin barra de navegación).</p>`,
-  api: `<h3>1. ¿Qué es una API?</h3><p>Es una interfaz de comunicación que permite que el frontend pida datos al backend. Usa endpoints (rutas) y métodos HTTP como GET (obtener) y POST (enviar).</p><h3>2. Códigos de estado y JSON</h3><p>Las respuestas incluyen códigos como 200 (OK), 404 (No encontrado) o 500 (Error del servidor). Los datos se envían normalmente en formato JSON.</p>`,
-  backend: `<h3>1. ¿Qué es el Backend?</h3><p>Es la parte del servidor invisible al usuario. Procesa solicitudes, valida datos, aplica reglas de negocio y se conecta a la base de datos.</p><h3>2. Seguridad y Validación</h3><p>El backend nunca debe confiar en el frontend. Debe validar los datos, comprobar la autenticación (quién eres) y la autorización (qué puedes hacer).</p>`,
-  cyber: `<h3>1. Ciberseguridad Básica</h3><p>Consiste en proteger el código y los datos. Las contraseñas deben guardarse encriptadas (hash) y las rutas privadas deben requerir autenticación.</p><h3>2. Validación y Permisos</h3><p>Nunca confíes en el usuario. Valida siempre en el servidor. Aplica el principio de menor privilegio (cada usuario solo tiene los permisos necesarios).</p>`,
-  debug: `<h3>1. Depuración</h3><p>Es el proceso de encontrar y corregir errores. Consiste en reproducir el problema, aislar la causa y aplicar una corrección mínima. Usa la consola y las herramientas de desarrollo.</p><h3>2. Identificar archivos</h3><p>Revisa el nombre, la extensión y el contenido. Por ejemplo, sw.js tendrá self.addEventListener, y manifest.json tendrá llaves y comillas.</p>`,
-  repo: `<h3>1. Repositorios y GitHub</h3><p>Un repositorio es el lugar donde se guarda el proyecto. Git es el sistema de control de versiones y GitHub es la nube donde lo alojas.</p><h3>2. Commits y Ramas</h3><p>Un commit guarda un cambio con un mensaje. Las ramas permiten trabajar en paralelo sin afectar la rama principal (main).</p>`
+  html: `<h3>1. Cómo funciona HTML</h3><p>HTML estructura el contenido web. Usa etiquetas para indicar títulos, párrafos e imágenes.</p><h3>2. Etiquetas y atributos</h3><p>Un elemento tiene etiqueta de apertura, contenido y cierre. Los atributos añaden información extra.</p>`,
+  css: `<h3>1. ¿Qué es CSS?</h3><p>CSS define la apariencia visual: colores, tamaños y diseño.</p><h3>2. Selectores y modelo de caja</h3><p>Los selectores aplican estilos. Todo elemento es una caja con padding, borde y margen.</p>`,
+  backend: `<h3>1. Backend</h3><p>Es la parte del servidor. Procesa solicitudes, valida datos y se conecta a la base de datos.</p><h3>2. Cliente y Servidor</h3><p>El cliente pide (frontend) y el servidor responde (backend). Usa autenticación y autorización.</p>`,
+  cyber: `<h3>1. Ciberseguridad</h3><p>Protege el código y los datos. Las contraseñas se guardan con hash.</p><h3>2. Validación y Permisos</h3><p>Nunca confíes en el usuario. Valida siempre en el backend y aplica el principio de menor privilegio.</p>`,
+  api: `<h3>1. API</h3><p>Interfaz que conecta frontend y backend. Usa métodos HTTP como GET y POST.</p><h3>2. Respuestas</h3><p>Usa códigos de estado (200 OK, 404 Not Found) y formato JSON.</p>`,
+  sw: `<h3>1. Service Worker</h3><p>Script en segundo plano que permite el modo offline usando caché.</p><h3>2. Ciclo de vida</h3><p>Se instala, se activa e intercepta solicitudes (fetch). Requiere HTTPS.</p>`,
+  manifest: `<h3>1. Manifest.json</h3><p>Documento de identidad de la PWA. Define nombre, iconos, colores y cómo abrir la app.</p>`,
+  debug: `<h3>1. Depuración</h3><p>Encontrar y corregir errores. Usa la consola y puntos de interrupción.</p><h3>2. Identificar archivos</h3><p>sw.js tiene self.addEventListener; manifest.json tiene llaves y comillas.</p>`,
+  repo: `<h3>1. Repositorio</h3><p>Espacio para guardar el proyecto con control de versiones (Git).</p><h3>2. Commits y Ramas</h3><p>Un commit guarda cambios. Las ramas permiten trabajar en paralelo.</p>`,
+  files: `<h3>1. Archivos de programación</h3><p>index.html (estructura), styles.css (diseño), app.js (lógica) y api.js (conexión).</p><h3>2. Backend y DB</h3><p>Archivos como server.js manejan el backend, y .sql manejan la base de datos.</p>`,
+  ia: `<h3>1. Programar con IA</h3><p>La IA ayuda a escribir y explicar código, pero debe revisarse.</p><h3>2. Buenos prompts</h3><p>Da contexto, indica el entorno, pide un plan y solicita código por partes. Nunca compartas secretos.</p>`,
+  hacking: `<h3>1. Hacking Ético</h3><p>Buscar vulnerabilidades con autorización para corregirlas.</p><h3>2. Alcance y práctica</h3><p>Nunca pruebes sistemas ajenos. Usa laboratorios como WebGoat o Juice Shop.</p>`
 };
 
 window.baseDePreguntas = {
@@ -31,126 +29,89 @@ window.baseDePreguntas = {
     { pregunta: "¿Cómo se llama la regla que prioriza un estilo?", opciones: ["Cascada y especificidad", "Herencia", "Flexbox"], correcta: 0, explicacion: "La cascada y especificidad definen qué regla gana." },
     { pregunta: "¿Qué unidad es relativa?", opciones: ["px", "cm", "%"], correcta: 2, explicacion: "El porcentaje depende del contenedor." }
   ],
-  js: [
-    { pregunta: "¿Cuál es la diferencia entre let y const?", opciones: ["let permite cambiar el valor, const no.", "const permite cambiar el valor, let no.", "Ambas hacen lo mismo."], correcta: 0, explicacion: "let es mutable, const es inmutable." },
-    { pregunta: "¿Cómo se escribe un texto?", opciones: ["Sin comillas.", "Entre comillas.", "Con $."], correcta: 1, explicacion: "Los strings van entre comillas." },
-    { pregunta: "¿Qué significa el operador %?", opciones: ["Porcentaje.", "El residuo de una división.", "División."], correcta: 1, explicacion: "% devuelve el sobrante." },
-    { pregunta: "¿Cuándo se ejecuta 'else'?", opciones: ["Cuando 'if' es verdadero.", "Cuando 'if' es falso.", "Siempre."], correcta: 1, explicacion: "else es la alternativa al if." },
-    { pregunta: "¿En qué índice empieza un arreglo?", opciones: ["0", "1", "10"], correcta: 0, explicacion: "Los arreglos empiezan en el índice 0." },
-    { pregunta: "¿Qué es una función?", opciones: ["Una variable", "Un bloque de código reutilizable", "Un bucle"], correcta: 1, explicacion: "Agrupa código para reutilizarlo." },
-    { pregunta: "¿Qué valor es booleano?", opciones: ["'Hola'", "45", "true"], correcta: 2, explicacion: "true y false son booleanos." },
-    { pregunta: "¿Qué operador significa 'exactamente igual'?", opciones: ["=", "==", "==="], correcta: 2, explicacion: "=== compara valor y tipo." },
-    { pregunta: "¿Qué estructura repite código?", opciones: ["if", "for", "const"], correcta: 1, explicacion: "for es un bucle." },
-    { pregunta: "¿Dónde se ejecuta JS en la web?", opciones: ["En el servidor", "En el navegador", "En la base de datos"], correcta: 1, explicacion: "El navegador interpreta JS." }
-  ],
-  php: [
-    { pregunta: "¿Con qué símbolo comienzan las variables en PHP?", opciones: ["#", "$", "@"], correcta: 1, explicacion: "Usan el símbolo $." },
-    { pregunta: "¿Qué etiqueta abre PHP?", opciones: ["<php>", "<?php", "<script>"], correcta: 1, explicacion: "Se usa <?php." },
-    { pregunta: "¿Qué instrucción muestra texto?", opciones: ["echo", "print_text", "show"], correcta: 0, explicacion: "echo imprime en pantalla." },
-    { pregunta: "¿Dónde se ejecuta PHP?", opciones: ["En el navegador", "En el servidor", "En CSS"], correcta: 1, explicacion: "Es un lenguaje del lado del servidor." },
-    { pregunta: "¿Qué variable guarda datos del servidor?", opciones: ["$_GET", "$_SERVER", "$_POST"], correcta: 1, explicacion: "$_SERVER tiene info del entorno." },
-    { pregunta: "¿Qué método envía datos por la URL?", opciones: ["POST", "GET", "PUT"], correcta: 1, explicacion: "GET expone datos en la URL." },
-    { pregunta: "¿Qué método se usa en formularios?", opciones: ["POST", "GET", "DELETE"], correcta: 0, explicacion: "POST oculta los datos en el cuerpo." },
-    { pregunta: "¿Cómo termina una instrucción?", opciones: ["Punto", "Coma", "Punto y coma"], correcta: 2, explicacion: "Se usa ;" },
-    { pregunta: "¿Qué extensión tienen los archivos?", opciones: [".html", ".php", ".js"], correcta: 1, explicacion: "El servidor lee .php." },
-    { pregunta: "¿Qué es una superglobal?", opciones: ["Variable de usuario", "Variable del sistema", "Variable predefinida"], correcta: 2, explicacion: "Son variables ya creadas por PHP." }
-  ],
-  ruby: [
-    { pregunta: "¿Qué es Ruby?", opciones: ["Lenguaje de programación", "Sistema operativo", "Base de datos"], correcta: 0, explicacion: "Es un lenguaje." },
-    { pregunta: "¿Cómo empieza una variable local?", opciones: ["Mayúscula", "Minúscula", "Con @"], correcta: 1, explicacion: "Empiezan con minúscula." },
-    { pregunta: "¿Cómo empieza una variable de instancia?", opciones: ["@", "$", "@@"], correcta: 0, explicacion: "Usan un solo @." },
-    { pregunta: "¿Qué significa true?", opciones: ["Falso", "Verdadero", "Nulo"], correcta: 1, explicacion: "Es el valor booleano verdadero." },
-    { pregunta: "¿Qué palabra inicia una condición?", opciones: ["if", "else", "for"], correcta: 0, explicacion: "if evalúa la condición." },
-    { pregunta: "¿Qué guarda un arreglo?", opciones: ["Un solo dato", "Una lista ordenada", "Una función"], correcta: 1, explicacion: "Es una colección." },
-    { pregunta: "¿En qué índice empieza un arreglo?", opciones: ["0", "1", "10"], correcta: 0, explicacion: "Empieza en 0." },
-    { pregunta: "¿Qué guarda un hash?", opciones: ["Clave y valor", "Solo números", "Solo listas"], correcta: 0, explicacion: "Son pares clave-valor." },
-    { pregunta: "¿Qué símbolo crea un comentario?", opciones: ["//", "#", "/*"], correcta: 1, explicacion: "Se usa el numeral #." },
-    { pregunta: "¿Para qué sirve un método?", opciones: ["Para repetir código", "Para agrupar instrucciones", "Para hacer variables"], correcta: 1, explicacion: "Agrupa tareas reutilizables." }
-  ],
-  c: [
-    { pregunta: "¿Qué es C?", opciones: ["Lenguaje de programación", "Navegador", "Sistema operativo"], correcta: 0, explicacion: "Es un lenguaje." },
-    { pregunta: "¿Qué tipo guarda enteros?", opciones: ["char", "int", "float"], correcta: 1, explicacion: "int guarda enteros." },
-    { pregunta: "¿Qué tipo guarda un carácter?", opciones: ["int", "char", "text"], correcta: 1, explicacion: "char guarda un carácter." },
-    { pregunta: "¿Dónde inicia el programa?", opciones: ["start()", "main()", "begin()"], correcta: 1, explicacion: "Todo inicia en main." },
-    { pregunta: "¿Qué traduce el código?", opciones: ["El navegador", "El compilador", "El teclado"], correcta: 1, explicacion: "El compilador traduce a máquina." },
-    { pregunta: "¿Qué termina una instrucción?", opciones: ["Punto", "Punto y coma", "Coma"], correcta: 1, explicacion: "Se usa ;." },
-    { pregunta: "¿Qué palabra inicia una condición?", opciones: ["if", "for", "while"], correcta: 0, explicacion: "if evalúa." },
-    { pregunta: "¿Qué estructura repite código?", opciones: ["if", "for", "int"], correcta: 1, explicacion: "for es un bucle." },
-    { pregunta: "¿Para qué sirve una función?", opciones: ["Para repetir código", "Para agrupar código", "Para borrar código"], correcta: 1, explicacion: "Agrupa y reutiliza." },
-    { pregunta: "¿Qué es un comentario?", opciones: ["Código que se ejecuta", "Texto ignorado", "Un error"], correcta: 1, explicacion: "El compilador lo ignora." }
-  ],
-  cpp: [
-    { pregunta: "¿Qué es C++?", opciones: ["Lenguaje de programación", "Sistema operativo", "Navegador"], correcta: 0, explicacion: "Es un lenguaje." },
-    { pregunta: "¿Qué tipo guarda enteros?", opciones: ["int", "char", "bool"], correcta: 0, explicacion: "int guarda enteros." },
-    { pregunta: "¿Qué tipo guarda verdadero/falso?", opciones: ["int", "char", "bool"], correcta: 2, explicacion: "bool es para booleanos." },
-    { pregunta: "¿Dónde inicia el programa?", opciones: ["main", "start", "begin"], correcta: 0, explicacion: "Todo inicia en main." },
-    { pregunta: "¿Qué es una clase?", opciones: ["Un molde para crear objetos", "Una variable", "Un error"], correcta: 0, explicacion: "Es un molde." },
-    { pregunta: "¿Qué es un objeto?", opciones: ["Una clase", "Una instancia de una clase", "Una función"], correcta: 1, explicacion: "Es una creación de la clase." },
-    { pregunta: "¿Qué palabra inicia una condición?", opciones: ["if", "for", "int"], correcta: 0, explicacion: "if evalúa." },
-    { pregunta: "¿Qué estructura repite código?", opciones: ["if", "for", "bool"], correcta: 1, explicacion: "for es un bucle." },
-    { pregunta: "¿Para qué sirve una función?", opciones: ["Para agrupar código", "Para hacer clases", "Para variables"], correcta: 0, explicacion: "Agrupa código." },
-    { pregunta: "¿Qué termina una instrucción?", opciones: ["Punto", "Punto y coma", "Coma"], correcta: 1, explicacion: "Se usa ;." }
-  ],
-  sw: [
-    { pregunta: "¿Qué hace un Service Worker?", opciones: ["Corre en segundo plano", "Borra la base de datos", "Diseña la página"], correcta: 0, explicacion: "Trabaja en segundo plano." },
-    { pregunta: "¿Qué permite el modo offline?", opciones: ["Usar la app sin internet", "Instalar Windows", "Jugar juegos"], correcta: 0, explicacion: "Usa caché para funcionar." },
-    { pregunta: "¿Dónde se registra?", opciones: ["En app.js", "En styles.css", "En index.html solo"], correcta: 0, explicacion: "Se registra en JS." },
-    { pregunta: "¿Qué evento intercepta?", opciones: ["install", "fetch", "click"], correcta: 1, explicacion: "fetch intercepta solicitudes." },
-    { pregunta: "¿Qué requisito de seguridad tiene?", opciones: ["HTTPS", "HTTP", "FTP"], correcta: 0, explicacion: "Requiere HTTPS." }
-  ],
-  manifest: [
-    { pregunta: "¿Qué es manifest.json?", opciones: ["Documento de identidad", "Un script", "Un estilo"], correcta: 0, explicacion: "Identifica la app." },
-    { pregunta: "¿Para qué sirve el display: standalone?", opciones: ["Abrir sin barra", "Borrar caché", "Guardar datos"], correcta: 0, explicacion: "Modo app nativa." },
-    { pregunta: "¿Qué se define con icons?", opciones: ["Los íconos", "Los textos", "Los colores"], correcta: 0, explicacion: "Los íconos de la app." },
-    { pregunta: "¿Qué lenguaje usa?", opciones: ["JSON", "HTML", "CSS"], correcta: 0, explicacion: "Usa formato JSON." },
-    { pregunta: "¿Reemplaza al HTML?", opciones: ["Sí", "No", "A veces"], correcta: 1, explicacion: "Es solo configuración." }
-  ],
-  api: [
-    { pregunta: "¿Qué es una API?", opciones: ["Interfaz de comunicación", "Un lenguaje", "Un servidor"], correcta: 0, explicacion: "Conecta frontend y backend." },
-    { pregunta: "¿Qué método pide datos?", opciones: ["GET", "POST", "DELETE"], correcta: 0, explicacion: "GET obtiene datos." },
-    { pregunta: "¿Qué método envía datos?", opciones: ["GET", "POST", "PUT"], correcta: 1, explicacion: "POST envía datos." },
-    { pregunta: "¿Qué código significa OK?", opciones: ["200", "404", "500"], correcta: 0, explicacion: "200 es éxito." },
-    { pregunta: "¿Qué formato es común?", opciones: ["JSON", "HTML", "CSS"], correcta: 0, explicacion: "Usa JSON." }
-  ],
   backend: [
-    { pregunta: "¿Dónde corre el backend?", opciones: ["En el servidor", "En el navegador", "En CSS"], correcta: 0, explicacion: "Corre en servidor." },
-    { pregunta: "¿Qué hace el backend?", opciones: ["Procesa datos", "Diseña la página", "Muestra botones"], correcta: 0, explicacion: "Procesa lógica." },
-    { pregunta: "¿Qué es la autenticación?", opciones: ["Quién eres", "Qué haces", "Dónde estás"], correcta: 0, explicacion: "Verifica identidad." },
-    { pregunta: "¿Qué es la autorización?", opciones: ["Qué puedes hacer", "Quién eres", "Dónde estás"], correcta: 0, explicacion: "Verifica permisos." },
-    { pregunta: "¿A qué se conecta?", opciones: ["A la base de datos", "A CSS", "Al teclado"], correcta: 0, explicacion: "Consulta la BD." }
+    { pregunta: "¿Dónde se ejecuta el backend?", opciones: ["En el servidor", "En el navegador", "En CSS"], correcta: 0, explicacion: "El backend corre en el servidor, invisible al usuario." },
+    { pregunta: "¿Qué significa autenticación?", opciones: ["Verificar quién eres", "Verificar qué puedes hacer", "Verificar tu velocidad"], correcta: 0, explicacion: "Autenticación verifica la identidad del usuario." },
+    { pregunta: "¿Qué significa autorización?", opciones: ["Verificar quién eres", "Verificar qué permisos tienes", "Verificar la base de datos"], correcta: 1, explicacion: "Autorización determina qué acciones puedes realizar." },
+    { pregunta: "¿Dónde debe validarse la información importante?", opciones: ["En el backend", "En el frontend", "En el CSS"], correcta: 0, explicacion: "El backend nunca debe confiar en el frontend, debe validar todo." },
+    { pregunta: "¿Qué es el CRUD?", opciones: ["Crear, Leer, Actualizar, Borrar", "Conectar, Redirigir, Usar, Datos", "Código, Red, Usuario, Diseño"], correcta: 0, explicacion: "CRUD son las operaciones básicas sobre datos." }
   ],
   cyber: [
-    { pregunta: "¿Qué protege la ciberseguridad?", opciones: ["Datos y código", "Solo el diseño", "Solo los botones"], correcta: 0, explicacion: "Protege todo." },
-    { pregunta: "¿Cómo se guardan contraseñas?", opciones: ["En texto plano", "Con hash", "En la URL"], correcta: 1, explicacion: "Siempre con hash." },
-    { pregunta: "¿De quién no debes fiarte?", opciones: ["Del usuario", "Del backend", "De la base de datos"], correcta: 0, explicacion: "El usuario puede manipular datos." },
-    { pregunta: "¿Dónde va la validación importante?", opciones: ["En el backend", "En el frontend solo", "En CSS"], correcta: 0, explicacion: "El servidor valida." },
-    { pregunta: "¿Qué es HTTPS?", opciones: ["Conexión segura", "Un lenguaje", "Una base de datos"], correcta: 0, explicacion: "Encripta los datos." }
+    { pregunta: "¿Cómo se deben guardar las contraseñas?", opciones: ["En texto plano", "Usando un hash", "En la URL"], correcta: 1, explicacion: "Siempre se deben guardar con un hash seguro." },
+    { pregunta: "¿Dónde deben ir las claves secretas de una API?", opciones: ["En el frontend", "En el backend (servidor)", "En la base de datos pública"], correcta: 1, explicacion: "Las claves secretas nunca deben estar en el código del navegador." },
+    { pregunta: "¿Qué es el principio de menor privilegio?", opciones: ["Dar todos los permisos", "Dar solo los permisos necesarios", "No dar permisos"], correcta: 1, explicacion: "Cada usuario debe tener solo los permisos que necesita." },
+    { pregunta: "¿Se debe confiar en la validación del frontend?", opciones: ["Sí, es suficiente", "No, siempre validar en el backend", "Solo si el usuario es administrador"], correcta: 1, explicacion: "El frontend puede manipularse, el backend es la autoridad final." },
+    { pregunta: "¿Para qué sirven las copias de seguridad?", opciones: ["Para recuperar datos ante fallos", "Para hacer la app más rápida", "Para guardar contraseñas"], correcta: 0, explicacion: "Las copias de seguridad protegen contra pérdida de información." }
+  ],
+  api: [
+    { pregunta: "¿Qué es una API?", opciones: ["Un lenguaje de programación", "Una interfaz que conecta aplicaciones", "Un tipo de base de datos"], correcta: 1, explicacion: "Una API permite la comunicación entre el frontend y el backend." },
+    { pregunta: "¿Qué método HTTP se usa para pedir datos?", opciones: ["GET", "POST", "DELETE"], correcta: 0, explicacion: "GET se utiliza para obtener información." },
+    { pregunta: "¿Qué método HTTP se usa para enviar datos?", opciones: ["GET", "POST", "PUT"], correcta: 1, explicacion: "POST se utiliza para crear o enviar información." },
+    { pregunta: "¿Qué significa el código de estado 404?", opciones: ["Éxito", "Error del servidor", "No encontrado"], correcta: 2, explicacion: "404 significa que el recurso solicitado no existe." },
+    { pregunta: "¿En qué formato suelen devolver las APIs los datos?", opciones: ["JSON", "HTML", "CSS"], correcta: 0, explicacion: "JSON es el formato estándar para intercambiar datos." }
+  ],
+  sw: [
+    { pregunta: "¿Dónde trabaja un Service Worker?", opciones: ["En el frontend visual", "En segundo plano", "En la base de datos"], correcta: 1, explicacion: "Es un script que corre en segundo plano en el navegador." },
+    { pregunta: "¿Para qué sirve el modo offline?", opciones: ["Para usar la app sin internet", "Para limpiar la caché", "Para instalar actualizaciones"], correcta: 0, explicacion: "Gracias a la caché, la app puede funcionar parcialmente sin conexión." },
+    { pregunta: "¿Qué evento intercepta las solicitudes de red?", opciones: ["install", "activate", "fetch"], correcta: 2, explicacion: "El evento 'fetch' intercepta las solicitudes." },
+    { pregunta: "¿Qué requisito de seguridad necesita?", opciones: ["HTTP", "HTTPS", "FTP"], correcta: 1, explicacion: "Requiere HTTPS (o localhost en desarrollo) por seguridad." },
+    { pregunta: "¿Qué es una estrategia de caché?", opciones: ["Decidir si usar caché o red", "Borrar archivos", "Programar en C++"], correcta: 0, explicacion: "Es la regla que define si se obtiene el recurso de la caché o de la red." }
+  ],
+  manifest: [
+    { pregunta: "¿Qué es el manifest.json?", opciones: ["Un documento de identidad de la app", "Un script de JavaScript", "Un archivo de estilos"], correcta: 0, explicacion: "Define cómo se instala y muestra la aplicación." },
+    { pregunta: "¿Qué formato tiene el manifest.json?", opciones: ["HTML", "JSON", "XML"], correcta: 1, explicacion: "Es un archivo con formato JSON." },
+    { pregunta: "¿Qué hace el 'display: standalone'?", opciones: ["Abre la app sin barra del navegador", "Borra la caché", "Guarda datos"], correcta: 0, explicacion: "Hace que la app se sienta como una aplicación nativa." },
+    { pregunta: "¿Qué se define en el campo 'icons'?", opciones: ["Los íconos de la app", "Los textos", "Los colores del fondo"], correcta: 0, explicacion: "Define los íconos que se usarán al instalar la app." },
+    { pregunta: "¿El manifest reemplaza al HTML?", opciones: ["Sí", "No", "Solo en móviles"], correcta: 1, explicacion: "El manifest es solo configuración, no reemplaza al HTML." }
   ],
   debug: [
-    { pregunta: "¿Qué es depurar?", opciones: ["Encontrar y corregir errores", "Escribir código", "Diseñar"], correcta: 0, explicacion: "Es corregir fallos." },
-    { pregunta: "¿Qué muestra la consola?", opciones: ["Mensajes y errores", "El diseño", "La base de datos"], correcta: 0, explicacion: "Muestra logs." },
-    { pregunta: "¿Qué es sw.js?", opciones: ["Un Service Worker", "Una imagen", "Un estilo"], correcta: 0, explicacion: "Es el SW." },
-    { pregunta: "¿Qué hace un punto de interrupción?", opciones: ["Pausa el código", "Borra todo", "Cierra la app"], correcta: 0, explicacion: "Pausa para revisar." },
-    { pregunta: "¿Qué extensión tiene un archivo JS?", opciones: [".js", ".css", ".html"], correcta: 0, explicacion: "Es .js." }
+    { pregunta: "¿Qué es depurar?", opciones: ["Encontrar y corregir errores", "Escribir código desde cero", "Diseñar interfaces"], correcta: 0, explicacion: "Depurar es el proceso de encontrar y solucionar fallos." },
+    { pregunta: "¿Qué herramienta del navegador muestra los errores?", opciones: ["La consola", "El editor de código", "El CSS"], correcta: 0, explicacion: "La consola muestra mensajes y errores." },
+    { pregunta: "¿Qué es un punto de interrupción?", opciones: ["Pausa el código para revisar valores", "Borra el código", "Reinicia la app"], correcta: 0, explicacion: "Permite pausar la ejecución para inspeccionar el estado." },
+    { pregunta: "¿Cómo reconoces un archivo sw.js?", opciones: ["Tiene etiquetas HTML", "Tiene self.addEventListener", "Tiene colores CSS"], correcta: 1, explicacion: "El Service Worker usa self.addEventListener para escuchar eventos." },
+    { pregunta: "¿Qué pestaña te muestra si una petición a la API falló?", opciones: ["Network (Red)", "Elements", "Console"], correcta: 0, explicacion: "La pestaña Network muestra las solicitudes y sus respuestas." }
   ],
   repo: [
-    { pregunta: "¿Qué es un repositorio?", opciones: ["Espacio para el código", "Un servidor", "Una base de datos"], correcta: 0, explicacion: "Guarda el proyecto." },
-    { pregunta: "¿Qué es Git?", opciones: ["Control de versiones", "Un lenguaje", "Un navegador"], correcta: 0, explicacion: "Registra cambios." },
-    { pregunta: "¿Qué es un commit?", opciones: ["Un registro de cambios", "Una rama", "Un error"], correcta: 0, explicacion: "Guarda un cambio." },
-    { pregunta: "¿Qué es una rama?", opciones: ["Línea de trabajo", "Un archivo", "Un commit"], correcta: 0, explicacion: "Permite trabajo paralelo." },
-    { pregunta: "¿Qué es GitHub?", opciones: ["Nube para repositorios", "Un lenguaje", "Un editor"], correcta: 0, explicacion: "Aloja repositorios." }
+    { pregunta: "¿Qué es un repositorio?", opciones: ["Un lugar para guardar el proyecto", "Un servidor web", "Una base de datos"], correcta: 0, explicacion: "Es el espacio donde se almacena el código y su historial." },
+    { pregunta: "¿Qué es un commit?", opciones: ["Un registro de cambios guardado", "Una rama", "Un error"], correcta: 0, explicacion: "Un commit guarda un cambio en el historial." },
+    { pregunta: "¿Qué es una rama (branch)?", opciones: ["Una línea de trabajo independiente", "Un archivo", "Un commit"], correcta: 0, explicacion: "Permite trabajar en paralelo sin afectar la rama principal." },
+    { pregunta: "¿Para qué sirve el README.md?", opciones: ["Para explicar el proyecto", "Para ejecutar código", "Para diseño"], correcta: 0, explicacion: "Es el archivo de documentación principal." },
+    { pregunta: "¿Qué hace el archivo .gitignore?", opciones: ["Excluye archivos del repositorio", "Borra archivos", "Ejecuta pruebas"], correcta: 0, explicacion: "Indica qué archivos no deben guardarse (como contraseñas o dependencias)." }
+  ],
+  files: [
+    { pregunta: "¿Qué archivo contiene la estructura principal de la página?", opciones: ["index.html", "styles.css", "app.js"], correcta: 0, explicacion: "index.html contiene la estructura base." },
+    { pregunta: "¿Qué archivo contiene los estilos visuales?", opciones: ["index.html", "styles.css", "app.js"], correcta: 1, explicacion: "styles.css contiene el diseño y los estilos." },
+    { pregunta: "¿Cómo identificas un Service Worker por su contenido?", opciones: ["Tiene self.addEventListener", "Tiene etiquetas <div>", "Tiene colores"], correcta: 0, explicacion: "El código del SW usa self.addEventListener." },
+    { pregunta: "¿Qué archivo describe la configuración de la PWA?", opciones: ["manifest.json", "app.js", "index.html"], correcta: 0, explicacion: "manifest.json contiene la configuración de la app instalable." },
+    { pregunta: "¿Qué archivo maneja la lógica principal del frontend?", opciones: ["app.js", "styles.css", "manifest.json"], correcta: 0, explicacion: "app.js contiene la lógica de la interfaz." }
+  ],
+  ia: [
+    { pregunta: "¿Qué necesita la IA para dar una buena respuesta?", opciones: ["Contexto y instrucciones claras", "Que le hables en inglés", "Nada, ella adivina"], correcta: 0, explicacion: "El contexto permite que la IA entienda el proyecto." },
+    { pregunta: "¿Debes copiar el código de la IA a ciegas?", opciones: ["Sí, siempre", "No, debes revisarlo y entenderlo", "Solo si es corto"], correcta: 1, explicacion: "Siempre debes revisar el código y entenderlo." },
+    { pregunta: "¿Qué es un buen prompt?", opciones: ["Decir 'haz una app'", "Pedir paso a paso y dar restricciones", "Escribir solo una palabra"], correcta: 1, explicacion: "Los prompts específicos generan mejores resultados." },
+    { pregunta: "¿Puedes compartir contraseñas con la IA?", opciones: ["Sí", "No, nunca", "Solo si es de prueba"], correcta: 1, explicacion: "Nunca compartas secretos o contraseñas con herramientas de IA." },
+    { pregunta: "¿Qué hacer si la IA se equivoca?", opciones: ["Rendirte", "Explicarle el error exacto y dar contexto", "Culpar al teclado"], correcta: 1, explicacion: "Proporcionar el mensaje de error ayuda a la IA a corregirse." }
+  ],
+  hacking: [
+    { pregunta: "¿Qué es el hacking ético?", opciones: ["Buscar vulnerabilidades con autorización", "Atacar sistemas ajenos", "Borrar bases de datos"], correcta: 0, explicacion: "Se realiza siempre con permiso para corregir fallos." },
+    { pregunta: "¿Cuál es la regla principal del hacking ético?", opciones: ["Nunca probar sin autorización", "Aprender rápido", "Atacar cualquier web"], correcta: 0, explicacion: "La autorización es el límite entre lo ético y lo ilegal." },
+    { pregunta: "¿Qué es una vulnerabilidad?", opciones: ["Una debilidad explotable", "Un servidor rápido", "Un tipo de contraseña"], correcta: 0, explicacion: "Es un fallo que puede comprometer la seguridad." },
+    { pregunta: "¿Qué es OWASP WebGoat?", opciones: ["Un laboratorio para practicar hacking", "Un lenguaje de programación", "Un servidor"], correcta: 0, explicacion: "Es una app vulnerable diseñada para aprender de forma segura." },
+    { pregunta: "¿Puedes hacer pruebas en una web que no es tuya?", opciones: ["Sí, si es pública", "No, necesitas autorización", "Solo los fines de semana"], correcta: 1, explicacion: "Debes tener permiso explícito del dueño." }
   ]
 };
 
 window.mapaMisiones = {
-  1: { nombre: "Los cimientos" },
-  2: { nombre: "Enciende el neón" },
-  3: { nombre: "El núcleo lógico" },
-  4: { nombre: "Reserva de energía" },
-  5: { nombre: "Identidad digital" },
-  6: { nombre: "Central de comunicaciones" },
-  7: { nombre: "Sala de máquinas" },
-  8: { nombre: "El escudo" },
-  9: { nombre: "Laboratorio de errores" },
-  10: { nombre: "Lanzamiento" }
+  1: { nombre: "Los cimientos (HTML)" },
+  2: { nombre: "Enciende el neón (CSS)" },
+  3: { nombre: "Sala de máquinas (Backend)" },
+  4: { nombre: "El escudo (Ciberseguridad)" },
+  5: { nombre: "Central de comunicaciones (API)" },
+  6: { nombre: "Reserva de energía (Service Worker)" },
+  7: { nombre: "Identidad digital (Manifiesto)" },
+  8: { nombre: "Laboratorio de errores (Depuración)" },
+  9: { nombre: "El lanzamiento (Repositorio)" },
+  10: { nombre: "El mapa del código (Archivos)" },
+  11: { nombre: "Compañero electrónico (IA)" },
+  12: { nombre: "El Pentester (Hacking)" }
 };
