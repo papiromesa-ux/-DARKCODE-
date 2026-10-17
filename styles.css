@@ -45,10 +45,11 @@ p { margin-bottom: 10px; }
 
 /* LENGUAJES */
 .lenguajes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 14px 0; }
-.lang-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 10px; cursor: pointer; color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 6px; transition: transform 0.15s, border 0.15s; }
+.lang-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 10px; cursor: pointer; color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 6px; transition: transform 0.15s, border 0.15s; position: relative; }
 .lang-card:active { transform: scale(0.96); border-color: var(--accent); }
 .lang-icon { font-size: 1.4rem; font-weight: 800; color: var(--accent); text-shadow: 0 2px 0 var(--accent-2); }
 .lang-card small { color: var(--text-2); font-size: 0.75rem; }
+.badge-recomendado { position: absolute; top: -10px; right: -5px; background: #fbbf24; color: #000; font-size: 0.6rem; font-weight: bold; padding: 3px 8px; border-radius: 999px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10; }
 
 /* SALÓN Y MAPA */
 .salon-top { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 12px; }
@@ -66,22 +67,22 @@ body.dazer .salon-tabs button.activo { background: #fff; color: #000; }
 .nodo-mision { display: flex; align-items: center; gap: 15px; background: var(--card); border: 2px solid var(--border); border-radius: 12px; padding: 12px; position: relative; z-index: 2; margin-left: 10px; transition: all 0.2s ease; }
 .nodo-mision:nth-child(even) { margin-left: 40px; }
 .nodo-mision:nth-child(odd) { margin-left: 0px; }
-.circulo-mision { width: 44px; height: 44px; border-radius: 50%; background: var(--bg-2); border: 3px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+.circulo-mision { width: 44px; height: 44px; border-radius: 50%; background: var(--bg-2); border: 3px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: bold; flex-shrink: 0; }
 .nodo-mision.actual { border-color: var(--accent); box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); transform: scale(1.02); }
 .nodo-mision.actual .circulo-mision { border-color: var(--accent); background: rgba(168, 85, 247, 0.2); }
 .nodo-mision.completada { opacity: 0.8; border-color: #4ade80; }
-.nodo-mision.completada .circulo-mision { border-color: #4ade80; background: rgba(74, 222, 128, 0.2); }
+.nodo-mision.completada .circulo-mision { border-color: #4ade80; background: rgba(74, 222, 128, 0.2); font-size: 0.7rem;}
 .etiqueta-mision { position: absolute; top: -10px; left: 20px; background: var(--accent); color: #fff; font-size: 0.65rem; padding: 2px 8px; border-radius: 999px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
 .info-mision { display: flex; flex-direction: column; }
 .info-mision strong { color: var(--text); font-size: 0.95rem; }
 .info-mision small { color: var(--text-2); font-size: 0.75rem; }
 
-/* BYTE */
-.byte-container { display: flex; align-items: flex-start; gap: 15px; margin-top: 20px; }
-.byte-robot { font-size: 2.5rem; background: var(--card); border: 2px solid var(--accent); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); animation: flotar 3s ease-in-out infinite; }
+/* MINICODE */
+.minicode-container { display: flex; align-items: flex-start; gap: 15px; margin-top: 20px; }
+.minicode-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--accent-2); border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 900; color: #fff; box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); animation: flotar 3s ease-in-out infinite; flex-shrink: 0; }
 @keyframes flotar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-.byte-dialogo { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 12px; position: relative; flex-grow: 1; }
-.byte-dialogo::before { content: ''; position: absolute; left: -8px; top: 20px; width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-right: 8px solid var(--border); }
+.minicode-dialogo { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 12px; position: relative; flex-grow: 1; }
+.minicode-dialogo::before { content: ''; position: absolute; left: -8px; top: 20px; width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-right: 8px solid var(--border); }
 
 /* AJUSTES Y PERFIL */
 .modos { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
@@ -149,7 +150,7 @@ footer { text-align: center; padding: 20px; font-size: 0.8rem; color: var(--text
 .logro-card { display: flex; align-items: center; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); transition: all 0.3s ease; }
 .logro-card.obtenido { border-color: #fbbf24; box-shadow: 0 0 10px rgba(251, 191, 36, 0.2); }
 .logro-card.bloqueado { opacity: 0.4; filter: grayscale(100%); }
-.logro-icono { font-size: 1.8rem; margin-right: 15px; }
+.logro-icono { font-size: 1.5rem; font-weight: bold; margin-right: 15px; width: 30px; text-align: center; color: var(--accent); }
 .logro-info { display: flex; flex-direction: column; }
 .logro-info strong { color: var(--text); font-size: 0.95rem; }
 .logro-info small { color: var(--text-2); font-size: 0.75rem; }
@@ -171,5 +172,5 @@ footer { text-align: center; padding: 20px; font-size: 0.8rem; color: var(--text
 #btn-leccion-comprobar:disabled { opacity: 0.5; cursor: not-allowed; }
 .feedback-container { background: var(--card); padding: 16px; border-radius: 12px; margin-top: 20px; border-left: 6px solid var(--accent); }
 .feedback-container.correcto { border-left-color: #4ade80; background: rgba(74, 222, 128, 0.1); }
-.feedback-container.incorrecto { border-left-color: #dc2626; background: rgba(220, 38, 38, 0.1); }
+.feedback-container.incorrecto { border-left-color: #dc2626; background: rgba(220, 38, 38, 0.2); }
 .feedback-container h3 { margin-top: 0; margin-bottom: 8px; }
