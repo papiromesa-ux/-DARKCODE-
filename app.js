@@ -27,14 +27,16 @@ const TODOS_LOS_LOGROS = [
   { id: "hola_clase", titulo: "Hola Clase", fase: 0, desc: "Entrar a una clase" },
   { id: "esqueletico", titulo: "Esquelético", fase: 1, desc: "Fase 1: Completada" },
   { id: "decorista", titulo: "Decorista", fase: 2, desc: "Fase 2: Completada" },
-  { id: "experto", titulo: "Experto", fase: 3, desc: "Fase 3: Completada" },
-  { id: "sin_conexion", titulo: "Sin conexión", fase: 4, desc: "Fase 4: Completada" },
-  { id: "manifestante", titulo: "Manifestante", fase: 5, desc: "Fase 5: Completada" },
-  { id: "conciencia", titulo: "Conciencia", fase: 6, desc: "Fase 6: Completada" },
-  { id: "caja_fuerte", titulo: "Caja Fuerte", fase: 7, desc: "Fase 7: Completada" },
-  { id: "policia", titulo: "Policía", fase: 8, desc: "Fase 8: Completada" },
-  { id: "compañero", titulo: "Compañero", fase: 9, desc: "Fase 9: Completada" },
-  { id: "instalable", titulo: "Instalable", fase: 10, desc: "Fase 10: Completada" }
+  { id: "experto_backend", titulo: "Maestro del Servidor", fase: 3, desc: "Fase 3: Completada" },
+  { id: "guardian", titulo: "Guardián", fase: 4, desc: "Fase 4: Completada" },
+  { id: "conector", titulo: "Conector", fase: 5, desc: "Fase 5: Completada" },
+  { id: "sin_conexion", titulo: "Sin conexión", fase: 6, desc: "Fase 6: Completada" },
+  { id: "manifestante", titulo: "Manifestante", fase: 7, desc: "Fase 7: Completada" },
+  { id: "detective", titulo: "Detective", fase: 8, desc: "Fase 8: Completada" },
+  { id: "organizador", titulo: "Organizador", fase: 9, desc: "Fase 9: Completada" },
+  { id: "explorador", titulo: "Explorador", fase: 10, desc: "Fase 10: Completada" },
+  { id: "ciborg", titulo: "Ciborg", fase: 11, desc: "Fase 11: Completada" },
+  { id: "hacker", titulo: "Hacker Ético", fase: 12, desc: "Fase 12: Completada" }
 ];
 
 // NOTIFICACIONES
@@ -204,14 +206,14 @@ function dibujarMapaMisiones() {
   container.innerHTML = "";
 
   let siguienteFase = 1;
-  for (let i = 1; i <= 10; i++) {
+  for (let i = 1; i <= 12; i++) {
     const logroFase = TODOS_LOS_LOGROS.find(l => l.fase === i);
     if (logroFase && state.logros.includes(logroFase.id)) {
       siguienteFase = i + 1; 
     } else { break; }
   }
 
-  for (let i = 1; i <= 10; i++) {
+  for (let i = 1; i <= 12; i++) {
     const mision = window.mapaMisiones[i];
     const logroFase = TODOS_LOS_LOGROS.find(l => l.fase === i);
     const completada = state.logros.includes(logroFase.id);
@@ -342,14 +344,16 @@ function irAPractica() {
 function obtenerLlaveTeoria(faseId) {
   if (faseId === 1) return "html";
   if (faseId === 2) return "css";
-  if (faseId === 3) return state.lenguaje.toLowerCase().replace("c++", "cpp");
-  if (faseId === 4) return "sw";
-  if (faseId === 5) return "manifest";
-  if (faseId === 6) return "api";
-  if (faseId === 7) return "backend";
-  if (faseId === 8) return "cyber";
-  if (faseId === 9) return "debug";
-  if (faseId === 10) return "repo";
+  if (faseId === 3) return "backend";
+  if (faseId === 4) return "cyber";
+  if (faseId === 5) return "api";
+  if (faseId === 6) return "sw";
+  if (faseId === 7) return "manifest";
+  if (faseId === 8) return "debug";
+  if (faseId === 9) return "repo";
+  if (faseId === 10) return "files";
+  if (faseId === 11) return "ia";
+  if (faseId === 12) return "hacking";
   return "";
 }
 
@@ -361,7 +365,6 @@ function cargarQuiz(faseId) {
     salirLeccion(); return;
   }
 
-  // Toma 5 preguntas al azar
   leccionActual = [...window.baseDePreguntas[llave]].sort(() => Math.random() - 0.5).slice(0, 5);
   indicePregunta = 0; aciertosLeccion = 0;
   
