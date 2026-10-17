@@ -18,6 +18,7 @@
 </head>
 <body>
 
+<!-- LOGIN -->
 <div id="login-screen" class="login-screen">
   <div class="login-box">
     <h1 class="logo-3d">&lt;DARKCODE&gt;</h1>
@@ -50,7 +51,6 @@
 <section id="inicio" class="seccion activa">
   <h2>Bienvenido a &lt;DARKCODE&gt;</h2>
   <p>Este sitio es un lugar de <strong>autoaprendizaje</strong> para aprender a programar. Elige tu lenguaje y empieza tu autoclase.</p>
-
   <h3>Programas de lenguaje</h3>
   <div class="lenguajes">
     <button class="lang-card" data-lang="PHP"><span class="lang-icon">PHP</span><small>Backend web</small></button>
@@ -59,7 +59,7 @@
     <button class="lang-card" data-lang="C"><span class="lang-icon">C</span><small>Base de todo</small></button>
     <button class="lang-card" data-lang="C++"><span class="lang-icon">C++</span><small>Alto rendimiento</small></button>
   </div>
-  <p class="aviso">Por el momento solo tenemos autoclase de estos lenguajes. Dependiendo del que elijas será la clase que te demos. Puedes cambiar de clase o poner otra nueva.</p>
+  <p class="aviso">Por el momento solo tenemos autoclase de estos lenguajes. Dependiendo del que elijas será la clase que te demos.</p>
 </section>
 
 <section id="aprende" class="seccion">
@@ -83,18 +83,12 @@
 
 <section id="practica" class="seccion">
   <h2>Practica</h2>
-  <p>Edita el código, presiona <strong>Ejecutar</strong> y observa la consola.</p>
+  <p>Edita el código, presiona <strong>Ejecutar</strong> y gana XP.</p>
   <label>Tu código:</label>
   <div id="editor-practica" class="editor-ace"></div>
   <button class="boton" onclick="ejecutar('editor-practica')">Ejecutar</button>
   <h3>Consola</h3>
   <pre id="consola-practica" class="consola"></pre>
-  <h3>Retos</h3>
-  <ul>
-    <li>Haz una función que sume dos números.</li>
-    <li>Haz una función que cuente las letras de una palabra.</li>
-    <li>Haz una función que diga si un número es par.</li>
-  </ul>
 </section>
 
 <section id="depura" class="seccion">
@@ -116,12 +110,6 @@
 }
 console.log(sumar(5, "2")); // 7</code></pre>
   </details>
-  <h3>Errores clásicos</h3>
-  <ul>
-    <li><code>TypeError: Cannot read properties of undefined</code></li>
-    <li><code>ReferenceError: x is not defined</code></li>
-    <li><code>NaN</code></li>
-  </ul>
 </section>
 
 <section id="ia" class="seccion">
@@ -132,12 +120,6 @@ console.log(sumar(5, "2")); // 7</code></pre>
 Mi código: [pega aquí]
 El error: [pega el mensaje]
 Explícame qué significa, en qué línea ocurre, dame una pista antes de la solución.</code></pre>
-  <h3>Reglas de oro</h3>
-  <ul>
-    <li>Pide pistas, no respuestas completas.</li>
-    <li>Nunca pegues contraseñas.</li>
-    <li>Pide analogías si no entiendes.</li>
-  </ul>
 </section>
 
 <section id="diccionario" class="seccion">
@@ -161,14 +143,12 @@ Explícame qué significa, en qué línea ocurre, dame una pista antes de la sol
     <h3>&lt;DARKCODE&gt;</h3>
     <p>Proyecto de autoaprendizaje de programación.</p>
     <p><strong>Desarrollador:</strong> PAPIROMESA</p>
-    <p><strong>Contacto:</strong> papiromesa-ux.github.io</p>
-    <p><strong>Tecnologías:</strong> HTML, CSS, JavaScript, PWA, Service Worker, Firebase Auth.</p>
-    <p><strong>Editor:</strong> Ace Editor (Cloudflare CDN)</p>
+    <p><strong>Tecnologías:</strong> HTML, CSS, JS, PWA, Firebase Auth.</p>
     <p><strong>Año:</strong> 2025</p>
   </div>
-  <div class="aviso">Gracias a todos los que aprenden a programar con nosotros.</div>
 </section>
 
+<!-- SALÓN DE AUTOCLASE -->
 <section id="salon" class="seccion">
   <div class="salon-top">
     <h2 id="salon-lenguaje">&lt;&lt;&lt; JAVASCRIPT &gt;&gt;&gt;</h2>
@@ -190,96 +170,78 @@ Explícame qué significa, en qué línea ocurre, dame una pista antes de la sol
     <div id="tab-bienvenida" class="salon-tab activo">
       <h3 class="titulo-3d-sec">SALÓN</h3>
       <p>Bienvenido al salón de <strong id="salon-lang-text">JavaScript</strong>. Aquí empieza tu viaje.</p>
-      <p>Usa las pestañas de arriba para navegar entre las clases, el editor, la configuración y tu perfil.</p>
     </div>
 
     <div id="tab-clases" class="salon-tab">
       <h3 class="titulo-3d-sec">CLASES</h3>
-      <p>Fases de aprendizaje:</p>
       <div class="fases">
-        <div class="fase fase-1">
-          <span class="fase-num">1</span>
-          <div><strong>Fase 1 — HTML</strong><p>El esqueleto: etiquetas, estructura, sin CSS.</p></div>
-        </div>
-        <div class="fase fase-2">
-          <span class="fase-num">2</span>
-          <div><strong>Fase 2 — CSS</strong><p>El estilo: colores, fuentes, diseño.</p></div>
-        </div>
-        <div class="fase fase-3">
-          <span class="fase-num">3</span>
-          <div><strong>Fase 3 — Lenguaje</strong><p>El más largo. Aquí va tu lenguaje elegido.</p></div>
-        </div>
-        <div class="fase fase-4">
-          <span class="fase-num">4</span>
-          <div><strong>Fase 4 — Programas externos</strong><p>Backend, API, Service Worker, Manifest.json, SW.js.</p></div>
-        </div>
+        <div class="fase"><span class="fase-num">1</span><div><strong>Fase 1 — HTML</strong><p>El esqueleto: etiquetas, estructura, sin CSS.</p></div></div>
+        <div class="fase"><span class="fase-num">2</span><div><strong>Fase 2 — CSS</strong><p>El estilo: colores, fuentes, diseño.</p></div></div>
+        <div class="fase"><span class="fase-num">3</span><div><strong>Fase 3 — Lenguaje</strong><p>El más largo. Aquí va tu lenguaje elegido.</p></div></div>
+        <div class="fase"><span class="fase-num">4</span><div><strong>Fase 4 — Externos</strong><p>Backend, API, Service Worker, Manifest.</p></div></div>
       </div>
     </div>
 
+    <!-- EDITOR CON VISTA PREVIA -->
     <div id="tab-editor" class="salon-tab">
       <h3 class="titulo-3d-sec">EDITOR</h3>
-      <div id="editor-salon" class="editor-ace"></div>
-      <button class="boton" onclick="ejecutarSalon()">Ejecutar</button>
+      <div class="editor-layout">
+        <div id="editor-salon" class="editor-ace"></div>
+        <div class="preview-container">
+          <iframe id="preview-salon" class="preview-iframe" sandbox="allow-scripts" title="Vista previa"></iframe>
+        </div>
+      </div>
+      <button class="boton" onclick="ejecutarSalon()">Ejecutar (+5 XP)</button>
       <h3>Consola</h3>
       <pre id="consola-salon" class="consola"></pre>
     </div>
 
     <div id="tab-informacion" class="salon-tab">
       <h3 class="titulo-3d-sec">INFORMACIÓN</h3>
-      <p>Atajos y consejos rápidos:</p>
       <ul>
         <li>Usa <code>console.log()</code> para ver valores.</li>
         <li>El error te dice la <strong>línea exacta</strong>.</li>
         <li>Lee el mensaje completo antes de buscar en Google.</li>
-        <li>Divide el problema en partes pequeñas.</li>
-        <li>Prueba siempre un cambio a la vez.</li>
       </ul>
     </div>
 
     <div id="tab-consejos" class="salon-tab">
       <h3 class="titulo-3d-sec">CONSEJOS</h3>
-      <p>Consejos para programar mejor:</p>
       <ul>
-        <li>Escribe código todos los días, aunque sea 15 minutos.</li>
+        <li>Escribe código todos los días.</li>
         <li>No copies y pegues: escribe y entiende.</li>
-        <li>Comenta tu código para tu yo del futuro.</li>
-        <li>Enseña lo que aprendes: es la mejor forma de fijarlo.</li>
+        <li>Comenta tu código.</li>
       </ul>
     </div>
 
     <div id="tab-configuracion" class="salon-tab">
       <h3 class="titulo-3d-sec">CONFIGURACIÓN</h3>
-
       <h4>Modo de color</h4>
       <div class="modos">
         <button class="modo-btn activo" data-modo="dark">Dark (morado/negro)</button>
         <button class="modo-btn" data-modo="light">Light (blanco/amarillo)</button>
         <button class="modo-btn" data-modo="dazer">Dazerhistorys (b/n)</button>
       </div>
-
       <h4>Sonido</h4>
-      <label class="switch">
-        <input type="checkbox" id="sonido-botones" checked>
-        <span>Sonido de botones</span>
-      </label>
-      <label class="switch">
-        <input type="checkbox" id="sonido-fondo">
-        <span>Sonido de fondo</span>
-      </label>
-
-      <h4>Otros</h4>
-      <label class="switch">
-        <input type="checkbox" id="animaciones" checked>
-        <span>Animaciones</span>
-      </label>
+      <label class="switch"><input type="checkbox" id="sonido-botones" checked><span>Sonido de botones</span></label>
+      <label class="switch"><input type="checkbox" id="sonido-fondo"><span>Sonido de fondo</span></label>
     </div>
 
+    <!-- PERFIL CON SISTEMA DE XP -->
     <div id="tab-perfil" class="salon-tab">
       <h3 class="titulo-3d-sec">PERFIL</h3>
       <p><strong>Usuario:</strong> <span id="perfil-nombre">Invitado</span></p>
       <p><strong>Email:</strong> <span id="perfil-email">—</span></p>
+      
+      <div class="xp-container">
+        <p><strong>Nivel:</strong> <span id="perfil-nivel">1</span></p>
+        <div class="xp-bar-bg">
+          <div id="xp-bar-fill" class="xp-bar-fill" style="width: 0%;"></div>
+        </div>
+        <p style="font-size: 0.8rem; text-align: right;"><span id="perfil-xp">0</span> / 100 XP</p>
+      </div>
+
       <p><strong>Lenguaje actual:</strong> <span id="perfil-lang">—</span></p>
-      <p><strong>Progreso:</strong> Fase 1 de 4</p>
       <button class="boton" onclick="cerrarSesion()">Cerrar sesión</button>
     </div>
   </div>
