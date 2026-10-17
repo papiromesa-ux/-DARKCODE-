@@ -1,117 +1,230 @@
-// clases.js - Teoría y Preguntas completas
-window.teoria = {
-  html: `<h3>1. Cómo funciona HTML</h3><p>HTML estructura el contenido web. Usa etiquetas para indicar títulos, párrafos e imágenes.</p><h3>2. Etiquetas y atributos</h3><p>Un elemento tiene etiqueta de apertura, contenido y cierre. Los atributos añaden información extra.</p>`,
-  css: `<h3>1. ¿Qué es CSS?</h3><p>CSS define la apariencia visual: colores, tamaños y diseño.</p><h3>2. Selectores y modelo de caja</h3><p>Los selectores aplican estilos. Todo elemento es una caja con padding, borde y margen.</p>`,
-  backend: `<h3>1. Backend</h3><p>Es la parte del servidor. Procesa solicitudes, valida datos y se conecta a la base de datos.</p><h3>2. Cliente y Servidor</h3><p>El cliente pide (frontend) y el servidor responde (backend). Usa autenticación y autorización.</p>`,
-  cyber: `<h3>1. Ciberseguridad</h3><p>Protege el código y los datos. Las contraseñas se guardan con hash.</p><h3>2. Validación y Permisos</h3><p>Nunca confíes en el usuario. Valida siempre en el backend y aplica el principio de menor privilegio.</p>`,
-  api: `<h3>1. API</h3><p>Interfaz que conecta frontend y backend. Usa métodos HTTP como GET y POST.</p><h3>2. Respuestas</h3><p>Usa códigos de estado (200 OK, 404 Not Found) y formato JSON.</p>`,
-  sw: `<h3>1. Service Worker</h3><p>Script en segundo plano que permite el modo offline usando caché.</p><h3>2. Ciclo de vida</h3><p>Se instala, se activa e intercepta solicitudes (fetch). Requiere HTTPS.</p>`,
-  manifest: `<h3>1. Manifest.json</h3><p>Documento de identidad de la PWA. Define nombre, iconos, colores y cómo abrir la app.</p>`,
-  debug: `<h3>1. Depuración</h3><p>Encontrar y corregir errores. Usa la consola y puntos de interrupción.</p><h3>2. Identificar archivos</h3><p>sw.js tiene self.addEventListener; manifest.json tiene llaves y comillas.</p>`,
-  repo: `<h3>1. Repositorio</h3><p>Espacio para guardar el proyecto con control de versiones (Git).</p><h3>2. Commits y Ramas</h3><p>Un commit guarda cambios. Las ramas permiten trabajar en paralelo.</p>`,
-  files: `<h3>1. Archivos de programación</h3><p>index.html (estructura), styles.css (diseño), app.js (lógica) y api.js (conexión).</p><h3>2. Backend y DB</h3><p>Archivos como server.js manejan el backend, y .sql manejan la base de datos.</p>`,
-  ia: `<h3>1. Programar con IA</h3><p>La IA ayuda a escribir y explicar código, pero debe revisarse.</p><h3>2. Buenos prompts</h3><p>Da contexto, indica el entorno, pide un plan y solicita código por partes. Nunca compartas secretos.</p>`,
-  hacking: `<h3>1. Hacking Ético</h3><p>Buscar vulnerabilidades con autorización para corregirlas.</p><h3>2. Alcance y práctica</h3><p>Nunca pruebes sistemas ajenos. Usa laboratorios como WebGoat o Juice Shop.</p>`
-};
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-window.baseDePreguntas = {
-  html: [
-    { pregunta: "¿Qué significa HTML?", opciones: ["HyperText Markup Language", "High Tech Modern Language", "Home Tool Markup Language"], correcta: 0, explicacion: "HTML significa HyperText Markup Language." },
-    { pregunta: "¿Cuál es la etiqueta correcta para crear un párrafo?", opciones: ["<h1>", "<p>", "<parrafo>"], correcta: 1, explicacion: "La etiqueta <p> viene de 'paragraph'." },
-    { pregunta: "¿Qué etiqueta se usa para insertar una imagen?", opciones: ["<picture>", "<img>", "<image>"], correcta: 1, explicacion: "La etiqueta correcta es <img>." },
-    { pregunta: "¿Qué significa que HTML sea de marcado?", opciones: ["Que estructura el contenido", "Que hace cálculos", "Que diseña la página"], correcta: 0, explicacion: "HTML estructura y da significado al contenido." },
-    { pregunta: "¿Dónde va el contenido visible?", opciones: ["En <head>", "En <body>", "En <script>"], correcta: 1, explicacion: "La etiqueta <body> contiene todo lo visible." }
-  ],
-  css: [
-    { pregunta: "¿Para qué sirve CSS?", opciones: ["Para estructurar el contenido", "Para definir la apariencia visual", "Para manejar bases de datos"], correcta: 1, explicacion: "CSS controla colores, tamaños y diseño." },
-    { pregunta: "¿Qué es el modelo de caja?", opciones: ["Contenido, padding, borde y margen", "Solo el borde", "Una etiqueta HTML"], correcta: 0, explicacion: "Todo elemento es una caja con esas 4 partes." },
-    { pregunta: "¿Qué propiedad cambia el color del texto?", opciones: ["background-color", "color", "text-size"], correcta: 1, explicacion: "La propiedad color cambia el texto." },
-    { pregunta: "¿Cómo se llama la regla que prioriza un estilo?", opciones: ["Cascada y especificidad", "Herencia", "Flexbox"], correcta: 0, explicacion: "La cascada y especificidad definen qué regla gana." },
-    { pregunta: "¿Qué unidad es relativa?", opciones: ["px", "cm", "%"], correcta: 2, explicacion: "El porcentaje depende del contenedor." }
-  ],
-  backend: [
-    { pregunta: "¿Dónde se ejecuta el backend?", opciones: ["En el servidor", "En el navegador", "En CSS"], correcta: 0, explicacion: "El backend corre en el servidor, invisible al usuario." },
-    { pregunta: "¿Qué significa autenticación?", opciones: ["Verificar quién eres", "Verificar qué puedes hacer", "Verificar tu velocidad"], correcta: 0, explicacion: "Autenticación verifica la identidad del usuario." },
-    { pregunta: "¿Qué significa autorización?", opciones: ["Verificar quién eres", "Verificar qué permisos tienes", "Verificar la base de datos"], correcta: 1, explicacion: "Autorización determina qué acciones puedes realizar." },
-    { pregunta: "¿Dónde debe validarse la información importante?", opciones: ["En el backend", "En el frontend", "En el CSS"], correcta: 0, explicacion: "El backend nunca debe confiar en el frontend, debe validar todo." },
-    { pregunta: "¿Qué es el CRUD?", opciones: ["Crear, Leer, Actualizar, Borrar", "Conectar, Redirigir, Usar, Datos", "Código, Red, Usuario, Diseño"], correcta: 0, explicacion: "CRUD son las operaciones básicas sobre datos." }
-  ],
-  cyber: [
-    { pregunta: "¿Cómo se deben guardar las contraseñas?", opciones: ["En texto plano", "Usando un hash", "En la URL"], correcta: 1, explicacion: "Siempre se deben guardar con un hash seguro." },
-    { pregunta: "¿Dónde deben ir las claves secretas de una API?", opciones: ["En el frontend", "En el backend (servidor)", "En la base de datos pública"], correcta: 1, explicacion: "Las claves secretas nunca deben estar en el código del navegador." },
-    { pregunta: "¿Qué es el principio de menor privilegio?", opciones: ["Dar todos los permisos", "Dar solo los permisos necesarios", "No dar permisos"], correcta: 1, explicacion: "Cada usuario debe tener solo los permisos que necesita." },
-    { pregunta: "¿Se debe confiar en la validación del frontend?", opciones: ["Sí, es suficiente", "No, siempre validar en el backend", "Solo si el usuario es administrador"], correcta: 1, explicacion: "El frontend puede manipularse, el backend es la autoridad final." },
-    { pregunta: "¿Para qué sirven las copias de seguridad?", opciones: ["Para recuperar datos ante fallos", "Para hacer la app más rápida", "Para guardar contraseñas"], correcta: 0, explicacion: "Las copias de seguridad protegen contra pérdida de información." }
-  ],
-  api: [
-    { pregunta: "¿Qué es una API?", opciones: ["Un lenguaje de programación", "Una interfaz que conecta aplicaciones", "Un tipo de base de datos"], correcta: 1, explicacion: "Una API permite la comunicación entre el frontend y el backend." },
-    { pregunta: "¿Qué método HTTP se usa para pedir datos?", opciones: ["GET", "POST", "DELETE"], correcta: 0, explicacion: "GET se utiliza para obtener información." },
-    { pregunta: "¿Qué método HTTP se usa para enviar datos?", opciones: ["GET", "POST", "PUT"], correcta: 1, explicacion: "POST se utiliza para crear o enviar información." },
-    { pregunta: "¿Qué significa el código de estado 404?", opciones: ["Éxito", "Error del servidor", "No encontrado"], correcta: 2, explicacion: "404 significa que el recurso solicitado no existe." },
-    { pregunta: "¿En qué formato suelen devolver las APIs los datos?", opciones: ["JSON", "HTML", "CSS"], correcta: 0, explicacion: "JSON es el formato estándar para intercambiar datos." }
-  ],
-  sw: [
-    { pregunta: "¿Dónde trabaja un Service Worker?", opciones: ["En el frontend visual", "En segundo plano", "En la base de datos"], correcta: 1, explicacion: "Es un script que corre en segundo plano en el navegador." },
-    { pregunta: "¿Para qué sirve el modo offline?", opciones: ["Para usar la app sin internet", "Para limpiar la caché", "Para instalar actualizaciones"], correcta: 0, explicacion: "Gracias a la caché, la app puede funcionar parcialmente sin conexión." },
-    { pregunta: "¿Qué evento intercepta las solicitudes de red?", opciones: ["install", "activate", "fetch"], correcta: 2, explicacion: "El evento 'fetch' intercepta las solicitudes." },
-    { pregunta: "¿Qué requisito de seguridad necesita?", opciones: ["HTTP", "HTTPS", "FTP"], correcta: 1, explicacion: "Requiere HTTPS (o localhost en desarrollo) por seguridad." },
-    { pregunta: "¿Qué es una estrategia de caché?", opciones: ["Decidir si usar caché o red", "Borrar archivos", "Programar en C++"], correcta: 0, explicacion: "Es la regla que define si se obtiene el recurso de la caché o de la red." }
-  ],
-  manifest: [
-    { pregunta: "¿Qué es el manifest.json?", opciones: ["Un documento de identidad de la app", "Un script de JavaScript", "Un archivo de estilos"], correcta: 0, explicacion: "Define cómo se instala y muestra la aplicación." },
-    { pregunta: "¿Qué formato tiene el manifest.json?", opciones: ["HTML", "JSON", "XML"], correcta: 1, explicacion: "Es un archivo con formato JSON." },
-    { pregunta: "¿Qué hace el 'display: standalone'?", opciones: ["Abre la app sin barra del navegador", "Borra la caché", "Guarda datos"], correcta: 0, explicacion: "Hace que la app se sienta como una aplicación nativa." },
-    { pregunta: "¿Qué se define en el campo 'icons'?", opciones: ["Los íconos de la app", "Los textos", "Los colores del fondo"], correcta: 0, explicacion: "Define los íconos que se usarán al instalar la app." },
-    { pregunta: "¿El manifest reemplaza al HTML?", opciones: ["Sí", "No", "Solo en móviles"], correcta: 1, explicacion: "El manifest es solo configuración, no reemplaza al HTML." }
-  ],
-  debug: [
-    { pregunta: "¿Qué es depurar?", opciones: ["Encontrar y corregir errores", "Escribir código desde cero", "Diseñar interfaces"], correcta: 0, explicacion: "Depurar es el proceso de encontrar y solucionar fallos." },
-    { pregunta: "¿Qué herramienta del navegador muestra los errores?", opciones: ["La consola", "El editor de código", "El CSS"], correcta: 0, explicacion: "La consola muestra mensajes y errores." },
-    { pregunta: "¿Qué es un punto de interrupción?", opciones: ["Pausa el código para revisar valores", "Borra el código", "Reinicia la app"], correcta: 0, explicacion: "Permite pausar la ejecución para inspeccionar el estado." },
-    { pregunta: "¿Cómo reconoces un archivo sw.js?", opciones: ["Tiene etiquetas HTML", "Tiene self.addEventListener", "Tiene colores CSS"], correcta: 1, explicacion: "El Service Worker usa self.addEventListener para escuchar eventos." },
-    { pregunta: "¿Qué pestaña te muestra si una petición a la API falló?", opciones: ["Network (Red)", "Elements", "Console"], correcta: 0, explicacion: "La pestaña Network muestra las solicitudes y sus respuestas." }
-  ],
-  repo: [
-    { pregunta: "¿Qué es un repositorio?", opciones: ["Un lugar para guardar el proyecto", "Un servidor web", "Una base de datos"], correcta: 0, explicacion: "Es el espacio donde se almacena el código y su historial." },
-    { pregunta: "¿Qué es un commit?", opciones: ["Un registro de cambios guardado", "Una rama", "Un error"], correcta: 0, explicacion: "Un commit guarda un cambio en el historial." },
-    { pregunta: "¿Qué es una rama (branch)?", opciones: ["Una línea de trabajo independiente", "Un archivo", "Un commit"], correcta: 0, explicacion: "Permite trabajar en paralelo sin afectar la rama principal." },
-    { pregunta: "¿Para qué sirve el README.md?", opciones: ["Para explicar el proyecto", "Para ejecutar código", "Para diseño"], correcta: 0, explicacion: "Es el archivo de documentación principal." },
-    { pregunta: "¿Qué hace el archivo .gitignore?", opciones: ["Excluye archivos del repositorio", "Borra archivos", "Ejecuta pruebas"], correcta: 0, explicacion: "Indica qué archivos no deben guardarse (como contraseñas o dependencias)." }
-  ],
-  files: [
-    { pregunta: "¿Qué archivo contiene la estructura principal de la página?", opciones: ["index.html", "styles.css", "app.js"], correcta: 0, explicacion: "index.html contiene la estructura base." },
-    { pregunta: "¿Qué archivo contiene los estilos visuales?", opciones: ["index.html", "styles.css", "app.js"], correcta: 1, explicacion: "styles.css contiene el diseño y los estilos." },
-    { pregunta: "¿Cómo identificas un Service Worker por su contenido?", opciones: ["Tiene self.addEventListener", "Tiene etiquetas <div>", "Tiene colores"], correcta: 0, explicacion: "El código del SW usa self.addEventListener." },
-    { pregunta: "¿Qué archivo describe la configuración de la PWA?", opciones: ["manifest.json", "app.js", "index.html"], correcta: 0, explicacion: "manifest.json contiene la configuración de la app instalable." },
-    { pregunta: "¿Qué archivo maneja la lógica principal del frontend?", opciones: ["app.js", "styles.css", "manifest.json"], correcta: 0, explicacion: "app.js contiene la lógica de la interfaz." }
-  ],
-  ia: [
-    { pregunta: "¿Qué necesita la IA para dar una buena respuesta?", opciones: ["Contexto y instrucciones claras", "Que le hables en inglés", "Nada, ella adivina"], correcta: 0, explicacion: "El contexto permite que la IA entienda el proyecto." },
-    { pregunta: "¿Debes copiar el código de la IA a ciegas?", opciones: ["Sí, siempre", "No, debes revisarlo y entenderlo", "Solo si es corto"], correcta: 1, explicacion: "Siempre debes revisar el código y entenderlo." },
-    { pregunta: "¿Qué es un buen prompt?", opciones: ["Decir 'haz una app'", "Pedir paso a paso y dar restricciones", "Escribir solo una palabra"], correcta: 1, explicacion: "Los prompts específicos generan mejores resultados." },
-    { pregunta: "¿Puedes compartir contraseñas con la IA?", opciones: ["Sí", "No, nunca", "Solo si es de prueba"], correcta: 1, explicacion: "Nunca compartas secretos o contraseñas con herramientas de IA." },
-    { pregunta: "¿Qué hacer si la IA se equivoca?", opciones: ["Rendirte", "Explicarle el error exacto y dar contexto", "Culpar al teclado"], correcta: 1, explicacion: "Proporcionar el mensaje de error ayuda a la IA a corregirse." }
-  ],
-  hacking: [
-    { pregunta: "¿Qué es el hacking ético?", opciones: ["Buscar vulnerabilidades con autorización", "Atacar sistemas ajenos", "Borrar bases de datos"], correcta: 0, explicacion: "Se realiza siempre con permiso para corregir fallos." },
-    { pregunta: "¿Cuál es la regla principal del hacking ético?", opciones: ["Nunca probar sin autorización", "Aprender rápido", "Atacar cualquier web"], correcta: 0, explicacion: "La autorización es el límite entre lo ético y lo ilegal." },
-    { pregunta: "¿Qué es una vulnerabilidad?", opciones: ["Una debilidad explotable", "Un servidor rápido", "Un tipo de contraseña"], correcta: 0, explicacion: "Es un fallo que puede comprometer la seguridad." },
-    { pregunta: "¿Qué es OWASP WebGoat?", opciones: ["Un laboratorio para practicar hacking", "Un lenguaje de programación", "Un servidor"], correcta: 0, explicacion: "Es una app vulnerable diseñada para aprender de forma segura." },
-    { pregunta: "¿Puedes hacer pruebas en una web que no es tuya?", opciones: ["Sí, si es pública", "No, necesitas autorización", "Solo los fines de semana"], correcta: 1, explicacion: "Debes tener permiso explícito del dueño." }
-  ]
-};
+:root {
+  --bg: #0d0614; --bg-2: #11081c; --card: #160a26; --border: #2b1248;
+  --text: #d4d4d8; --text-2: #a1a1aa; --accent: #a855f7; --accent-2: #4c1d95; --accent-3: #6d28d9;
+  --header: linear-gradient(135deg, #2e1065, #4c1d95); --header-shadow: rgba(76, 29, 149, 0.5); --code-bg: #050108;
+}
+body.light { --bg: #fffef5; --bg-2: #fdfbe8; --card: #ffffff; --border: #e5e0c0; --text: #1a1a1a; --text-2: #555; --accent: #ca8a04; --accent-2: #facc15; --accent-3: #eab308; --header: linear-gradient(135deg, #facc15, #eab308); --header-shadow: rgba(234, 179, 8, 0.4); --code-bg: #fef9c3; }
+body.dazer { --bg: #000000; --bg-2: #000000; --card: #111111; --border: #444444; --text: #ffffff; --text-2: #cccccc; --accent: #ffffff; --accent-2: #333333; --accent-3: #555555; --header: linear-gradient(135deg, #000, #111); --header-shadow: none; --code-bg: #000000; }
 
-window.mapaMisiones = {
-  1: { nombre: "Los cimientos (HTML)" },
-  2: { nombre: "Enciende el neón (CSS)" },
-  3: { nombre: "Sala de máquinas (Backend)" },
-  4: { nombre: "El escudo (Ciberseguridad)" },
-  5: { nombre: "Central de comunicaciones (API)" },
-  6: { nombre: "Reserva de energía (Service Worker)" },
-  7: { nombre: "Identidad digital (Manifiesto)" },
-  8: { nombre: "Laboratorio de errores (Depuración)" },
-  9: { nombre: "El lanzamiento (Repositorio)" },
-  10: { nombre: "El mapa del código (Archivos)" },
-  11: { nombre: "Compañero electrónico (IA)" },
-  12: { nombre: "El Pentester (Hacking)" }
-};
+body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 60px; transition: background 0.3s, color 0.3s; }
+
+/* LOGIN */
+.login-screen { position: fixed; inset: 0; z-index: 2000; background: radial-gradient(circle at center, #2e1065, #0d0614 70%); display: flex; justify-content: center; align-items: center; }
+body.light .login-screen { background: radial-gradient(circle at center, #fef08a, #fffef5 70%); }
+body.dazer .login-screen { background: #000; }
+.login-screen.oculto { display: none; }
+.login-box { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 32px 24px; text-align: center; max-width: 340px; width: 90%; box-shadow: 0 20px 60px rgba(109, 40, 217, 0.5); }
+.login-sub { color: var(--text-2); margin: 10px 0 24px; font-size: 0.9rem; }
+.btn-google { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px; border-radius: 10px; background: #fff; color: #1a1a1a; border: 1px solid #ddd; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: transform 0.15s; }
+.btn-google:active { transform: scale(0.97); }
+
+/* TÍTULOS 3D */
+.logo-3d { font-size: 1.8rem; letter-spacing: 3px; font-weight: 900; color: #fff; text-align: center; text-shadow: 0 1px 0 var(--accent-3), 0 2px 0 var(--accent-2), 0 3px 0 #3b0f75, 0 4px 0 #2e1065, 0 5px 8px rgba(0,0,0,0.7), 0 0 20px var(--accent); transform: perspective(500px) rotateX(6deg); display: block; }
+body.dazer .logo-3d { text-shadow: 0 0 10px #fff; }
+.titulo-3d-sec { font-size: 1.5rem; letter-spacing: 2px; font-weight: 800; color: var(--accent); text-shadow: 0 1px 0 var(--accent-3), 0 2px 0 var(--accent-2), 0 3px 6px rgba(0,0,0,0.6); transform: perspective(500px) rotateX(4deg); margin-bottom: 12px; }
+body.dazer .titulo-3d-sec { text-shadow: 0 0 8px #fff; }
+
+/* ESTRUCTURA */
+header { background: var(--header); color: #fff; padding: 22px 16px; text-align: center; box-shadow: 0 4px 20px var(--header-shadow); }
+.sub { font-size: 0.85rem; opacity: 0.9; margin-top: 6px; }
+#menu { display: flex; overflow-x: auto; gap: 6px; padding: 10px; background: var(--bg-2); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--border); }
+#menu button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 8px 14px; border-radius: 999px; font-size: 0.85rem; white-space: nowrap; cursor: pointer; }
+#menu button.activo { background: var(--accent-2); color: #fff; border-color: var(--accent-3); box-shadow: 0 0 12px var(--accent-3); }
+body.dazer #menu button.activo { background: #fff; color: #000; }
+
+main { padding: 16px; max-width: 720px; margin: 0 auto; }
+.seccion { display: none; animation: aparecer 0.2s ease; }
+.seccion.activa { display: block; }
+@keyframes aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+h2 { margin-bottom: 12px; color: var(--accent); font-size: 1.3rem; letter-spacing: 1px; }
+h3 { margin: 16px 0 8px; color: var(--accent); font-size: 1rem; }
+h4 { margin: 14px 0 6px; color: var(--accent); font-size: 0.9rem; }
+p { margin-bottom: 10px; }
+
+/* LENGUAJES */
+.lenguajes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 14px 0; }
+.lang-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 10px; cursor: pointer; color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 6px; transition: transform 0.15s, border 0.15s; position: relative; }
+.lang-card:active { transform: scale(0.96); border-color: var(--accent); }
+.lang-icon { font-size: 1.4rem; font-weight: 800; color: var(--accent); text-shadow: 0 2px 0 var(--accent-2); }
+.lang-card small { color: var(--text-2); font-size: 0.75rem; }
+.badge-recomendado { position: absolute; top: -10px; right: -5px; background: #fbbf24; color: #000; font-size: 0.6rem; font-weight: bold; padding: 3px 8px; border-radius: 999px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10; }
+
+/* SALÓN Y MAPA */
+.salon-top { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 12px; }
+.boton-salir { background: transparent; color: var(--text-2); border: none; font-size: 0.9rem; cursor: pointer; margin-bottom: 10px; display: block; text-align: left; }
+.boton-salir:hover { color: var(--accent); }
+.salon-tabs { display: flex; overflow-x: auto; gap: 6px; padding: 8px 0; margin-bottom: 12px; border-bottom: 1px solid var(--border); }
+.salon-tabs button { background: transparent; color: var(--text-2); border: 1px solid var(--border); padding: 6px 12px; border-radius: 999px; font-size: 0.75rem; white-space: nowrap; cursor: pointer; }
+.salon-tabs button.activo { background: var(--accent-2); color: #fff; border-color: var(--accent-3); }
+body.dazer .salon-tabs button.activo { background: #fff; color: #000; }
+.salon-tab { display: none; }
+.salon-tab.activo { display: block; }
+
+.mapa-ruta { display: flex; flex-direction: column; gap: 15px; position: relative; padding: 10px; }
+.mapa-ruta::before { content: ''; position: absolute; top: 0; bottom: 0; left: 30px; width: 4px; background: var(--border); z-index: 1; border-radius: 4px; }
+.nodo-mision { display: flex; align-items: center; gap: 15px; background: var(--card); border: 2px solid var(--border); border-radius: 12px; padding: 12px; position: relative; z-index: 2; margin-left: 10px; transition: all 0.2s ease; }
+.nodo-mision:nth-child(even) { margin-left: 40px; }
+.nodo-mision:nth-child(odd) { margin-left: 0px; }
+.circulo-mision { width: 44px; height: 44px; border-radius: 50%; background: var(--bg-2); border: 3px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: bold; flex-shrink: 0; }
+.nodo-mision.actual { border-color: var(--accent); box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); transform: scale(1.02); }
+.nodo-mision.actual .circulo-mision { border-color: var(--accent); background: rgba(168, 85, 247, 0.2); }
+.nodo-mision.completada { opacity: 0.8; border-color: #4ade80; }
+.nodo-mision.completada .circulo-mision { border-color: #4ade80; background: rgba(74, 222, 128, 0.2); font-size: 0.7rem;}
+.etiqueta-mision { position: absolute; top: -10px; left: 20px; background: var(--accent); color: #fff; font-size: 0.65rem; padding: 2px 8px; border-radius: 999px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+.info-mision { display: flex; flex-direction: column; }
+.info-mision strong { color: var(--text); font-size: 0.95rem; }
+.info-mision small { color: var(--text-2); font-size: 0.75rem; }
+
+/* MINICODE */
+.minicode-chat { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px; }
+.minicode-face {
+    width: 55px; height: 55px;
+    background: var(--accent-2);
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    position: relative;
+    display: flex; justify-content: center; align-items: center;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+    animation: flotar 3s ease-in-out infinite;
+    flex-shrink: 0;
+}
+@keyframes flotar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+.mc-eye-left, .mc-eye-right {
+    position: absolute; top: 12px;
+    color: var(--accent); font-family: monospace; font-size: 1.3rem; font-weight: bold;
+}
+.mc-eye-left { left: 10px; }
+.mc-eye-right { right: 10px; }
+.mc-smile {
+    width: 16px; height: 8px;
+    border-bottom: 2px solid var(--accent);
+    border-radius: 0 0 10px 10px;
+    position: absolute; bottom: 10px;
+}
+
+.minicode-speech {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 15px;
+    border-radius: 12px;
+    position: relative;
+    flex-grow: 1;
+}
+.minicode-speech::before {
+    content: ''; position: absolute;
+    left: -8px; top: 20px;
+    width: 0; height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid var(--border);
+}
+
+/* AJUSTES Y PERFIL */
+.modos { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.modo-btn { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 10px; text-align: left; cursor: pointer; font-size: 0.9rem; }
+.modo-btn.activo { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-3); }
+.switch { display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--border); padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; cursor: pointer; font-size: 0.9rem; }
+.switch input { width: 18px; height: 18px; accent-color: var(--accent); }
+.xp-container { background: var(--card); padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin: 14px 0; }
+.xp-bar-bg { width: 100%; height: 14px; background: rgba(0,0,0,0.5); border-radius: 999px; overflow: hidden; margin: 8px 0; border: 1px solid var(--border); }
+body.light .xp-bar-bg { background: #e5e0c0; }
+body.dazer .xp-bar-bg { background: #222; }
+.xp-bar-fill { height: 100%; background: linear-gradient(90deg, #a855f7, #4ade80); transition: width 0.5s ease; border-radius: 999px; }
+body.dazer .xp-bar-fill { background: #fff; }
+
+/* EDITOR */
+.editor-ace { width: 100%; min-height: 200px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 10px; font-size: 0.85rem; }
+.ace_editor { background: #050108 !important; }
+body.light .ace_editor { background: #fffef5 !important; }
+body.dazer .ace_editor { background: #000000 !important; }
+.ace_gutter { background: #11081c !important; }
+body.light .ace_gutter { background: #fdfbe8 !important; }
+body.dazer .ace_gutter { background: #111111 !important; }
+.editor-layout { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+@media (min-width: 600px) { .editor-layout { flex-direction: row; } .editor-layout > * { flex: 1; } }
+.preview-container { border: 1px solid var(--border); border-radius: 8px; background: #fff; min-height: 200px; overflow: hidden; }
+.preview-iframe { width: 100%; height: 100%; min-height: 200px; border: none; }
+
+/* GENÉRICOS */
+details { background: var(--card); padding: 10px 14px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border); }
+summary { cursor: pointer; font-weight: 600; color: var(--text); }
+summary::marker { color: var(--accent); }
+pre, code { font-family: "Courier New", monospace; font-size: 0.85rem; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; overflow-x: auto; margin: 8px 0; white-space: pre-wrap; word-wrap: break-word; color: var(--accent); }
+body.dazer pre, body.dazer code { color: #fff; }
+code { background: var(--code-bg); padding: 2px 5px; border-radius: 4px; color: var(--accent); }
+label { display: block; margin: 10px 0 6px; font-size: 0.9rem; color: var(--text-2); }
+.boton { background: var(--accent-2); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-size: 0.95rem; font-weight: 600; margin-top: 8px; cursor: pointer; box-shadow: 0 0 12px var(--accent-3); }
+.boton:active { background: var(--accent-3); }
+body.dazer .boton { background: #fff; color: #000; box-shadow: none; }
+.consola { background: #000; color: #4ade80; border: 1px solid var(--border); min-height: 60px; font-family: "Courier New", monospace; padding: 10px; border-radius: 8px; }
+body.light .consola { background: #1a1a1a; }
+body.dazer .consola { background: #000; border-color: #444; }
+.aviso { background: var(--card); border-left: 4px solid var(--accent-3); padding: 10px 12px; border-radius: 6px; font-size: 0.9rem; margin: 12px 0; }
+ul { margin: 8px 0 8px 20px; }
+li { margin-bottom: 6px; }
+dl { display: grid; gap: 8px; }
+dt { font-weight: 700; color: var(--accent); margin-top: 8px; }
+dd { margin-left: 12px; font-size: 0.9rem; color: var(--text-2); }
+footer { text-align: center; padding: 20px; font-size: 0.8rem; color: var(--text-2); opacity: 0.7; }
+
+/* NOTIFICACIONES Y CONFETI */
+#notificaciones-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; pointer-events: none; }
+.toast { background: var(--card); border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5); border-left: 5px solid var(--accent); animation: slideDown 0.3s ease forwards; transition: opacity 0.3s ease; color: var(--text); }
+.toast.error { border-left-color: #dc2626; background: #2a0a0a; }
+.toast.exito { border-left-color: #4ade80; background: #0a2a15; }
+.toast.logro { border-left-color: #fbbf24; background: #2a1a0a; border: 1px solid #fbbf24; }
+@keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+#confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; overflow: hidden; }
+.confeti-pieza { position: absolute; width: 10px; height: 10px; top: -10px; opacity: 0.9; animation: caer 2.5s linear forwards; }
+@keyframes caer { 0% { transform: translateY(0) rotate(0deg); } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+/* LOGROS */
+.logros-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 15px; }
+.logro-card { display: flex; align-items: center; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); transition: all 0.3s ease; }
+.logro-card.obtenido { border-color: #fbbf24; box-shadow: 0 0 10px rgba(251, 191, 36, 0.2); }
+.logro-card.bloqueado { opacity: 0.4; filter: grayscale(100%); }
+.logro-icono { font-size: 1.5rem; font-weight: bold; margin-right: 15px; width: 30px; text-align: center; color: var(--accent); }
+.logro-info { display: flex; flex-direction: column; }
+.logro-info strong { color: var(--text); font-size: 0.95rem; }
+.logro-info small { color: var(--text-2); font-size: 0.75rem; }
+
+/* LECCIÓN Y TEORÍA */
+#pantalla-teoria, #pantalla-leccion { background: var(--bg); min-height: 100vh; padding: 20px; display: flex; flex-direction: column; }
+.leccion-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+.barra-progreso-bg { flex-grow: 1; height: 16px; background: var(--border); border-radius: 999px; overflow: hidden; }
+.barra-progreso-fill { height: 100%; background: #4ade80; transition: width 0.3s ease; }
+.leccion-contenido { flex-grow: 1; }
+.opciones-container { display: flex; flex-direction: column; gap: 12px; }
+.opcion-btn { background: var(--card); color: var(--text); border: 2px solid var(--border); padding: 16px; border-radius: 12px; font-size: 1rem; text-align: left; cursor: pointer; transition: all 0.15s; font-weight: 500; }
+.opcion-btn.seleccionada { border-color: var(--accent); background: var(--bg-2); }
+.opcion-btn.correcta { border-color: #4ade80; background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+.opcion-btn.incorrecta { border-color: #dc2626; background: rgba(220, 38, 38, 0.2); color: #dc2626; }
+.opcion-btn:disabled { cursor: default; }
+.leccion-footer { margin-top: 20px; padding-bottom: 20px; }
+.leccion-footer .boton { width: 100%; padding: 16px; font-size: 1.1rem; }
+#btn-leccion-comprobar:disabled { opacity: 0.5; cursor: not-allowed; }
+.feedback-container { margin-top: 20px; }
+.feedback-container.correcto #feedback-bubble { border-color: #4ade80; }
+.feedback-container.incorrecto #feedback-bubble { border-color: #dc2626; }
+
+#teoria-texto {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text);
+  max-height: 65vh;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+#teoria-texto h3 { color: var(--accent); margin-top: 20px; margin-bottom: 8px; font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+#teoria-texto h3:first-child { margin-top: 0; }
+#teoria-texto p { margin-bottom: 12px; color: var(--text-2); }
+#teoria-texto b { color: var(--text); }
