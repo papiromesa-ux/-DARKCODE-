@@ -28,7 +28,7 @@ const baseDePreguntas = {
   fase6_api: [
     { tipo: "opcion", pregunta: "En una aplicación que consulta un servidor, ¿qué permite una API?", opciones: ["Solicitar datos mediante una interfaz definida.", "Aumentar automáticamente la velocidad de internet.", "Evitar cualquier error del programa."], correcta: 0, explicacion: "Una API es un contrato para pedir y recibir datos." },
     { tipo: "opcion", pregunta: "La app necesita recuperar una lista de ejercicios del servidor. ¿Qué acción corresponde?", opciones: ["Cambiar el color del botón.", "Realizar una solicitud y procesar la respuesta.", "Instalar una fuente tipográfica."], correcta: 1, explicacion: "El frontend hace la petición y el servidor responde con los datos." },
-    { tipo: "opcion", pregunta: "Verdadero o falso: 'Toda API pertenece a una empresa externa'.", opciones: ["Verdadero.", "Falso."], correcta: 1, explicacion: "También existen APIs proporcionadas por el navegador (como la del clima o el GPS)." }
+    { tipo: "opcion", pregunta: "Verdadero o falso: 'Toda API pertenece a una empresa externa'.", opciones: ["Verdadero.", "Falso."], correcta: 1, explicacion: "También existen APIs proporcionadas por el navegador." }
   ],
   fase7_backend: [
     { tipo: "opcion", pregunta: "¿Dónde se ejecuta el código de backend?", opciones: ["Exclusivamente dentro de una imagen.", "En el servidor.", "Dentro del archivo de estilos."], correcta: 1, explicacion: "El backend corre en el servidor, lejos de la vista del usuario." },
@@ -52,7 +52,6 @@ const baseDePreguntas = {
   ]
 };
 
-// Nombres narrativos de las fases para el Mapa
 const mapaMisiones = {
   1: { nombre: "Los cimientos", icono: "🧱" },
   2: { nombre: "Enciende el neón", icono: "🖌️" },
