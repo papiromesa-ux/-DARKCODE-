@@ -1,4 +1,4 @@
-const CACHE = "darkcode-R3-final-sin-emoji";
+const CACHE = "darkcode-R3-final";
 
 const LOCALES = [
   "./", "./index.html", "./styles.css", "./app.js", "./clases.js", "./manifest.json",
