@@ -8,50 +8,42 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="<DARKCODE>" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <link rel="stylesheet" href="styles.css" />
-  <title>&lt;DARKCODE&gt;</title>
+  <title>&lt;DARKCODE&gt; [R3]</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/ace.js"></script>
 </head>
 <body>
+
+<div id="notificaciones-container"></div>
+<div id="confetti-container"></div>
 
 <!-- LOGIN -->
 <div id="login-screen" class="login-screen">
   <div class="login-box">
     <h1 class="logo-3d">&lt;DARKCODE&gt;</h1>
-    <p class="login-sub">Bienvenido a &lt;DARKCODE&gt;</p>
+    <p class="login-sub">Bienvenido a &lt;DARKCODE&gt; [R3]</p>
     <button id="btn-google" class="btn-google">
       <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.3 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.3 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.5 2.4-7.2 2.4-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.6l6.2 5.2C41 35.6 44 30.2 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg>
       Entrar con Google
     </button>
-    <p class="login-nota">Autenticación real con Firebase.</p>
   </div>
 </div>
 
-<header>
+<header id="main-header">
   <h1 class="logo-3d">&lt;DARKCODE&gt;</h1>
   <p class="sub">Aprende a programar y depurar sin pagar nada</p>
 </header>
 
 <nav id="menu">
   <button data-seccion="inicio" class="activo">Inicio</button>
-  <button data-seccion="aprende">Aprende</button>
-  <button data-seccion="practica">Practica</button>
-  <button data-seccion="depura">Depura</button>
-  <button data-seccion="ia">IA</button>
-  <button data-seccion="diccionario">Diccionario</button>
-  <button data-seccion="creditos">Créditos</button>
+  <button data-seccion="ajustes">⚙️ Ajustes y Créditos</button>
 </nav>
 
 <main>
-
 <section id="inicio" class="seccion activa">
   <h2>Bienvenido a &lt;DARKCODE&gt;</h2>
-  <p>Este sitio es un lugar de <strong>autoaprendizaje</strong> para aprender a programar. Elige tu lenguaje y empieza tu autoclase.</p>
-  <h3>Programas de lenguaje</h3>
+  <p>Este sitio es un lugar de <strong>autoaprendizaje</strong>. Elige tu lenguaje y empieza tu autoclase.</p>
   <div class="lenguajes">
     <button class="lang-card" data-lang="PHP"><span class="lang-icon">PHP</span><small>Backend web</small></button>
     <button class="lang-card" data-lang="Ruby"><span class="lang-icon">Ruby</span><small>Lenguaje elegante</small></button>
@@ -59,175 +51,87 @@
     <button class="lang-card" data-lang="C"><span class="lang-icon">C</span><small>Base de todo</small></button>
     <button class="lang-card" data-lang="C++"><span class="lang-icon">C++</span><small>Alto rendimiento</small></button>
   </div>
-  <p class="aviso">Por el momento solo tenemos autoclase de estos lenguajes. Dependiendo del que elijas será la clase que te demos.</p>
 </section>
 
-<section id="aprende" class="seccion">
-  <h2>Aprende</h2>
-  <details open>
-    <summary>¿Qué es HTML?</summary>
-    <p>HTML describe la <strong>estructura</strong> de una página.</p>
-    <pre><code>&lt;h1&gt;Hola mundo&lt;/h1&gt;</code></pre>
-  </details>
-  <details>
-    <summary>¿Qué es CSS?</summary>
-    <p>CSS le da <strong>estilo</strong>: colores, tamaños, fuentes.</p>
-    <pre><code>body { background: #0a0a0a; }</code></pre>
-  </details>
-  <details>
-    <summary>¿Qué es JavaScript?</summary>
-    <p>JavaScript le da <strong>comportamiento</strong>.</p>
-    <pre><code>console.log("Hola");</code></pre>
-  </details>
-</section>
-
-<section id="practica" class="seccion">
-  <h2>Practica</h2>
-  <p>Edita el código, presiona <strong>Ejecutar</strong> y gana XP.</p>
-  <label>Tu código:</label>
-  <div id="editor-practica" class="editor-ace"></div>
-  <button class="boton" onclick="ejecutar('editor-practica')">Ejecutar</button>
-  <h3>Consola</h3>
-  <pre id="consola-practica" class="consola"></pre>
-</section>
-
-<section id="depura" class="seccion">
-  <h2 class="titulo-3d-sec">Depura</h2>
-  <p>Este código tiene un error. Míralo, ejecútalo y encuentra el problema.</p>
-  <label>Código con error:</label>
-  <div id="editor-depura" class="editor-ace"></div>
-  <button class="boton" onclick="ejecutar('editor-depura')">Ejecutar</button>
-  <h3>Consola</h3>
-  <pre id="consola-depura" class="consola"></pre>
-  <details>
-    <summary>Ver pista</summary>
-    <p>Cuando sumas un número con un texto, JavaScript <strong>concatena</strong>. El resultado es <code>"52"</code>, no <code>7</code>.</p>
-  </details>
-  <details>
-    <summary>Ver solución</summary>
-    <pre><code>function sumar(a, b) {
-  return Number(a) + Number(b);
-}
-console.log(sumar(5, "2")); // 7</code></pre>
-  </details>
-</section>
-
-<section id="ia" class="seccion">
-  <h2>IA para programar</h2>
-  <p>La IA debe ayudarte a <strong>entender</strong>, no a copiar.</p>
-  <h3>Plantilla de prompt</h3>
-  <pre><code>Estoy aprendiendo JavaScript.
-Mi código: [pega aquí]
-El error: [pega el mensaje]
-Explícame qué significa, en qué línea ocurre, dame una pista antes de la solución.</code></pre>
-</section>
-
-<section id="diccionario" class="seccion">
-  <h2>Diccionario</h2>
-  <dl>
-    <dt>Variable</dt><dd>Espacio con nombre donde guardas un valor.</dd>
-    <dt>Función</dt><dd>Bloque de código reutilizable.</dd>
-    <dt>Error</dt><dd>Problema que impide que el código funcione.</dd>
-    <dt>Depurar</dt><dd>Encontrar y corregir errores.</dd>
-    <dt>Consola</dt><dd>Herramienta donde ves mensajes.</dd>
-    <dt>API</dt><dd>Contrato para pedir datos o servicios.</dd>
-    <dt>PWA</dt><dd>Aplicación web instalable.</dd>
-    <dt>Service Worker</dt><dd>Script que permite funcionar sin conexión.</dd>
-    <dt>Manifest</dt><dd>Archivo que describe la app instalable.</dd>
-  </dl>
-</section>
-
-<section id="creditos" class="seccion">
-  <h2>Créditos</h2>
-  <div class="card-creditos">
-    <h3>&lt;DARKCODE&gt;</h3>
-    <p>Proyecto de autoaprendizaje de programación.</p>
-    <p><strong>Desarrollador:</strong> PAPIROMESA</p>
-    <p><strong>Tecnologías:</strong> HTML, CSS, JS, PWA, Firebase Auth.</p>
-    <p><strong>Año:</strong> 2025</p>
+<section id="ajustes" class="seccion">
+  <h2>Ajustes Generales</h2>
+  <h4>Modo de color</h4>
+  <div class="modos">
+    <button class="modo-btn activo" data-modo="dark">Dark (morado/negro)</button>
+    <button class="modo-btn" data-modo="light">Light (blanco/amarillo)</button>
+    <button class="modo-btn" data-modo="dazer">Dazerhistorys (b/n)</button>
+  </div>
+  <h4>Música de fondo</h4>
+  <div class="musica-config">
+    <select id="select-musica" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px;">
+      <option value="">Sin música (Silencio)</option>
+      <option value="./musica1.mp3">Música 1</option>
+      <option value="./musica2.mp3">Música 2</option>
+      <option value="./musica3.mp3">Música 3</option>
+      <option value="./musica4.mp3">Música 4</option>
+      <option value="./musica5.mp3">Música 5</option>
+    </select>
+    <button class="boton" onclick="toggleMusica()" id="btn-toggle-musica" style="width:100%;">▶ Reproducir / Pausar</button>
+  </div>
+  <h4>Sonidos de la app</h4>
+  <label class="switch"><input type="checkbox" id="sonido-botones" checked><span>Sonido de botones</span></label>
+  <h4>Cuenta y Datos</h4>
+  <button class="boton" onclick="cerrarSesion()" style="width:100%; margin-bottom:10px;">Cerrar sesión</button>
+  <button class="boton" onclick="borrarMisDatos()" style="width:100%; background:#dc2626; box-shadow:0 0 12px #dc2626;">Borrar mis datos</button>
+  
+  <h4 style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 15px;">Créditos</h4>
+  <div class="card-creditos" style="font-size: 0.85rem; line-height: 1.8;">
+    <p><strong>Desarrolladores:</strong> papiromesa</p>
+    <p><strong>Fecha de comienzo:</strong> 10 de enero de 2024</p>
+    <p><strong>Release actual:</strong> 20 de octubre (R3)</p>
+    <p><strong>Próxima Release:</strong> 15 de Noviembre (R4)</p>
+    <p><strong>Lenguaje:</strong> [JS]-DK</p>
   </div>
 </section>
 
-<!-- SALÓN DE AUTOCLASE -->
 <section id="salon" class="seccion">
   <div class="salon-top">
+    <button class="boton-salir" onclick="salirSalon()">← Volver al Inicio</button>
     <h2 id="salon-lenguaje">&lt;&lt;&lt; JAVASCRIPT &gt;&gt;&gt;</h2>
-    <p id="salon-bienvenida">Bienvenido a autoclase</p>
-    <button class="boton-salir" onclick="salirSalon()">Salir del salón</button>
   </div>
 
   <nav class="salon-tabs">
     <button data-tab="bienvenida" class="activo">SALÓN</button>
-    <button data-tab="clases">CLASES</button>
+    <button data-tab="clases">MAPA DE MISIONES</button>
     <button data-tab="editor">EDITOR</button>
-    <button data-tab="informacion">INFORMACIÓN</button>
-    <button data-tab="consejos">CONSEJOS</button>
-    <button data-tab="configuracion">CONFIGURACIÓN</button>
-    <button data-tab="perfil">PERFIL</button>
+    <button data-tab="perfil">PERFIL Y LOGROS</button>
   </nav>
 
   <div class="salon-contenido">
     <div id="tab-bienvenida" class="salon-tab activo">
-      <h3 class="titulo-3d-sec">SALÓN</h3>
-      <p>Bienvenido al salón de <strong id="salon-lang-text">JavaScript</strong>. Aquí empieza tu viaje.</p>
-    </div>
-
-    <div id="tab-clases" class="salon-tab">
-      <h3 class="titulo-3d-sec">CLASES</h3>
-      <div class="fases">
-        <div class="fase"><span class="fase-num">1</span><div><strong>Fase 1 — HTML</strong><p>El esqueleto: etiquetas, estructura, sin CSS.</p></div></div>
-        <div class="fase"><span class="fase-num">2</span><div><strong>Fase 2 — CSS</strong><p>El estilo: colores, fuentes, diseño.</p></div></div>
-        <div class="fase"><span class="fase-num">3</span><div><strong>Fase 3 — Lenguaje</strong><p>El más largo. Aquí va tu lenguaje elegido.</p></div></div>
-        <div class="fase"><span class="fase-num">4</span><div><strong>Fase 4 — Externos</strong><p>Backend, API, Service Worker, Manifest.</p></div></div>
+      <div class="byte-container">
+        <div class="byte-robot">🤖</div>
+        <div class="byte-dialogo">
+          <p><strong>BYTE:</strong> ¡Hola! Soy tu compañero. Estoy aquí para ayudarte a reparar este laboratorio digital. ¿Empezamos con los cimientos?</p>
+        </div>
       </div>
     </div>
 
-    <!-- EDITOR CON VISTA PREVIA -->
+    <div id="tab-clases" class="salon-tab">
+      <h3 class="titulo-3d-sec">MAPA DEL LABORATORIO</h3>
+      <p style="font-size:0.85rem; color:var(--text-2); margin-bottom:15px;">Sigue la ruta para activar cada parte de tu aplicación.</p>
+      
+      <!-- Aquí JS inyectará el mapa -->
+      <div id="mapa-misiones-container" class="mapa-ruta"></div>
+    </div>
+
     <div id="tab-editor" class="salon-tab">
       <h3 class="titulo-3d-sec">EDITOR</h3>
       <div class="editor-layout">
         <div id="editor-salon" class="editor-ace"></div>
         <div class="preview-container">
-          <iframe id="preview-salon" class="preview-iframe" sandbox="allow-scripts" title="Vista previa"></iframe>
+          <iframe id="preview-salon" class="preview-iframe" sandbox="allow-scripts"></iframe>
         </div>
       </div>
       <button class="boton" onclick="ejecutarSalon()">Ejecutar (+5 XP)</button>
-      <h3>Consola</h3>
       <pre id="consola-salon" class="consola"></pre>
     </div>
 
-    <div id="tab-informacion" class="salon-tab">
-      <h3 class="titulo-3d-sec">INFORMACIÓN</h3>
-      <ul>
-        <li>Usa <code>console.log()</code> para ver valores.</li>
-        <li>El error te dice la <strong>línea exacta</strong>.</li>
-        <li>Lee el mensaje completo antes de buscar en Google.</li>
-      </ul>
-    </div>
-
-    <div id="tab-consejos" class="salon-tab">
-      <h3 class="titulo-3d-sec">CONSEJOS</h3>
-      <ul>
-        <li>Escribe código todos los días.</li>
-        <li>No copies y pegues: escribe y entiende.</li>
-        <li>Comenta tu código.</li>
-      </ul>
-    </div>
-
-    <div id="tab-configuracion" class="salon-tab">
-      <h3 class="titulo-3d-sec">CONFIGURACIÓN</h3>
-      <h4>Modo de color</h4>
-      <div class="modos">
-        <button class="modo-btn activo" data-modo="dark">Dark (morado/negro)</button>
-        <button class="modo-btn" data-modo="light">Light (blanco/amarillo)</button>
-        <button class="modo-btn" data-modo="dazer">Dazerhistorys (b/n)</button>
-      </div>
-      <h4>Sonido</h4>
-      <label class="switch"><input type="checkbox" id="sonido-botones" checked><span>Sonido de botones</span></label>
-      <label class="switch"><input type="checkbox" id="sonido-fondo"><span>Sonido de fondo</span></label>
-    </div>
-
-    <!-- PERFIL CON SISTEMA DE XP -->
     <div id="tab-perfil" class="salon-tab">
       <h3 class="titulo-3d-sec">PERFIL</h3>
       <p><strong>Usuario:</strong> <span id="perfil-nombre">Invitado</span></p>
@@ -235,24 +139,51 @@ Explícame qué significa, en qué línea ocurre, dame una pista antes de la sol
       
       <div class="xp-container">
         <p><strong>Nivel:</strong> <span id="perfil-nivel">1</span></p>
-        <div class="xp-bar-bg">
-          <div id="xp-bar-fill" class="xp-bar-fill" style="width: 0%;"></div>
-        </div>
+        <div class="xp-bar-bg"><div id="xp-bar-fill" class="xp-bar-fill" style="width: 0%;"></div></div>
         <p style="font-size: 0.8rem; text-align: right;"><span id="perfil-xp">0</span> / 100 XP</p>
       </div>
 
-      <p><strong>Lenguaje actual:</strong> <span id="perfil-lang">—</span></p>
-      <button class="boton" onclick="cerrarSesion()">Cerrar sesión</button>
+      <h3 class="titulo-3d-sec" style="margin-top: 30px;">LOGROS</h3>
+      <div id="lista-logros" class="logros-grid"></div>
     </div>
   </div>
 </section>
 
+<!-- LECCIÓN -->
+<section id="pantalla-leccion" class="seccion" style="z-index: 500; position: relative;">
+  <div class="leccion-header">
+    <button class="boton-salir" onclick="salirLeccion()">✕</button>
+    <div class="barra-progreso-bg">
+      <div id="leccion-progreso" class="barra-progreso-fill" style="width: 0%;"></div>
+    </div>
+  </div>
+  
+  <div class="leccion-contenido">
+    <h2 id="leccion-pregunta" style="color: var(--text); font-size: 1.2rem; margin-bottom: 20px;">Cargando...</h2>
+    <div id="leccion-opciones" class="opciones-container"></div>
+  </div>
+
+  <!-- Feedback con BYTE -->
+  <div id="leccion-feedback" class="feedback-container" style="display: none;">
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+      <span style="font-size:1.5rem;">🤖</span>
+      <h3 id="feedback-titulo" style="margin:0;">BYTE dice:</h3>
+    </div>
+    <p id="feedback-texto">Explicación...</p>
+  </div>
+
+  <div class="leccion-footer">
+    <button id="btn-leccion-comprobar" class="boton" onclick="comprobarRespuesta()" disabled>Comprobar</button>
+    <button id="btn-leccion-siguiente" class="boton" onclick="siguientePregunta()" style="display: none;">Continuar</button>
+  </div>
+</section>
 </main>
 
 <footer>
-  <p>&lt;DARKCODE&gt; — sin registro, sin pagos, sin APIs externas.</p>
+  <p>&lt;DARKCODE&gt; [R3] — sin registro, sin pagos, sin APIs externas.</p>
 </footer>
 
+<script src="clases.js"></script>
 <script type="module" src="app.js"></script>
 </body>
 </html>
