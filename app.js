@@ -39,7 +39,6 @@ const TODOS_LOS_LOGROS = [
   { id: "hacker", titulo: "Hacker Ético", fase: 12, desc: "Fase 12: Completada" }
 ];
 
-// NOTIFICACIONES
 function mostrarToast(titulo, mensaje, tipo = "error") {
   const container = document.getElementById("notificaciones-container");
   const toast = document.createElement("div");
@@ -55,7 +54,6 @@ function lanzarError(codigo, mensaje) {
   reproducirSonido("error");
 }
 
-// LOGROS
 function desbloquearLogro(idLogro) {
   if (state.logros.includes(idLogro)) return;
   state.logros.push(idLogro);
@@ -106,7 +104,6 @@ function lanzarConfeti() {
   }
 }
 
-// FIRESTORE
 async function cargarDatosNube(uid) {
   try {
     const docSnap = await getDoc(doc(db, "usuarios", uid));
@@ -130,7 +127,6 @@ async function guardarDatosNube() {
   } catch (e) { lanzarError(101, "No se pudo guardar el progreso. Estás sin conexión."); }
 }
 
-// LOGIN
 document.getElementById("btn-google").addEventListener("click", async () => {
   try { await signInWithPopup(auth, provider); reproducirSonido("ok"); } 
   catch (error) { lanzarError(403, "Acceso denegado. No se pudo iniciar sesión."); }
@@ -148,7 +144,6 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// NAVEGACIÓN
 document.querySelectorAll("#menu button").forEach((b) => {
   b.addEventListener("click", () => {
     reproducirSonido("click");
@@ -157,10 +152,10 @@ document.querySelectorAll("#menu button").forEach((b) => {
     document.querySelectorAll(".seccion").forEach((s) => s.classList.remove("activa"));
     b.classList.add("activo");
     document.getElementById(destino).classList.add("activa");
+    document.getElementById("salon").style.display = "none";
   });
 });
 
-// SALÓN
 document.querySelectorAll(".lang-card").forEach((card) => {
   card.addEventListener("click", () => {
     reproducirSonido("ok");
@@ -174,7 +169,11 @@ function entrarSalon(lang) {
   document.getElementById("main-header").style.display = "none";
   document.getElementById("menu").style.display = "none";
   document.querySelectorAll(".seccion").forEach((s) => s.classList.remove("activa"));
-  document.getElementById("salon").classList.add("activa");
+  
+  const salon = document.getElementById("salon");
+  salon.classList.add("activa");
+  salon.style.display = "block"; 
+  
   desbloquearLogro("hola_clase");
   guardarDatosNube();
 }
@@ -184,6 +183,7 @@ function salirSalon() {
   document.getElementById("main-header").style.display = "block";
   document.getElementById("menu").style.display = "flex";
   document.querySelectorAll(".seccion").forEach((s) => s.classList.remove("activa"));
+  document.getElementById("salon").style.display = "none"; 
   document.getElementById("inicio").classList.add("activa");
   document.querySelectorAll("#menu button").forEach((x) => x.classList.remove("activo"));
   document.querySelector('#menu [data-seccion="inicio"]').classList.add("activo");
@@ -199,7 +199,6 @@ document.querySelectorAll(".salon-tabs button").forEach((b) => {
   });
 });
 
-// MAPA
 function dibujarMapaMisiones() {
   const container = document.getElementById("mapa-misiones-container");
   if (!container) return;
@@ -242,7 +241,6 @@ function dibujarMapaMisiones() {
   }
 }
 
-// MODOS
 document.querySelectorAll(".modo-btn").forEach((b) => {
   b.addEventListener("click", () => {
     reproducirSonido("click");
@@ -266,7 +264,6 @@ function aplicarModo(modo) {
 }
 aplicarModo(state.modo);
 
-// MÚSICA
 let musicaFondo = new Audio();
 musicaFondo.loop = true; musicaFondo.volume = 0.3; let musicaActiva = false;
 const selectMusica = document.getElementById("select-musica");
@@ -289,7 +286,6 @@ function toggleMusica() {
   musicaActiva = !musicaActiva;
 }
 
-// SONIDOS Y XP
 let audioCtx = null;
 function reproducirSonido(tipo) {
   if (!state.sonidoBotones) return;
@@ -315,7 +311,6 @@ function ganarXP(cantidad) {
   actualizarPerfil(); guardarDatosNube();
 }
 
-// LÓGICA DE TEORÍA Y QUIZ
 let leccionActual = [], indicePregunta = 0, opcionSeleccionada = null, aciertosLeccion = 0, faseActual = 1;
 
 function iniciarLeccion(faseId) {
@@ -327,11 +322,14 @@ function iniciarLeccion(faseId) {
   }
 
   document.getElementById("salon").style.display = "none";
+  document.getElementById("pantalla-leccion").style.display = "none"; 
+  
   document.getElementById("teoria-texto").innerHTML = window.teoria[llave];
   document.getElementById("teoria-titulo").textContent = `Fase ${faseId}: ${window.mapaMisiones[faseId].nombre}`;
+  
   document.getElementById("pantalla-teoria").classList.add("activa");
   document.getElementById("pantalla-teoria").style.display = "block";
-  document.getElementById("pantalla-leccion").style.display = "none";
+  
   reproducirSonido("click");
 }
 
@@ -344,7 +342,14 @@ function irAPractica() {
 function obtenerLlaveTeoria(faseId) {
   if (faseId === 1) return "html";
   if (faseId === 2) return "css";
-  if (faseId === 3) return "backend";
+  if (faseId === 3) {
+    if (state.lenguaje === "PHP") return "php";
+    if (state.lenguaje === "Ruby") return "ruby";
+    if (state.lenguaje === "JavaScript") return "js";
+    if (state.lenguaje === "C") return "c";
+    if (state.lenguaje === "C++") return "cpp";
+    return "backend";
+  }
   if (faseId === 4) return "cyber";
   if (faseId === 5) return "api";
   if (faseId === 6) return "sw";
@@ -460,14 +465,13 @@ function terminarLeccion() {
   dibujarMapaMisiones();
 }
 
-// EDITOR
 let editorSalon;
 window.addEventListener("load", () => {
   if (typeof ace === "undefined") return;
   editorSalon = ace.edit("editor-salon");
   editorSalon.setTheme("ace/theme/monokai");
   editorSalon.session.setMode("ace/mode/html");
-  editorSalon.setValue(`<div style="text-align:center;">\n  <h1 style="color:purple;">¡Hola <DARKCODE>!</h1>\n  <button onclick="alert('Funciona!')">Probar</button>\n</div>`);
+  editorSalon.setValue(`<div style="text-align:center;">\n  <h1 style="color:purple;">¡Hola &lt;DARKCODE&gt;!</h1>\n  <button onclick="alert('Funciona!')">Probar</button>\n</div>`);
   dibujarMapaMisiones();
   renderizarLogros();
 });
@@ -476,14 +480,10 @@ function ejecutarSalon() {
   const iframe = document.getElementById("preview-salon");
   if (!editorSalon || !iframe) return;
   const codigo = editorSalon.getValue();
-  const doc = iframe.contentWindow.document;
-  doc.open();
-  doc.write(`<!DOCTYPE html><html><head><style>body { font-family: sans-serif; padding: 10px; color: #333; background: #fff; margin: 0; }</style></head><body>${codigo}</body></html>`);
-  doc.close();
+  iframe.srcdoc = `<!DOCTYPE html><html><head><style>body { font-family: sans-serif; padding: 10px; color: #333; background: #fff; margin: 0; }</style></head><body>${codigo}</body></html>`;
   ganarXP(5);
 }
 
-// PERFIL
 function actualizarPerfil() {
   document.getElementById("perfil-nombre").textContent = state.user ? (state.user.displayName || "Usuario") : "Invitado";
   document.getElementById("perfil-email").textContent = state.user ? (state.user.email || "—") : "—";
