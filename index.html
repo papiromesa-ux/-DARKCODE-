@@ -27,7 +27,6 @@
       <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.3 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.3 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.5 2.4-7.2 2.4-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.6l6.2 5.2C41 35.6 44 30.2 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg>
       Entrar con Google
     </button>
-    <p class="login-nota">O entra como invitado explorando la app.</p>
   </div>
 </div>
 
@@ -58,7 +57,6 @@
   </div>
 </section>
 
-<!-- AJUSTES Y CRÉDITOS -->
 <section id="ajustes" class="seccion">
   <h2>Ajustes Generales</h2>
   
@@ -100,7 +98,6 @@
   </div>
 </section>
 
-<!-- SALÓN -->
 <section id="salon" class="seccion">
   <div class="salon-top">
     <button class="boton-salir" onclick="salirSalon()">Volver al Inicio</button>
@@ -116,10 +113,14 @@
 
   <div class="salon-contenido">
     <div id="tab-bienvenida" class="salon-tab activo">
-      <div class="minicode-container">
-        <div class="minicode-avatar">MC</div>
-        <div class="minicode-dialogo">
-          <p><strong>MiniCode:</strong> ¡Hola! Soy tu compañero de laboratorio. Estoy aquí para ayudarte a reparar este sistema. ¿Empezamos con los cimientos?</p>
+      <div class="minicode-chat">
+        <div class="minicode-face">
+          <span class="mc-eye-left">&lt;</span>
+          <span class="mc-eye-right">&gt;</span>
+          <span class="mc-smile"></span>
+        </div>
+        <div class="minicode-speech">
+          <p style="margin:0;"><strong style="color:var(--accent);">MiniCode:</strong> ¡Hola! Soy tu compañero de laboratorio. Estoy aquí para ayudarte a reparar este sistema. ¿Empezamos con los cimientos?</p>
         </div>
       </div>
     </div>
@@ -160,7 +161,21 @@
   </div>
 </section>
 
-<!-- LECCIÓN -->
+<!-- PANTALLA DE TEORÍA -->
+<section id="pantalla-teoria" class="seccion" style="z-index: 500; position: relative;">
+  <div class="leccion-header">
+    <button class="boton-salir" onclick="salirLeccion()">X</button>
+    <h2 id="teoria-titulo" style="color: var(--accent); margin: 0; font-size: 1.2rem;">Clase</h2>
+  </div>
+  
+  <div class="leccion-contenido" id="teoria-texto"></div>
+
+  <div class="leccion-footer">
+    <button id="btn-ir-a-practica" class="boton" onclick="irAPractica()" style="width:100%; padding:16px; font-size:1.1rem;">Entendido, ir a la práctica</button>
+  </div>
+</section>
+
+<!-- PANTALLA DE PREGUNTAS -->
 <section id="pantalla-leccion" class="seccion" style="z-index: 500; position: relative;">
   <div class="leccion-header">
     <button class="boton-salir" onclick="salirLeccion()">X</button>
@@ -170,16 +185,32 @@
   </div>
   
   <div class="leccion-contenido">
-    <h2 id="leccion-pregunta" style="color: var(--text); font-size: 1.2rem; margin-bottom: 20px;">Cargando...</h2>
+    <div class="minicode-chat">
+      <div class="minicode-face">
+        <span class="mc-eye-left">&lt;</span>
+        <span class="mc-eye-right">&gt;</span>
+        <span class="mc-smile"></span>
+      </div>
+      <div class="minicode-speech">
+        <h2 id="leccion-pregunta" style="color: var(--text); font-size: 1.1rem; margin: 0;">Cargando...</h2>
+      </div>
+    </div>
+    
     <div id="leccion-opciones" class="opciones-container"></div>
   </div>
 
   <div id="leccion-feedback" class="feedback-container" style="display: none;">
-    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-      <div class="minicode-avatar" style="width:40px; height:40px; font-size:0.9rem;">MC</div>
-      <h3 id="feedback-titulo" style="margin:0;">MiniCode dice:</h3>
+    <div class="minicode-chat" style="margin-top: 10px;">
+      <div class="minicode-face">
+        <span class="mc-eye-left">&lt;</span>
+        <span class="mc-eye-right">&gt;</span>
+        <span class="mc-smile"></span>
+      </div>
+      <div class="minicode-speech" id="feedback-bubble">
+        <h3 id="feedback-titulo" style="margin:0 0 5px 0; color:var(--accent);">MiniCode dice:</h3>
+        <p id="feedback-texto" style="margin:0;">Explicación...</p>
+      </div>
     </div>
-    <p id="feedback-texto">Explicación...</p>
   </div>
 
   <div class="leccion-footer">
@@ -187,6 +218,7 @@
     <button id="btn-leccion-siguiente" class="boton" onclick="siguientePregunta()" style="display: none;">Continuar</button>
   </div>
 </section>
+
 </main>
 
 <footer>
