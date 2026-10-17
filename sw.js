@@ -1,4 +1,4 @@
-const CACHE = "darkcode-R3-final";
+const CACHE = "darkcode-R3-final-12fases";
 
 const LOCALES = [
   "./", "./index.html", "./styles.css", "./app.js", "./clases.js", "./manifest.json",
