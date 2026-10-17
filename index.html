@@ -8,6 +8,8 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <link rel="stylesheet" href="styles.css" />
   <title>&lt;DARKCODE&gt; [R3]</title>
@@ -30,6 +32,7 @@
   </div>
 </div>
 
+<!-- HEADER -->
 <header id="main-header">
   <h1 class="logo-3d">&lt;DARKCODE&gt;</h1>
   <p class="sub">Aprende a programar y depurar sin pagar nada</p>
@@ -41,9 +44,11 @@
 </nav>
 
 <main>
+
+<!-- INICIO -->
 <section id="inicio" class="seccion activa">
   <h2>Bienvenido a &lt;DARKCODE&gt;</h2>
-  <p>Este sitio es un lugar de <strong>autoaprendizaje</strong>. Elige tu lenguaje y empieza tu autoclase.</p>
+  <p>Este sitio es un lugar de <strong>autoaprendizaje</strong> para aprender a programar. Elige tu lenguaje y empieza tu autoclase.</p>
   <div class="lenguajes">
     <button class="lang-card" data-lang="PHP"><span class="lang-icon">PHP</span><small>Backend web</small></button>
     <button class="lang-card" data-lang="Ruby"><span class="lang-icon">Ruby</span><small>Lenguaje elegante</small></button>
@@ -53,16 +58,19 @@
   </div>
 </section>
 
+<!-- AJUSTES Y CRÉDITOS -->
 <section id="ajustes" class="seccion">
   <h2>Ajustes Generales</h2>
+  
   <h4>Modo de color</h4>
   <div class="modos">
     <button class="modo-btn activo" data-modo="dark">Dark (morado/negro)</button>
     <button class="modo-btn" data-modo="light">Light (blanco/amarillo)</button>
     <button class="modo-btn" data-modo="dazer">Dazerhistorys (b/n)</button>
   </div>
+
   <h4>Música de fondo</h4>
-  <div class="musica-config">
+  <div class="musica-config" style="margin-bottom: 20px;">
     <select id="select-musica" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px;">
       <option value="">Sin música (Silencio)</option>
       <option value="./musica1.mp3">Música 1</option>
@@ -73,22 +81,26 @@
     </select>
     <button class="boton" onclick="toggleMusica()" id="btn-toggle-musica" style="width:100%;">▶ Reproducir / Pausar</button>
   </div>
+
   <h4>Sonidos de la app</h4>
   <label class="switch"><input type="checkbox" id="sonido-botones" checked><span>Sonido de botones</span></label>
+
   <h4>Cuenta y Datos</h4>
   <button class="boton" onclick="cerrarSesion()" style="width:100%; margin-bottom:10px;">Cerrar sesión</button>
   <button class="boton" onclick="borrarMisDatos()" style="width:100%; background:#dc2626; box-shadow:0 0 12px #dc2626;">Borrar mis datos</button>
-  
-  <h4 style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 15px;">Créditos</h4>
-  <div class="card-creditos" style="font-size: 0.85rem; line-height: 1.8;">
+
+  <h4 style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 15px;">Información y Créditos</h4>
+  <div class="card-creditos" style="font-size: 0.85rem; line-height: 1.8; margin-top: 10px;">
     <p><strong>Desarrolladores:</strong> papiromesa</p>
     <p><strong>Fecha de comienzo:</strong> 10 de enero de 2024</p>
+    <p><strong>Modelo antiguo:</strong> R1</p>
     <p><strong>Release actual:</strong> 20 de octubre (R3)</p>
-    <p><strong>Próxima Release:</strong> 15 de Noviembre (R4)</p>
-    <p><strong>Lenguaje:</strong> [JS]-DK</p>
+    <p><strong>Nueva Release:</strong> 15 de Noviembre (R4)</p>
+    <p><strong>Lenguaje de la plataforma:</strong> [JS]-DK</p>
   </div>
 </section>
 
+<!-- SALÓN -->
 <section id="salon" class="seccion">
   <div class="salon-top">
     <button class="boton-salir" onclick="salirSalon()">← Volver al Inicio</button>
@@ -115,8 +127,6 @@
     <div id="tab-clases" class="salon-tab">
       <h3 class="titulo-3d-sec">MAPA DEL LABORATORIO</h3>
       <p style="font-size:0.85rem; color:var(--text-2); margin-bottom:15px;">Sigue la ruta para activar cada parte de tu aplicación.</p>
-      
-      <!-- Aquí JS inyectará el mapa -->
       <div id="mapa-misiones-container" class="mapa-ruta"></div>
     </div>
 
@@ -125,10 +135,11 @@
       <div class="editor-layout">
         <div id="editor-salon" class="editor-ace"></div>
         <div class="preview-container">
-          <iframe id="preview-salon" class="preview-iframe" sandbox="allow-scripts"></iframe>
+          <iframe id="preview-salon" class="preview-iframe" sandbox="allow-scripts" title="Vista previa"></iframe>
         </div>
       </div>
       <button class="boton" onclick="ejecutarSalon()">Ejecutar (+5 XP)</button>
+      <h3>Consola</h3>
       <pre id="consola-salon" class="consola"></pre>
     </div>
 
@@ -163,7 +174,6 @@
     <div id="leccion-opciones" class="opciones-container"></div>
   </div>
 
-  <!-- Feedback con BYTE -->
   <div id="leccion-feedback" class="feedback-container" style="display: none;">
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
       <span style="font-size:1.5rem;">🤖</span>
@@ -177,6 +187,7 @@
     <button id="btn-leccion-siguiente" class="boton" onclick="siguientePregunta()" style="display: none;">Continuar</button>
   </div>
 </section>
+
 </main>
 
 <footer>
