@@ -1,7 +1,6 @@
-// <DARKCODE> - Service Worker v8
-const CACHE = "darkcode-v8";
+// <DARKCODE> - Service Worker v9 (Ignora Firebase)
+const CACHE = "darkcode-v9";
 
-// Archivos locales que SÍ se cachean
 const LOCALES = [
   "./",
   "./index.html",
@@ -15,17 +14,12 @@ const LOCALES = [
   "./apple-touch-icon.png"
 ];
 
-// Dominios que NUNCA se cachean (Firebase, Google, CDN)
+// No cachear nada de Google o Firebase
 const NO_CACHEAR = [
-  "googleapis.com",
-  "gstatic.com",
-  "firebaseapp.com",
-  "firebaseio.com",
-  "google-analytics.com",
-  "googletagmanager.com"
+  "googleapis.com", "gstatic.com", "firebaseapp.com", 
+  "firebaseio.com", "google-analytics.com", "googletagmanager.com"
 ];
 
-// Instalar: activar de inmediato
 self.addEventListener("install", (e) => {
   self.skipWaiting();
   e.waitUntil(
@@ -33,7 +27,6 @@ self.addEventListener("install", (e) => {
   );
 });
 
-// Activar: borrar cachés viejos
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches.keys()
@@ -44,19 +37,13 @@ self.addEventListener("activate", (e) => {
   );
 });
 
-// Fetch
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
-
   const url = req.url;
 
-  // 1. Nunca cachear Firebase, Google, etc.
-  if (NO_CACHEAR.some((d) => url.includes(d))) {
-    return; // deja que el navegador lo maneje directo
-  }
+  if (NO_CACHEAR.some((d) => url.includes(d))) return;
 
-  // 2. Navegación: red primero, caché si falla
   if (req.mode === "navigate") {
     e.respondWith(
       fetch(req)
@@ -70,7 +57,6 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // 3. Otros archivos locales: caché primero, red si no está
   e.respondWith(
     caches.match(req).then((res) => res || fetch(req).then((r) => {
       const copia = r.clone();
