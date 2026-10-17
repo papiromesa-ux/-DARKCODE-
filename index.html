@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#1a0b2e" />
-  <meta name="color-scheme" content="dark" />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -43,7 +42,7 @@
 <main>
 <section id="inicio" class="seccion activa">
   <h2>Bienvenido a &lt;DARKCODE&gt;</h2>
-  <p>Este sitio es un lugar de <strong>autoaprendizaje</strong> para aprender a programar. Elige tu lenguaje y empieza tu autoclase.</p>
+  <p>Este sitio es un lugar de <strong>autoaprendizaje</strong>. Elige tu lenguaje y empieza tu autoclase.</p>
   
   <div class="lenguajes">
     <button class="lang-card" data-lang="PHP"><span class="lang-icon">PHP</span><small>Backend web</small></button>
@@ -59,18 +58,16 @@
 
 <section id="ajustes" class="seccion">
   <h2>Ajustes Generales</h2>
-  
   <h4>Modo de color</h4>
   <div class="modos">
-    <button class="modo-btn activo" data-modo="dark">Dark (morado/negro)</button>
-    <button class="modo-btn" data-modo="light">Light (blanco/amarillo)</button>
-    <button class="modo-btn" data-modo="dazer">Dazerhistorys (b/n)</button>
+    <button class="modo-btn activo" data-modo="dark">Dark</button>
+    <button class="modo-btn" data-modo="light">Light</button>
+    <button class="modo-btn" data-modo="dazer">Dazerhistorys</button>
   </div>
-
   <h4>Música de fondo</h4>
   <div class="musica-config" style="margin-bottom: 20px;">
     <select id="select-musica" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px;">
-      <option value="">Sin música (Silencio)</option>
+      <option value="">Sin música</option>
       <option value="./musica1.mp3">Música 1</option>
       <option value="./musica2.mp3">Música 2</option>
       <option value="./musica3.mp3">Música 3</option>
@@ -79,13 +76,11 @@
     </select>
     <button class="boton" onclick="toggleMusica()" id="btn-toggle-musica" style="width:100%;">Reproducir / Pausar</button>
   </div>
-
   <h4>Sonidos de la app</h4>
   <label class="switch"><input type="checkbox" id="sonido-botones" checked><span>Sonido de botones</span></label>
-
   <h4>Cuenta y Datos</h4>
   <button class="boton" onclick="cerrarSesion()" style="width:100%; margin-bottom:10px;">Cerrar sesión</button>
-  <button class="boton" onclick="borrarMisDatos()" style="width:100%; background:#dc2626; box-shadow:0 0 12px #dc2626;">Borrar mis datos</button>
+  <button class="boton" onclick="borrarMisDatos()" style="width:100%; background:#dc2626;">Borrar mis datos</button>
 
   <h4 style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 15px;">Información y Créditos</h4>
   <div class="card-creditos" style="font-size: 0.85rem; line-height: 1.8; margin-top: 10px;">
@@ -120,7 +115,7 @@
           <span class="mc-smile"></span>
         </div>
         <div class="minicode-speech">
-          <p style="margin:0;"><strong style="color:var(--accent);">MiniCode:</strong> ¡Hola! Soy tu compañero de laboratorio. Estoy aquí para ayudarte a reparar este sistema. ¿Empezamos con los cimientos?</p>
+          <p style="margin:0;"><strong style="color:var(--accent);">MiniCode:</strong> ¡Hola! Soy tu compañero. ¿Empezamos con los cimientos?</p>
         </div>
       </div>
     </div>
@@ -161,21 +156,19 @@
   </div>
 </section>
 
-<!-- PANTALLA DE TEORÍA -->
+<!-- PANTALLA 1: TEORÍA (LECTURA) -->
 <section id="pantalla-teoria" class="seccion" style="z-index: 500; position: relative;">
   <div class="leccion-header">
     <button class="boton-salir" onclick="salirLeccion()">X</button>
     <h2 id="teoria-titulo" style="color: var(--accent); margin: 0; font-size: 1.2rem;">Clase</h2>
   </div>
-  
   <div class="leccion-contenido" id="teoria-texto"></div>
-
   <div class="leccion-footer">
     <button id="btn-ir-a-practica" class="boton" onclick="irAPractica()" style="width:100%; padding:16px; font-size:1.1rem;">Entendido, ir a la práctica</button>
   </div>
 </section>
 
-<!-- PANTALLA DE PREGUNTAS -->
+<!-- PANTALLA 2: PREGUNTAS (QUIZ) -->
 <section id="pantalla-leccion" class="seccion" style="z-index: 500; position: relative;">
   <div class="leccion-header">
     <button class="boton-salir" onclick="salirLeccion()">X</button>
@@ -195,7 +188,6 @@
         <h2 id="leccion-pregunta" style="color: var(--text); font-size: 1.1rem; margin: 0;">Cargando...</h2>
       </div>
     </div>
-    
     <div id="leccion-opciones" class="opciones-container"></div>
   </div>
 
