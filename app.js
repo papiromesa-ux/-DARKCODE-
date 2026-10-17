@@ -1,3 +1,4 @@
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
@@ -24,17 +25,17 @@ const state = {
 };
 
 const TODOS_LOS_LOGROS = [
-  { id: "hola_clase", titulo: "Hola Clase", fase: 0, icono: "👋", desc: "Entrar a una clase" },
-  { id: "esqueletico", titulo: "Esquelético", fase: 1, icono: "🦴", desc: "Fase 1: HTML" },
-  { id: "decorista", titulo: "Decorista", fase: 2, icono: "🎨", desc: "Fase 2: CSS" },
-  { id: "experto", titulo: "Experto", fase: 3, icono: "🧠", desc: "Fase 3: Lenguaje" },
-  { id: "sin_conexion", titulo: "Sin conexión", fase: 4, icono: "📴", desc: "Fase 4: Service Worker" },
-  { id: "manifestante", titulo: "Manifestante", fase: 5, icono: "📄", desc: "Fase 5: Manifest" },
-  { id: "conciencia", titulo: "Conciencia", fase: 6, icono: "🔌", desc: "Fase 6: API" },
-  { id: "caja_fuerte", titulo: "Caja Fuerte", fase: 7, icono: "🔒", desc: "Fase 7: Backend" },
-  { id: "policia", titulo: "Policía", fase: 8, icono: "👮", desc: "Fase 8: Ciberseguridad" },
-  { id: "compañero", titulo: "Compañero Electrónico", fase: 9, icono: "🤖", desc: "Fase 9: IA" },
-  { id: "instalable", titulo: "Instalable", fase: 10, icono: "📲", desc: "Fase 10: PWA" }
+  { id: "hola_clase", titulo: "Hola Clase", fase: 0, desc: "Entrar a una clase" },
+  { id: "esqueletico", titulo: "Esquelético", fase: 1, desc: "Fase 1: Completada" },
+  { id: "decorista", titulo: "Decorista", fase: 2, desc: "Fase 2: Completada" },
+  { id: "experto", titulo: "Experto", fase: 3, desc: "Fase 3: Completada" },
+  { id: "sin_conexion", titulo: "Sin conexión", fase: 4, desc: "Fase 4: Completada" },
+  { id: "manifestante", titulo: "Manifestante", fase: 5, desc: "Fase 5: Completada" },
+  { id: "conciencia", titulo: "Conciencia", fase: 6, desc: "Fase 6: Completada" },
+  { id: "caja_fuerte", titulo: "Caja Fuerte", fase: 7, desc: "Fase 7: Completada" },
+  { id: "policia", titulo: "Policía", fase: 8, desc: "Fase 8: Completada" },
+  { id: "compañero", titulo: "Compañero", fase: 9, desc: "Fase 9: Completada" },
+  { id: "instalable", titulo: "Instalable", fase: 10, desc: "Fase 10: Completada" }
 ];
 
 // --- SISTEMA DE NOTIFICACIONES ---
@@ -42,8 +43,9 @@ function mostrarToast(titulo, mensaje, tipo = "error") {
   const container = document.getElementById("notificaciones-container");
   const toast = document.createElement("div");
   toast.className = `toast ${tipo}`;
-  let icono = tipo === "error" ? "🚫" : tipo === "exito" ? "✅" : "🏆";
-  toast.innerHTML = `<div style="font-size:1.5rem; margin-right:10px;">${icono}</div><div><div style="font-weight:bold; font-size:0.9rem;">${titulo}</div><div style="font-size:0.8rem; opacity:0.9;">${mensaje}</div></div>`;
+  let etiqueta = tipo === "error" ? "[!]" : tipo === "exito" ? "[OK]" : "[LOG]";
+  
+  toast.innerHTML = `<div style="font-weight:bold; margin-right:10px; font-family:monospace;">${etiqueta}</div><div><div style="font-weight:bold; font-size:0.9rem;">${titulo}</div><div style="font-size:0.8rem; opacity:0.9;">${mensaje}</div></div>`;
   container.appendChild(toast);
   setTimeout(() => { toast.style.opacity = "0"; setTimeout(() => toast.remove(), 300); }, 4000);
 }
@@ -72,11 +74,23 @@ function renderizarLogros() {
   const container = document.getElementById("lista-logros");
   if (!container) return;
   container.innerHTML = "";
+  
+  if (!state.user) { state.logros = []; }
+
   TODOS_LOS_LOGROS.forEach(logro => {
     const obtenido = state.logros.includes(logro.id);
     const div = document.createElement("div");
     div.className = `logro-card ${obtenido ? 'obtenido' : 'bloqueado'}`;
-    div.innerHTML = `<div class="logro-icono">${logro.icono}</div><div class="logro-info"><strong>${logro.titulo}</strong><small>${logro.desc}</small></div>`;
+    // Usamos la primera letra del título como "icono"
+    const inicial = logro.titulo.charAt(0).toUpperCase();
+    
+    div.innerHTML = `
+      <div class="logro-icono" style="opacity: ${obtenido ? 1 : 0.5};">${inicial}</div>
+      <div class="logro-info">
+        <strong style="color: ${obtenido ? 'var(--text)' : 'var(--text-2)'};">${logro.titulo}</strong>
+        <small>${logro.desc}</small>
+      </div>
+    `;
     container.appendChild(div);
   });
 }
@@ -132,6 +146,7 @@ onAuthStateChanged(auth, (user) => {
   } else {
     state.user = null;
     document.getElementById("login-screen").classList.remove("oculto");
+    renderizarLogros();
   }
 });
 
@@ -203,7 +218,7 @@ function dibujarMapaMisiones() {
   }
 
   for (let i = 1; i <= 10; i++) {
-    const mision = mapaMisiones[i];
+    const mision = window.mapaMisiones[i];
     const logroFase = TODOS_LOS_LOGROS.find(l => l.fase === i);
     const completada = state.logros.includes(logroFase.id);
     
@@ -214,8 +229,9 @@ function dibujarMapaMisiones() {
       div.innerHTML = `<div class="etiqueta-mision">Tu siguiente misión</div>`;
     }
 
+    // Usamos el número de fase en lugar del icono
     div.innerHTML += `
-      <div class="circulo-mision">${completada ? '✅' : mision.icono}</div>
+      <div class="circulo-mision">${completada ? 'OK' : i}</div>
       <div class="info-mision">
         <strong>Fase ${i}: ${mision.nombre}</strong>
         <small>${completada ? 'Repasar' : 'Pendiente'}</small>
@@ -317,14 +333,19 @@ let leccionActual = [], indicePregunta = 0, opcionSeleccionada = null, aciertosL
 
 function iniciarLeccion(faseId) {
   faseActual = faseId;
-  const llave = `fase${faseId}_` + ["html", "css", "lenguaje", "sw", "manifest", "api", "backend", "cyber", "ia", "deploy"][faseId - 1];
   
-  if (!baseDePreguntas[llave]) {
-    mostrarToast("Próximamente", "Esta fase estará disponible pronto.", "error");
+  let langMin = state.lenguaje.toLowerCase();
+  let sufijo = langMin;
+  if (langMin === "c++") sufijo = "cplusplus";
+
+  const llave = `fase${faseId}_${sufijo}`;
+  
+  if (!window.baseDePreguntas || !window.baseDePreguntas[llave]) {
+    mostrarToast("Próximamente", `Las clases de ${state.lenguaje} estarán disponibles pronto.`, "error");
     return;
   }
 
-  leccionActual = [...baseDePreguntas[llave]];
+  leccionActual = [...window.baseDePreguntas[llave]];
   indicePregunta = 0; aciertosLeccion = 0;
   document.getElementById("salon").style.display = "none";
   document.getElementById("pantalla-leccion").classList.add("activa");
@@ -382,14 +403,14 @@ function comprobarRespuesta() {
     botones[opcionSeleccionada].classList.add("correcta");
     reproducirSonido("ok");
     feedbackDiv.className = "feedback-container correcto";
-    tituloFb.textContent = "¡Correcto! BYTE dice:";
+    tituloFb.textContent = "¡Correcto! MiniCode dice:";
     aciertosLeccion++; ganarXP(10);
   } else {
     botones[opcionSeleccionada].classList.add("incorrecta");
     botones[p.correcta].classList.add("correcta");
     reproducirSonido("error");
     feedbackDiv.className = "feedback-container incorrecto";
-    tituloFb.textContent = "Todavía no. BYTE dice:";
+    tituloFb.textContent = "Todavía no. MiniCode dice:";
   }
   document.getElementById("feedback-texto").textContent = p.explicacion;
   feedbackDiv.style.display = "block";
@@ -402,12 +423,15 @@ function terminarLeccion() {
   document.getElementById("pantalla-leccion").style.display = "none";
   document.getElementById("salon").style.display = "block";
   
-  if (aciertosLeccion >= 2) {
+  const porcentajeAcierto = (aciertosLeccion / leccionActual.length) * 100;
+
+  if (porcentajeAcierto >= 70) {
     const logro = TODOS_LOS_LOGROS.find(l => l.fase === faseActual);
     if (logro) desbloquearLogro(logro.id);
     ganarXP(20);
+    mostrarToast("¡Fase Superada!", `Has acertado ${aciertosLeccion} de ${leccionActual.length}.`, "exito");
   } else {
-    mostrarToast("Sigue intentando", "Necesitas más aciertos para reparar esta estación.", "error");
+    mostrarToast("Casi lo logras", `Acertaste ${aciertosLeccion} de ${leccionActual.length}. Repasa e intenta de nuevo.`, "error");
   }
   dibujarMapaMisiones();
 }
