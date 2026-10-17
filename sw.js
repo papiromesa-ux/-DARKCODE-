@@ -1,7 +1,7 @@
-const CACHE = "darkcode-R3-fix-v3"; // Importante subir la versión para que limpie el caché viejo
+const CACHE = "darkcode-R3-;
 
 const LOCALES = [
-  "./", "./index.html", "./styles.css", "./app.js", "./clases.js", "./manifest.json",
+  "./", "./index.html", "./styles.css", "./app.js", "./clases.js", "./quiz.js", "./manifest.json",
   "./icon-192.png", "./icon-512.png", "./icon-192-maskable.png", "./icon-512-maskable.png", "./apple-touch-icon.png"
 ];
 
