@@ -2,9 +2,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebas
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
-// ==========================================
-// 1. CONFIGURACIÓN DE FIREBASE
-// ==========================================
 const firebaseConfig = {
   apiKey: "AIzaSyCJLUtvrmiCuGqFu4_gj5P9vH4kUhDa2yA",
   authDomain: "darkcode-3691d.firebaseapp.com",
@@ -20,9 +17,6 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// ==========================================
-// 2. ESTADO GLOBAL Y LOGROS
-// ==========================================
 const state = {
   user: null, lenguaje: "JavaScript", modo: localStorage.getItem("dc_modo") || "dark",
   sonidoBotones: localStorage.getItem("dc_sb") !== "0", xp: 0, nivel: 1,
@@ -45,9 +39,6 @@ const TODOS_LOS_LOGROS = [
   { id: "hacker", titulo: "Hacker Ético", fase: 12, desc: "Fase 12: Completada" }
 ];
 
-// ==========================================
-// 3. SISTEMA DE NOTIFICACIONES Y SONIDOS
-// ==========================================
 function mostrarToast(titulo, mensaje, tipo = "error") {
   const container = document.getElementById("notificaciones-container");
   const toast = document.createElement("div");
@@ -95,9 +86,6 @@ function reproducirSonido(tipo) {
   } catch (e) {}
 }
 
-// ==========================================
-// 4. LOGROS Y CONFETI
-// ==========================================
 function lanzarConfeti() {
   const container = document.getElementById("confetti-container");
   for (let i = 0; i < 50; i++) {
@@ -149,9 +137,6 @@ function renderizarLogros() {
   });
 }
 
-// ==========================================
-// 5. FIRESTORE (NUBE)
-// ==========================================
 async function cargarDatosNube(uid) {
   try {
     const docSnap = await getDoc(doc(db, "usuarios", uid));
@@ -179,9 +164,6 @@ async function guardarDatosNube() {
   } catch (e) { lanzarError(101, "No se pudo guardar el progreso. Estás sin conexión."); }
 }
 
-// ==========================================
-// 6. LOGIN Y SESIÓN
-// ==========================================
 document.getElementById("btn-google").addEventListener("click", async () => {
   try { 
     await signInWithPopup(auth, provider); 
@@ -203,9 +185,6 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// ==========================================
-// 7. NAVEGACIÓN Y MODALES
-// ==========================================
 document.querySelectorAll("#menu button").forEach((b) => {
   b.addEventListener("click", () => {
     reproducirSonido("click");
@@ -233,11 +212,9 @@ function cerrarModalConfirmacion() {
 function confirmarSalida() {
   cerrarModalConfirmacion();
   
-  // Detener música de suspenso
   audioQuiz.pause();
   audioQuiz.currentTime = 0;
   
-  // Reanudar la música que estaba sonando antes
   if (musicaActiva && musicaFondo) {
     musicaFondo.play().catch(()=>{});
   } else {
@@ -249,9 +226,6 @@ function confirmarSalida() {
   document.getElementById("salon").style.display = "block";
 }
 
-// ==========================================
-// 8. ENTRAR AL SALÓN
-// ==========================================
 document.querySelectorAll(".lang-card").forEach((card) => {
   card.addEventListener("click", () => {
     reproducirSonido("ok");
@@ -276,7 +250,6 @@ function entrarSalon(lang) {
   cargarListaAula(); 
   dibujarMapaMisiones(); 
   
-  // Iniciar música relajada del Aula (solo si no hay una canción del selector sonando)
   if (!musicaActiva) {
     audioAula.play().catch(() => console.log("Esperando clic para audio de Aula"));
   }
@@ -303,14 +276,10 @@ document.querySelectorAll(".salon-tabs button").forEach((b) => {
   });
 });
 
-// ==========================================
-// 9. MAPA DE MISIONES Y AULA
-// ==========================================
 function dibujarMapaMisiones() {
   const container = document.getElementById("mapa-misiones-container");
   if (!container) return;
   
-  // SALVAVIDAS
   if (!window.mapaMisiones) {
     window.mapaMisiones = {};
     for(let i=1; i<=12; i++) window.mapaMisiones[i] = { nombre: `Misión ${i}` };
@@ -397,9 +366,6 @@ function abrirTeoriaSola(faseId) {
   reproducirSonido("click");
 }
 
-// ==========================================
-// 10. AJUSTES (Modos y Música) Y SISTEMA DE AUDIO
-// ==========================================
 document.querySelectorAll(".modo-btn").forEach((b) => {
   b.addEventListener("click", () => {
     reproducirSonido("click");
@@ -423,13 +389,10 @@ function aplicarModo(modo) {
 }
 aplicarModo(state.modo);
 
-// --- SISTEMA DE AUDIO ---
-// Audio por defecto del aula
 const audioAula = new Audio("./SnapTube Audio/audio1.mp3");
 audioAula.loop = true;
 audioAula.volume = 0.2;
 
-// Audios de suspenso para el Quiz
 const cancionesSuspenso = [
   "./SnapTube Audio/audioquiz1.mp3",
   "./SnapTube Audio/audioquiz2.mp3" 
@@ -438,7 +401,6 @@ const audioQuiz = new Audio();
 audioQuiz.loop = true;
 audioQuiz.volume = 0.3;
 
-// Audio del selector
 let musicaFondo = new Audio();
 musicaFondo.loop = true; 
 musicaFondo.volume = 0.3; 
@@ -455,7 +417,7 @@ if (selectMusica) {
       musicaFondo.src = nuevaCancion;
       musicaFondo.play().catch(() => lanzarError(400, "Haz clic para permitir el audio."));
       musicaActiva = true;
-      audioAula.pause(); // Pausar el audio por defecto
+      audioAula.pause(); 
     }
   });
 }
@@ -474,9 +436,6 @@ function toggleMusica() {
   musicaActiva = !musicaActiva;
 }
 
-// ==========================================
-// 11. SISTEMA DE XP Y NIVELES
-// ==========================================
 function ganarXP(cantidad) {
   state.xp += cantidad;
   if (state.xp >= 100) {
@@ -490,9 +449,6 @@ function ganarXP(cantidad) {
   guardarDatosNube();
 }
 
-// ==========================================
-// 12. LÓGICA DE CLASES Y QUIZ
-// ==========================================
 let leccionActual = [], indicePregunta = 0, opcionSeleccionada = null, aciertosLeccion = 0, faseActual = 1;
 
 function iniciarLeccion(faseId) {
@@ -510,7 +466,7 @@ function iniciarLeccion(faseId) {
   document.getElementById("teoria-texto").innerHTML = window.teoria[llave];
   document.getElementById("teoria-titulo").textContent = `Fase ${faseId}: ${window.mapaMisiones[faseId].nombre}`;
   
-  document.getElementById("btn-ir-a-practica").style.display = "block"; // Restaurar botón
+  document.getElementById("btn-ir-a-practica").style.display = "block"; 
   
   document.getElementById("pantalla-teoria").classList.add("activa");
   reproducirSonido("click");
@@ -559,12 +515,10 @@ function cargarQuiz(faseId) {
   indicePregunta = 0; 
   aciertosLeccion = 0;
   
-  // Reproducir música de suspenso aleatoria
   const trackRandom = cancionesSuspenso[Math.floor(Math.random() * cancionesSuspenso.length)];
   audioQuiz.src = trackRandom;
   audioQuiz.play().catch(e => console.log("Esperando clic para audio de Quiz"));
   
-  // Pausar músicas relajadas
   audioAula.pause();
   if (musicaActiva && musicaFondo) musicaFondo.pause(); 
   
@@ -643,7 +597,6 @@ function siguientePregunta() {
 }
 
 function terminarLeccion() {
-  // Detener música de suspenso y reanudar relajada
   audioQuiz.pause();
   audioQuiz.currentTime = 0;
   if (musicaActiva && musicaFondo) {
@@ -668,9 +621,6 @@ function terminarLeccion() {
   dibujarMapaMisiones();
 }
 
-// ==========================================
-// 13. EDITOR DE CÓDIGO
-// ==========================================
 let editorSalon;
 window.addEventListener("load", () => {
   if (typeof ace === "undefined") return;
@@ -694,9 +644,6 @@ function ejecutarSalon() {
   ganarXP(5);
 }
 
-// ==========================================
-// 14. PERFIL Y CUENTA
-// ==========================================
 function actualizarPerfil() {
   document.getElementById("perfil-nombre").textContent = state.user ? (state.user.displayName || "Usuario") : "Invitado";
   document.getElementById("perfil-email").textContent = state.user ? (state.user.email || "—") : "—";
@@ -719,9 +666,6 @@ async function borrarMisDatos() {
   }
 }
 
-// ==========================================
-// 15. EXPONER FUNCIONES AL HTML
-// ==========================================
 window.salirSalon = salirSalon;
 window.ejecutarSalon = ejecutarSalon;
 window.cerrarSesion = cerrarSesion;
