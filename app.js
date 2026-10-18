@@ -213,7 +213,6 @@ document.querySelectorAll("#menu button").forEach((b) => {
     document.querySelectorAll("#menu button").forEach((x) => x.classList.remove("activo"));
     document.querySelectorAll(".seccion").forEach((s) => s.classList.remove("activa"));
     
-    // Ocultar pantallas fantasma
     document.getElementById("salon").style.display = "none";
     document.getElementById("pantalla-teoria").classList.remove("activa");
     document.getElementById("pantalla-leccion").classList.remove("activa");
@@ -233,6 +232,18 @@ function cerrarModalConfirmacion() {
 
 function confirmarSalida() {
   cerrarModalConfirmacion();
+  
+  // Detener música de suspenso
+  audioQuiz.pause();
+  audioQuiz.currentTime = 0;
+  
+  // Reanudar la música que estaba sonando antes
+  if (musicaActiva && musicaFondo) {
+    musicaFondo.play().catch(()=>{});
+  } else {
+    audioAula.play().catch(()=>{});
+  }
+
   document.getElementById("pantalla-teoria").classList.remove("activa");
   document.getElementById("pantalla-leccion").classList.remove("activa");
   document.getElementById("salon").style.display = "block";
@@ -261,6 +272,14 @@ function entrarSalon(lang) {
   
   desbloquearLogro("hola_clase");
   guardarDatosNube();
+  
+  cargarListaAula(); 
+  dibujarMapaMisiones(); 
+  
+  // Iniciar música relajada del Aula (solo si no hay una canción del selector sonando)
+  if (!musicaActiva) {
+    audioAula.play().catch(() => console.log("Esperando clic para audio de Aula"));
+  }
 }
 
 function salirSalon() {
@@ -285,11 +304,18 @@ document.querySelectorAll(".salon-tabs button").forEach((b) => {
 });
 
 // ==========================================
-// 9. MAPA DE MISIONES
+// 9. MAPA DE MISIONES Y AULA
 // ==========================================
 function dibujarMapaMisiones() {
   const container = document.getElementById("mapa-misiones-container");
   if (!container) return;
+  
+  // SALVAVIDAS
+  if (!window.mapaMisiones) {
+    window.mapaMisiones = {};
+    for(let i=1; i<=12; i++) window.mapaMisiones[i] = { nombre: `Misión ${i}` };
+  }
+
   container.innerHTML = "";
 
   let siguienteFase = 1;
@@ -331,8 +357,48 @@ function dibujarMapaMisiones() {
   }
 }
 
+function cargarListaAula() {
+  const container = document.getElementById("aula-contenedor-lista");
+  if (!container) return;
+  container.innerHTML = "";
+  
+  if (!window.teoria) {
+    container.innerHTML = "<p style='color:red;'>Error: No se encontró clases.js</p>";
+    return;
+  }
+
+  for (let i = 1; i <= 12; i++) {
+    const llave = obtenerLlaveTeoria(i);
+    if (window.teoria[llave]) {
+      const btn = document.createElement("button");
+      btn.className = "boton";
+      btn.style.marginBottom = "10px";
+      btn.style.width = "100%";
+      btn.style.textAlign = "left";
+      btn.innerHTML = `Clase ${i}: ${window.mapaMisiones[i] ? window.mapaMisiones[i].nombre : 'Teoría'}`;
+      btn.onclick = () => abrirTeoriaSola(i);
+      container.appendChild(btn);
+    }
+  }
+}
+
+function abrirTeoriaSola(faseId) {
+  faseActual = faseId;
+  const llave = obtenerLlaveTeoria(faseId);
+  if (!window.teoria || !window.teoria[llave]) return;
+
+  document.getElementById("teoria-texto").innerHTML = window.teoria[llave];
+  document.getElementById("teoria-titulo").textContent = `Clase ${faseId}`;
+  
+  document.getElementById("btn-ir-a-practica").style.display = "none";
+  
+  document.getElementById("salon").style.display = "none";
+  document.getElementById("pantalla-teoria").classList.add("activa");
+  reproducirSonido("click");
+}
+
 // ==========================================
-// 10. AJUSTES (Modos y Música)
+// 10. AJUSTES (Modos y Música) Y SISTEMA DE AUDIO
 // ==========================================
 document.querySelectorAll(".modo-btn").forEach((b) => {
   b.addEventListener("click", () => {
@@ -357,6 +423,22 @@ function aplicarModo(modo) {
 }
 aplicarModo(state.modo);
 
+// --- SISTEMA DE AUDIO ---
+// Audio por defecto del aula
+const audioAula = new Audio("./SnapTube Audio/audio1.mp3");
+audioAula.loop = true;
+audioAula.volume = 0.2;
+
+// Audios de suspenso para el Quiz
+const cancionesSuspenso = [
+  "./SnapTube Audio/audioquiz1.mp3",
+  "./SnapTube Audio/audioquiz2.mp3" 
+];
+const audioQuiz = new Audio();
+audioQuiz.loop = true;
+audioQuiz.volume = 0.3;
+
+// Audio del selector
 let musicaFondo = new Audio();
 musicaFondo.loop = true; 
 musicaFondo.volume = 0.3; 
@@ -373,6 +455,7 @@ if (selectMusica) {
       musicaFondo.src = nuevaCancion;
       musicaFondo.play().catch(() => lanzarError(400, "Haz clic para permitir el audio."));
       musicaActiva = true;
+      audioAula.pause(); // Pausar el audio por defecto
     }
   });
 }
@@ -382,8 +465,12 @@ function toggleMusica() {
     mostrarToast("Música", "Primero selecciona una canción.", "error"); 
     return; 
   }
-  if (musicaActiva) { musicaFondo.pause(); } 
-  else { musicaFondo.play().catch(() => lanzarError(400, "Toca de nuevo para dar permiso al audio.")); }
+  if (musicaActiva) { 
+    musicaFondo.pause(); 
+  } else { 
+    musicaFondo.play().catch(() => lanzarError(400, "Toca de nuevo para dar permiso al audio."));
+    audioAula.pause(); 
+  }
   musicaActiva = !musicaActiva;
 }
 
@@ -422,6 +509,8 @@ function iniciarLeccion(faseId) {
   
   document.getElementById("teoria-texto").innerHTML = window.teoria[llave];
   document.getElementById("teoria-titulo").textContent = `Fase ${faseId}: ${window.mapaMisiones[faseId].nombre}`;
+  
+  document.getElementById("btn-ir-a-practica").style.display = "block"; // Restaurar botón
   
   document.getElementById("pantalla-teoria").classList.add("activa");
   reproducirSonido("click");
@@ -466,10 +555,18 @@ function cargarQuiz(faseId) {
     return;
   }
 
-  // Mezclar preguntas y tomar 5
   leccionActual = [...window.baseDePreguntas[llave]].sort(() => Math.random() - 0.5).slice(0, 5);
   indicePregunta = 0; 
   aciertosLeccion = 0;
+  
+  // Reproducir música de suspenso aleatoria
+  const trackRandom = cancionesSuspenso[Math.floor(Math.random() * cancionesSuspenso.length)];
+  audioQuiz.src = trackRandom;
+  audioQuiz.play().catch(e => console.log("Esperando clic para audio de Quiz"));
+  
+  // Pausar músicas relajadas
+  audioAula.pause();
+  if (musicaActiva && musicaFondo) musicaFondo.pause(); 
   
   document.getElementById("pantalla-leccion").classList.add("activa");
   cargarPregunta();
@@ -546,6 +643,15 @@ function siguientePregunta() {
 }
 
 function terminarLeccion() {
+  // Detener música de suspenso y reanudar relajada
+  audioQuiz.pause();
+  audioQuiz.currentTime = 0;
+  if (musicaActiva && musicaFondo) {
+    musicaFondo.play().catch(()=>{});
+  } else {
+    audioAula.play().catch(()=>{});
+  }
+
   document.getElementById("pantalla-leccion").classList.remove("activa");
   document.getElementById("salon").style.display = "block";
   
