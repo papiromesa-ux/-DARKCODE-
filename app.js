@@ -239,12 +239,24 @@ function cargarListaAula() {
   if (moduloLenguaje === "c++") moduloLenguaje = "cpp";
   const modulosPermitidos = [...modulosComunes, moduloLenguaje];
 
+  // Diccionario para nombres bonitos
+  const nombresBonitos = {
+    html: "Los Cimientos (HTML)", css: "El Diseño (CSS)", cyber: "El Escudo (Cyber)", 
+    api: "Comunicaciones (API)", sw: "Modo Offline (SW)", manifest: "Identidad (Manifest)", 
+    debug: "Laboratorio de Errores", repo: "El Lanzamiento (Git)", files: "El Mapa (Archivos)", 
+    ia: "Compañero IA", hacking: "Hacker Ético", json: "Datos (JSON)", consola: "La Consola",
+    js: "El Núcleo (JavaScript)", php: "El Gigante (PHP)", ruby: "El Elegante (Ruby)", 
+    python: "La Serpiente (Python)", c: "La Base (C)", cpp: "Alto Rendimiento (C++)"
+  };
+
   Object.keys(window.teoria).forEach((modulo) => {
     if (modulosPermitidos.includes(modulo)) {
       const btn = document.createElement("button"); btn.className = "boton";
       btn.style.marginBottom = "10px"; btn.style.width = "100%"; btn.style.textAlign = "left";
-      const nombreModulo = modulo.charAt(0).toUpperCase() + modulo.slice(1);
-      btn.innerHTML = `Módulo: ${nombreModulo}`; btn.onclick = () => abrirTeoriaSola(modulo); container.appendChild(btn);
+      const nombre = nombresBonitos[modulo] || modulo.toUpperCase();
+      btn.innerHTML = `<strong>${nombre}</strong>`; 
+      btn.onclick = () => abrirTeoriaSola(modulo); 
+      container.appendChild(btn);
     }
   });
 }
