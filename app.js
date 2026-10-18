@@ -449,13 +449,19 @@ window.comprobarRespuesta = function() {
   if (esCorrecta) {
     reproducirSonido("ok"); feedbackDiv.className = "feedback-container correcto";
     tituloFb.textContent = "¡Correcto! MiniCode dice:"; aciertosLeccion++; ganarXP(10);
+    
+    // CARA FELIZ (Ojos de chequecito y sonrisa)
     cara.className = "minicode-face feliz"; 
-    document.getElementById("mc-eye-left").textContent = "^"; document.getElementById("mc-eye-right").textContent = "^";
+    document.getElementById("mc-eye-left").textContent = "^"; 
+    document.getElementById("mc-eye-right").textContent = "^";
   } else {
     reproducirSonido("error"); feedbackDiv.className = "feedback-container incorrecto";
     tituloFb.textContent = "Todavía no. MiniCode dice:";
+    
+    // CARA TRISTE (Ojos de X y boca triste)
     cara.className = "minicode-face triste"; 
-    document.getElementById("mc-eye-left").textContent = "x"; document.getElementById("mc-eye-right").textContent = "x";
+    document.getElementById("mc-eye-left").textContent = "x"; 
+    document.getElementById("mc-eye-right").textContent = "x";
   }
   
   document.getElementById("feedback-texto").textContent = p.explicacion || p.atajo || "Revisa la teoría.";
