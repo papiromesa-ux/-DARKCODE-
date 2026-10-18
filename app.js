@@ -273,20 +273,20 @@ function cargarListaPractica() {
 
       const div = document.createElement("div");
       
-      let icono = "▶";
-      let textoEstado = `Fase ${faseActualNum + 1}`;
-      
-      if (!tieneFase && faseActualNum > 0) {
-        div.className = "nodo-mision completado";
-        icono = "✔";
-        textoEstado = "¡Completado!";
-      } else if (!tieneFase) {
-        div.className = "nodo-mision bloqueado";
-        icono = "A";
-        textoEstado = "Próximamente...";
-      } else {
-        div.className = "nodo-mision actual";
-      }
+      let icono = ">";
+let textoEstado = `Fase ${faseActualNum + 1}`;
+
+if (!tieneFase && faseActualNum > 0) {
+  div.className = "nodo-mision completado";
+  icono = "OK";
+  textoEstado = "Completado";
+} else if (!tieneFase) {
+  div.className = "nodo-mision bloqueado";
+  icono = "X";
+  textoEstado = "Proximamente...";
+} else {
+  div.className = "nodo-mision actual";
+}
 
       div.innerHTML = `<div class="circulo-mision">${icono}</div><div class="info-mision"><strong>Práctica: ${modulo.toUpperCase()}</strong><small>${textoEstado}</small></div>`;
       
