@@ -1,8 +1,10 @@
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
+// ==========================================
+// 1. CONFIGURACIÓN DE FIREBASE
+// ==========================================
 const firebaseConfig = {
   apiKey: "AIzaSyCJLUtvrmiCuGqFu4_gj5P9vH4kUhDa2yA",
   authDomain: "darkcode-3691d.firebaseapp.com",
@@ -18,6 +20,9 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
+// ==========================================
+// 2. ESTADO GLOBAL Y LOGROS
+// ==========================================
 const state = {
   user: null, lenguaje: "JavaScript", modo: localStorage.getItem("dc_modo") || "dark",
   sonidoBotones: localStorage.getItem("dc_sb") !== "0", xp: 0, nivel: 1,
@@ -45,7 +50,7 @@ const TODOS_LOS_LOGROS = [
 ];
 
 // ==========================================
-// SISTEMA DE NOTIFICACIONES Y SONIDOS
+// 3. SISTEMA DE NOTIFICACIONES Y SONIDOS
 // ==========================================
 function mostrarToast(titulo, mensaje, tipo = "error") {
   const container = document.getElementById("notificaciones-container");
@@ -73,7 +78,7 @@ function reproducirSonido(tipo) {
 }
 
 // ==========================================
-// LOGROS
+// 4. LOGROS Y CONFETI
 // ==========================================
 function lanzarConfeti() {
   const container = document.getElementById("confetti-container");
@@ -109,7 +114,7 @@ function renderizarLogros() {
 }
 
 // ==========================================
-// FIRESTORE
+// 5. FIRESTORE (NUBE)
 // ==========================================
 async function cargarDatosNube(uid) {
   try {
@@ -138,7 +143,7 @@ async function guardarDatosNube() {
 }
 
 // ==========================================
-// LOGIN
+// 6. LOGIN Y SESIÓN
 // ==========================================
 document.getElementById("btn-google")?.addEventListener("click", async () => {
   try { await signInWithPopup(auth, provider); reproducirSonido("ok"); } catch (error) { lanzarError(403, "Acceso denegado."); }
@@ -159,7 +164,7 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // ==========================================
-// NAVEGACIÓN
+// 7. NAVEGACIÓN PRINCIPAL
 // ==========================================
 window.cambiarSeccion = function(seccion) {
   reproducirSonido("click");
@@ -182,7 +187,7 @@ window.enviarRecomendacion = function() {
 }
 
 // ==========================================
-// SALÓN (OCULTAR MENÚ Y CARGAR MÓDULOS)
+// 8. ENTRAR AL SALÓN
 // ==========================================
 document.querySelectorAll(".lang-card").forEach((card) => {
   card.addEventListener("click", () => { reproducirSonido("ok"); entrarSalon(card.dataset.lang); });
@@ -229,12 +234,46 @@ document.querySelectorAll(".salon-tabs button").forEach((b) => {
   });
 });
 
+// ==========================================
+// 9. CARGAR AULA Y PRÁCTICA
+// ==========================================
+function cargarListaAula() {
+  const container = document.getElementById("aula-contenedor-lista"); if (!container) return; container.innerHTML = "";
+  if (!window.teoria) { container.innerHTML = `<p style="color:red;">Error: No se encontró clases.js</p>`; return; }
+  
+  const modulosComunes = ["html", "css", "cyber", "api", "sw", "manifest", "debug", "repo", "files", "ia", "hacking", "json", "consola"];
+  let moduloLenguaje = state.lenguaje.toLowerCase();
+  if (moduloLenguaje === "javascript") moduloLenguaje = "js";
+  if (moduloLenguaje === "c++") moduloLenguaje = "cpp";
+  const modulosPermitidos = [...modulosComunes, moduloLenguaje];
+
+  const nombresBonitos = {
+    html: "Los Cimientos (HTML)", css: "El Diseño (CSS)", cyber: "El Escudo (Cyber)", 
+    api: "Comunicaciones (API)", sw: "Modo Offline (SW)", manifest: "Identidad (Manifest)", 
+    debug: "Laboratorio de Errores", repo: "El Lanzamiento (Git)", files: "El Mapa (Archivos)", 
+    ia: "Compañero IA", hacking: "Hacker Ético", json: "Datos (JSON)", consola: "La Consola",
+    js: "El Núcleo (JavaScript)", php: "El Gigante (PHP)", ruby: "El Elegante (Ruby)", 
+    python: "La Serpiente (Python)", c: "La Base (C)", cpp: "Alto Rendimiento (C++)"
+  };
+
+  Object.keys(window.teoria).forEach((modulo) => {
+    if (modulosPermitidos.includes(modulo)) {
+      const btn = document.createElement("button"); btn.className = "boton";
+      btn.style.marginBottom = "10px"; btn.style.width = "100%"; btn.style.textAlign = "left";
+      const nombre = nombresBonitos[modulo] || modulo.toUpperCase();
+      btn.innerHTML = `<strong>${nombre}</strong>`; 
+      btn.onclick = () => abrirTeoriaSola(modulo); 
+      container.appendChild(btn);
+    }
+  });
+}
+
+// SOLO UNA FUNCIÓN CARGAR LISTA PRACTICA (SIN DUPLICADOS)
 function cargarListaPractica() {
   const container = document.getElementById("mapa-misiones-container"); 
   if (!container) return; 
   container.innerHTML = "";
   
-  // SALVAVIDAS: Si quiz.js falla, mostramos un mensaje de error en pantalla
   if (!window.baseDePreguntas) {
     container.innerHTML = `<div style="color: #dc2626; padding: 20px; background: var(--card); border-radius: 10px; border: 1px solid #dc2626; text-align: center; margin-top:20px;">
       <p><strong>Error crítico:</strong> No se pudo cargar el archivo <b>quiz.js</b>.</p>
@@ -250,26 +289,6 @@ function cargarListaPractica() {
   const modulosPermitidos = [...modulosComunes, moduloLenguaje];
 
   Object.keys(window.baseDePreguntas).forEach((modulo) => {
-    if (modulosPermitidos.includes(modulo)) {
-      const div = document.createElement("div");
-      div.className = "nodo-mision actual";
-      div.innerHTML = `<div class="circulo-mision">▶</div><div class="info-mision"><strong>Práctica: ${modulo.toUpperCase()}</strong><small>Demuestra lo que sabes</small></div>`;
-      div.onclick = () => { moduloActual = modulo; cargarQuiz(modulo, "fase1", "quiz1"); };
-      container.appendChild(div);
-    }
-  });
-}
-
-function cargarListaPractica() {
-  const container = document.getElementById("mapa-misiones-container"); if (!container) return; container.innerHTML = "";
-  
-  const modulosComunes = ["html", "css", "cyber", "api", "sw", "manifest", "debug", "repo", "files", "ia", "hacking", "json", "consola"];
-  let moduloLenguaje = state.lenguaje.toLowerCase();
-  if (moduloLenguaje === "javascript") moduloLenguaje = "js";
-  if (moduloLenguaje === "c++") moduloLenguaje = "cpp";
-  const modulosPermitidos = [...modulosComunes, moduloLenguaje];
-
-  Object.keys(window.baseDePreguntas || {}).forEach((modulo) => {
     if (modulosPermitidos.includes(modulo)) {
       const div = document.createElement("div");
       div.className = "nodo-mision actual";
@@ -296,7 +315,7 @@ window.irAPractica = function() {
 }
 
 // ==========================================
-// MÚSICA (CAMBIAR CANCIÓN Y LOOP)
+// 10. REPRODUCTOR DE MÚSICA Y AJUSTES
 // ==========================================
 document.querySelectorAll(".modo-btn").forEach((b) => {
   b.addEventListener("click", () => {
@@ -358,7 +377,7 @@ window.toggleMusica = function() {
 }
 
 // ==========================================
-// XP Y EDITOR
+// 11. SISTEMA DE XP Y PERFIL
 // ==========================================
 function ganarXP(cantidad) {
   state.xp += cantidad;
@@ -378,6 +397,9 @@ function actualizarPerfil() {
 
 window.cerrarSesion = function() { signOut(auth).then(() => location.reload()); }
 
+// ==========================================
+// 12. EDITOR DE CÓDIGO
+// ==========================================
 let editorSalon;
 window.addEventListener("load", () => {
   if (typeof ace === "undefined") return;
@@ -394,7 +416,7 @@ window.ejecutarSalon = function() {
 }
 
 // ==========================================
-// LÓGICA DE LECCIONES (QUIZZES)
+// 13. LÓGICA DE QUIZZES (MINICODE CARAS)
 // ==========================================
 let leccionActual = [], indicePregunta = 0, opcionSeleccionada = null, aciertosLeccion = 0, moduloActual = "";
 let editorReto = null;
@@ -461,7 +483,7 @@ window.comprobarRespuesta = function() {
     reproducirSonido("ok"); feedbackDiv.className = "feedback-container correcto";
     tituloFb.textContent = "¡Correcto! MiniCode dice:"; aciertosLeccion++; ganarXP(10);
     
-    // CARA FELIZ (Ojos de chequecito y sonrisa)
+    // CARA FELIZ
     cara.className = "minicode-face feliz"; 
     document.getElementById("mc-eye-left").textContent = "^"; 
     document.getElementById("mc-eye-right").textContent = "^";
@@ -469,7 +491,7 @@ window.comprobarRespuesta = function() {
     reproducirSonido("error"); feedbackDiv.className = "feedback-container incorrecto";
     tituloFb.textContent = "Todavía no. MiniCode dice:";
     
-    // CARA TRISTE (Ojos de X y boca triste)
+    // CARA TRISTE
     cara.className = "minicode-face triste"; 
     document.getElementById("mc-eye-left").textContent = "x"; 
     document.getElementById("mc-eye-right").textContent = "x";
@@ -496,6 +518,9 @@ function terminarLeccion() {
   }
 }
 
+// ==========================================
+// 14. MODALES Y SISTEMA ANTI-TRAMPA
+// ==========================================
 window.abrirModalSalir = function() { document.getElementById("modal-confirmacion").style.display = "flex"; }
 window.cerrarModalConfirmacion = function() { document.getElementById("modal-confirmacion").style.display = "none"; }
 window.confirmarSalida = function() {
@@ -507,9 +532,6 @@ window.confirmarSalida = function() {
   document.getElementById("salon").style.display = "block";
 }
 
-// ==========================================
-// 15. SISTEMA ANTI-TRAMPA (REDIRECCIÓN TOTAL)
-// ==========================================
 let enExamen = false;
 
 const observerExamen = new MutationObserver(() => {
