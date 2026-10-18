@@ -4563,7 +4563,7 @@ No inventes variables que no existan en el proyecto.</code></pre>
   <h3>Repaso final</h3>
   <p>El hacking ético de plataformas web es una rama de la ciberseguridad que busca encontrar vulnerabilidades en aplicaciones, APIs, sesiones, permisos, bases de datos y configuraciones. Una evaluación completa revisa la superficie de ataque, la autenticación, la autorización, la validación, la lógica de negocio, los archivos, las dependencias, el Service Worker, el manifest y el repositorio.</p>
   <p>Para practicar de forma segura puedes utilizar laboratorios como OWASP WebGoat, OWASP Juice Shop y PortSwigger Web Security Academy. No se debe intentar acceder a plataformas ajenas, robar cuentas, modificar datos o interrumpir servicios. El objetivo profesional es detectar problemas, documentarlos, corregirlos y volver a comprobar que la aplicación sea segura.</p>
-`,
+`,}; 
 
 // ==========================================
 // MAPA DE MISIONES (NO TOCAR)
