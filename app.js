@@ -151,7 +151,10 @@ async function cargarDatosNube(uid) {
       actualizarPerfil(); 
       dibujarMapaMisiones();
     }
-  } catch (e) { lanzarError(500, "Fallo al conectar con el servidor."); }
+  } catch (e) { 
+    // Ignorar error silencioso de conexión si no hay datos
+    console.log("Firebase sin conexión o error de red"); 
+  }
 }
 
 async function guardarDatosNube() {
@@ -212,12 +215,11 @@ function cerrarModalConfirmacion() {
 function confirmarSalida() {
   cerrarModalConfirmacion();
   
-  audioQuiz.pause();
-  audioQuiz.currentTime = 0;
+  if(typeof audioQuiz !== 'undefined') { audioQuiz.pause(); audioQuiz.currentTime = 0; }
   
   if (musicaActiva && musicaFondo) {
     musicaFondo.play().catch(()=>{});
-  } else {
+  } else if(typeof audioAula !== 'undefined') {
     audioAula.play().catch(()=>{});
   }
 
@@ -250,7 +252,7 @@ function entrarSalon(lang) {
   cargarListaAula(); 
   dibujarMapaMisiones(); 
   
-  if (!musicaActiva) {
+  if (!musicaActiva && typeof audioAula !== 'undefined') {
     audioAula.play().catch(() => console.log("Esperando clic para audio de Aula"));
   }
 }
@@ -276,13 +278,21 @@ document.querySelectorAll(".salon-tabs button").forEach((b) => {
   });
 });
 
+// ==========================================
+// ARREGLO: DIBUJAR MAPA (Blindado)
+// ==========================================
 function dibujarMapaMisiones() {
   const container = document.getElementById("mapa-misiones-container");
   if (!container) return;
   
+  // 1. Verificar si las misiones cargaron
   if (!window.mapaMisiones) {
-    window.mapaMisiones = {};
-    for(let i=1; i<=12; i++) window.mapaMisiones[i] = { nombre: `Misión ${i}` };
+    container.innerHTML = `
+      <div style="background:rgba(220,38,38,0.2); border:1px solid #dc2626; padding:20px; border-radius:12px; text-align:center;">
+        <p style="color:#fca5a5; font-weight:bold; margin-bottom:5px;">Error al cargar las misiones</p>
+        <p style="color:#fca5a5; font-size:0.85rem;">Revisa que tu archivo <b>clases.js</b> esté subido correctamente y termine con <b>};</b></p>
+      </div>`;
+    return;
   }
 
   container.innerHTML = "";
@@ -304,7 +314,7 @@ function dibujarMapaMisiones() {
     div.className = `nodo-mision ${completada ? 'completada' : ''} ${i === siguienteFase ? 'actual' : ''}`;
     
     if (i === siguienteFase && !completada) {
-      div.innerHTML = `<div class="etiqueta-mision">Tu siguiente misión</div>`;
+      div.innerHTML = `<div class="etiqueta-mision">Tu siguiente reto</div>`;
     }
 
     div.innerHTML += `
@@ -320,21 +330,30 @@ function dibujarMapaMisiones() {
       div.onclick = () => iniciarLeccion(i);
     } else {
       div.style.opacity = "0.5";
-      div.onclick = () => mostrarToast("Bloqueada", "Completa la misión anterior primero.", "error");
+      div.onclick = () => mostrarToast("Bloqueada", "Completa la fase anterior primero.", "error");
     }
     container.appendChild(div);
   }
 }
 
+// ==========================================
+// ARREGLO: CARGAR AULA (Blindado)
+// ==========================================
 function cargarListaAula() {
   const container = document.getElementById("aula-contenedor-lista");
   if (!container) return;
-  container.innerHTML = "";
   
+  // 1. Verificar si la teoría cargó
   if (!window.teoria) {
-    container.innerHTML = "<p style='color:red;'>Error: No se encontró clases.js</p>";
+    container.innerHTML = `
+      <div style="background:rgba(220,38,38,0.2); border:1px solid #dc2626; padding:20px; border-radius:12px; text-align:center;">
+        <p style="color:#fca5a5; font-weight:bold; margin-bottom:5px;">Error al cargar la teoría</p>
+        <p style="color:#fca5a5; font-size:0.85rem;">Revisa que tu archivo <b>clases.js</b> esté subido correctamente.</p>
+      </div>`;
     return;
   }
+
+  container.innerHTML = "";
 
   for (let i = 1; i <= 12; i++) {
     const llave = obtenerLlaveTeoria(i);
@@ -506,7 +525,7 @@ function cargarQuiz(faseId) {
   const llave = obtenerLlaveTeoria(faseId);
   
   if (!window.baseDePreguntas || !window.baseDePreguntas[llave] || window.baseDePreguntas[llave].length === 0) {
-    mostrarToast("Sin preguntas", `Aún no hay preguntas para esta fase.`, "error");
+    mostrarToast("Sin preguntas", `Aún no hay preguntas para esta fase. Revisa quiz.js`, "error");
     confirmarSalida(); 
     return;
   }
