@@ -1,4 +1,4 @@
-const CACHE = "darkcode-R10"; 
+const CACHE = "darkcode-R4"; 
 const LOCALES = [
   "./", 
   "./index.html", 
