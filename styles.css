@@ -101,9 +101,12 @@ body.dazer .lang-card:hover { box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2); }
 
 .logo-front, .logo-back {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  left: 0;
+  width: 100% !important;  /* El !important evita que se hagan gigantes */
+  height: 100% !important; /* El !important evita que se hagan gigantes */
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   object-fit: contain;
 }
 
