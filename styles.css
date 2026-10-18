@@ -266,3 +266,33 @@ body.dazer .boton { background: #fff; color: #000; box-shadow: none; }
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   border-left: 4px solid var(--accent);
 }
+
+/* Arreglo para que la carita de MiniCode se vea bien (Boca feliz y triste) */
+.minicode-face .mc-smile {
+  width: 16px; height: 8px;
+  border-bottom: 2px solid var(--accent);
+  border-radius: 0 0 10px 10px;
+  position: absolute; bottom: 10px;
+}
+
+.minicode-face.feliz .mc-smile {
+  border-color: #4ade80 !important;
+  border-radius: 10px 10px 0 0 !important;
+  border-bottom: none !important;
+  border-top: 2px solid #4ade80 !important;
+  transform: translateY(3px);
+}
+
+.minicode-face.triste .mc-smile {
+  border-color: #dc2626 !important;
+  border-radius: 0 0 10px 10px !important;
+  border-top: none !important;
+  border-bottom: 2px solid #dc2626 !important;
+  transform: translateY(-3px);
+}
+
+.mc-eye-left, .mc-eye-right { 
+  position: absolute; top: 12px; color: var(--accent); font-family: monospace; font-size: 1.3rem; font-weight: bold; 
+}
+.minicode-face.feliz .mc-eye-left, .minicode-face.feliz .mc-eye-right { color: #4ade80 !important; }
+.minicode-face.triste .mc-eye-left, .minicode-face.triste .mc-eye-right { color: #dc2626 !important; }
