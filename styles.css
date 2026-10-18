@@ -48,18 +48,9 @@ p { margin-bottom: 10px; }
 .lang-card small { color: var(--text-2); font-size: 0.8rem; text-align: center; }
 .badge-recomendado { position: absolute; top: -10px; right: -5px; background: #fbbf24; color: #000; font-size: 0.65rem; font-weight: bold; padding: 3px 10px; border-radius: 999px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10; }
 
-.lang-icon { font-size: 1.8rem; font-weight: 900; line-height: 1; display: flex; justify-content: center; align-items: center; height: 40px; }
-.lang-php { font-family: monospace; color: #8892BF; font-style: italic; font-size: 1.6rem; text-shadow: 0 0 5px rgba(136,146,191,0.3); }
-.lang-ruby { font-family: sans-serif; color: #CC342D; font-size: 1.6rem; text-shadow: 0 0 5px rgba(204,52,45,0.3); }
-.lang-js { font-family: sans-serif; background: #F7DF1E; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 1.3rem; }
-.lang-c { font-family: monospace; color: #659AD2; font-size: 1.8rem; text-shadow: 0 0 5px rgba(101,154,210,0.3); }
-.lang-cpp { font-family: monospace; color: #659AD2; font-size: 1.6rem; text-shadow: 0 0 5px rgba(101,154,210,0.3); }
-.lang-py { font-family: sans-serif; color: #FFD43B; font-size: 1.6rem; text-shadow: 0 0 5px rgba(255,212,59,0.3); }
-body.light .lang-php { color: #4F5B93; text-shadow: none; }
-body.light .lang-ruby { color: #9B111E; text-shadow: none; }
-body.light .lang-c, body.light .lang-cpp { color: #00599C; text-shadow: none; }
-body.light .lang-py { color: #3776AB; text-shadow: none; }
-body.dazer .lang-icon { color: #fff !important; background: transparent !important; text-shadow: none !important; }
+/* NUEVO: Estilos para los logos de imágenes */
+.lang-img { width: 55px; height: 55px; object-fit: contain; margin-bottom: 5px; }
+body.dazer .lang-img { filter: grayscale(100%) contrast(200%); }
 
 .salon-top { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 12px; }
 .boton-salir { background: transparent; color: var(--text-2); border: none; font-size: 0.9rem; cursor: pointer; margin-bottom: 10px; display: block; text-align: left; transition: color 0.2s; }
