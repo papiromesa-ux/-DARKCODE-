@@ -1,4 +1,4 @@
-const CACHE = "darkcode-R1"; // <-- CAMBIADO A R12
+const CACHE = "darkcode-R1"; //esto Solo se cambiará si es un gran cambio para cambiarle a r2
 
 const LOCALES = [
   "./", 
