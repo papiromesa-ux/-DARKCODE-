@@ -7,7 +7,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
   <link rel="stylesheet" href="styles.css" />
   <title>&lt;DARKCODE&gt; [R3]</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/ace.js"></script>
@@ -17,7 +17,6 @@
 <div id="notificaciones-container"></div>
 <div id="confetti-container"></div>
 
-<!-- MODAL DE CONFIRMACIÓN -->
 <div id="modal-confirmacion" class="modal-overlay" style="display: none;">
   <div class="modal-box">
     <h3>¿Seguro que quieres salir?</h3>
@@ -29,7 +28,6 @@
   </div>
 </div>
 
-<!-- LOGIN -->
 <div id="login-screen" class="login-screen">
   <div class="login-box">
     <h1 class="logo-3d">&lt;DARKCODE&gt;</h1>
@@ -41,7 +39,6 @@
   </div>
 </div>
 
-<!-- HEADER -->
 <header id="main-header">
   <h1 class="logo-3d">&lt;DARKCODE&gt;</h1>
   <p class="sub">Aprende a usar diferentes lenguajes de programación</p>
@@ -54,7 +51,6 @@
 
 <main>
 
-<!-- ================= INICIO ================= -->
 <section id="inicio" class="seccion activa">
   <h2>Bienvenido a &lt;DARKCODE&gt;</h2>
   <p>Este sitio es un lugar de <strong>autoaprendizaje</strong>. Elige tu lenguaje y empieza tu autoclase.</p>
@@ -88,7 +84,6 @@
   </div>
 </section>
 
-<!-- ================= AJUSTES Y CRÉDITOS ================= -->
 <section id="ajustes" class="seccion">
   <h2>Ajustes Generales</h2>
   <h4>Modo de color</h4>
@@ -130,7 +125,6 @@
   </div>
 </section>
 
-<!-- ================= SALÓN ================= -->
 <section id="salon" class="seccion">
   <div class="salon-top">
     <button class="boton-salir" onclick="salirSalon()">Volver al Inicio</button>
@@ -159,14 +153,12 @@
       </div>
     </div>
 
-    <!-- NUEVA PESTAÑA AULA -->
     <div id="tab-aula" class="salon-tab">
       <h3 class="titulo-3d-sec">AULA</h3>
       <p style="font-size:0.85rem; color:var(--text-2); margin-bottom:15px;">Avanza para entender el lenguaje que prefieras.</p>
       <div id="aula-contenedor-lista"></div>
     </div>
 
-    <!-- NUEVA PESTAÑA MISIONES -->
     <div id="tab-misiones" class="salon-tab">
       <h3 class="titulo-3d-sec">MAPA DE MISIONES</h3>
       <p style="font-size:0.85rem; color:var(--text-2); margin-bottom:15px;">Demuestra lo que sabes en los Quizzes.</p>
@@ -203,7 +195,6 @@
   </div>
 </section>
 
-<!-- ================= PANTALLA 1: TEORÍA (LECTURA) ================= -->
 <section id="pantalla-teoria" class="seccion-pantalla">
   <div class="leccion-header">
     <button class="boton-salir" onclick="abrirModalSalir()">SALIR</button>
@@ -215,7 +206,6 @@
   </div>
 </section>
 
-<!-- ================= PANTALLA 2: PREGUNTAS (QUIZ) ================= -->
 <section id="pantalla-leccion" class="seccion-pantalla">
   <div class="leccion-header">
     <button class="boton-salir" onclick="abrirModalSalir()">SALIR</button>
