@@ -111,7 +111,11 @@ body.dazer .lang-card:hover { box-shadow: 0 15px 30px rgba(255, 255, 255, 0.3); 
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   object-fit: contain;
-  mix-blend-mode: multiply; /* <-- ESTO QUITA EL FONDO BLANCO O CUADRITOS */
+  mix-blend-mode: multiply; /* Magia para quitar el fondo blanco */
+}
+
+body.dazer .logo-front, body.dazer .logo-back {
+  mix-blend-mode: normal; /* En modo Dazer lo dejamos normal */
 }
 
 body.dazer .logo-front, body.dazer .logo-back {
