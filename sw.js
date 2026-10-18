@@ -1,4 +1,4 @@
-const CACHE = "darkcode-R3"; // Tu nombre exacto solicitado
+const CACHE = "darkcode-R3";
 
 const LOCALES = [
   "./", 
@@ -8,14 +8,14 @@ const LOCALES = [
   "./clases.js", 
   "./quiz.js", 
   "./manifest.json",
+  "./icon-48.png",
+  "./icon-72.png",
+  "./icon-96.png",
+  "./icon-114.png",
   "./icon-192.png", 
-  "./icon-512.png", 
-  "./icon-192-maskable.png", 
-  "./icon-512-maskable.png", 
-  "./apple-touch-icon.png"
+  "./icon-512.png"
 ];
 
-// Archivos de Google/Firebase que NUNCA deben guardarse en caché
 const NO_CACHEAR = [
   "googleapis.com", 
   "gstatic.com", 
@@ -46,10 +46,8 @@ self.addEventListener("fetch", (e) => {
   if (req.method !== "GET") return;
   const url = req.url;
 
-  // 1. Ignorar Firebase y Google (para que el login y XP no fallen)
   if (NO_CACHEAR.some((d) => url.includes(d))) return;
 
-  // 2. Si el usuario navega a la app: Red primero, Caché si falla
   if (req.mode === "navigate") {
     e.respondWith(
       fetch(req).then((res) => {
@@ -61,7 +59,6 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // 3. Para el resto de archivos: Caché primero, Red si no está
   e.respondWith(
     caches.match(req).then((res) => {
       return res || fetch(req).then((r) => {
