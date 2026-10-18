@@ -47,7 +47,6 @@
   <p class="sub">Aprende a usar diferentes lenguajes de programación</p>
 </header>
 
-<!-- MENÚ PRINCIPAL (3 BOTONES) -->
 <nav id="menu" class="menu-principal">
   <button data-seccion="inicio" class="activo" onclick="cambiarSeccion('inicio')">Escuela</button>
   <button data-seccion="perfil" onclick="cambiarSeccion('perfil')">Perfil</button>
@@ -56,21 +55,19 @@
 
 <main>
 
-<!-- ================= ESCUELA ================= -->
 <section id="inicio" class="seccion activa">
   <div class="hero-section">
     <h2 class="animar-entrada">Bienvenido a la Escuela</h2>
     <p class="animar-entrada delay-1">Elige tu lenguaje, desbloquea misiones y conviértete en un maestro del código.</p>
   </div>
   
-  <!-- BLOQUE DE LENGUAJES (CORREGIDO SIN DUPLICADOS) -->
   <div class="lenguajes">
     <!-- PHP -->
     <button class="lang-card animar-entrada delay-2" data-lang="PHP">
       <div class="logo-flip-container">
         <div class="logo-flip-inner">
-          <img src="php1.png" alt="PHP" class="logo-front">
-          <img src="php2.png" alt="PHP Elefante" class="logo-back">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/2/27/PHP-logo.svg" alt="PHP" class="logo-front">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Php_elephant.png" alt="PHP Elefante" class="logo-back">
         </div>
       </div>
       <strong class="lang-name">PHP</strong>
@@ -81,8 +78,8 @@
     <button class="lang-card animar-entrada delay-2" data-lang="Ruby">
       <div class="logo-flip-container">
         <div class="logo-flip-inner">
-          <img src="ruby1.png" alt="Ruby" class="logo-front">
-          <img src="ruby2.png" alt="Ruby Alterno" class="logo-back">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/7/73/Ruby_logo.svg" alt="Ruby" class="logo-front">
+          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ruby/ruby-plain.svg" alt="Ruby Alterno" class="logo-back">
         </div>
       </div>
       <strong class="lang-name">Ruby</strong>
@@ -94,8 +91,8 @@
       <span class="badge-recomendado">Recomendado</span>
       <div class="logo-flip-container">
         <div class="logo-flip-inner">
-          <img src="js1.png" alt="JavaScript" class="logo-front">
-          <img src="js2.png" alt="JavaScript Alterno" class="logo-back">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png" alt="JavaScript" class="logo-front">
+          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-plain.svg" alt="JavaScript Alterno" class="logo-back">
         </div>
       </div>
       <strong class="lang-name">JavaScript</strong>
@@ -106,8 +103,8 @@
     <button class="lang-card animar-entrada delay-3" data-lang="C">
       <div class="logo-flip-container">
         <div class="logo-flip-inner">
-          <img src="c1.png" alt="C" class="logo-front">
-          <img src="c2.png" alt="C Alterno" class="logo-back">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/C_Logo.png" alt="C" class="logo-front">
+          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-plain.svg" alt="C Alterno" class="logo-back">
         </div>
       </div>
       <strong class="lang-name">C</strong>
@@ -119,8 +116,8 @@
       <span class="badge-recomendado">Recomendado</span>
       <div class="logo-flip-container">
         <div class="logo-flip-inner">
-          <img src="cpp1.png" alt="C++" class="logo-front">
-          <img src="cpp2.png" alt="C++ Alterno" class="logo-back">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/1/18/ISO_C%2B%2B_Logo.svg" alt="C++" class="logo-front">
+          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-plain.svg" alt="C++ Alterno" class="logo-back">
         </div>
       </div>
       <strong class="lang-name">C++</strong>
@@ -132,8 +129,8 @@
       <span class="badge-recomendado">Popular</span>
       <div class="logo-flip-container">
         <div class="logo-flip-inner">
-          <img src="python1.png" alt="Python" class="logo-front">
-          <img src="python2.png" alt="Python Alterno" class="logo-back">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" alt="Python" class="logo-front">
+          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-plain.svg" alt="Python Alterno" class="logo-back">
         </div>
       </div>
       <strong class="lang-name">Python</strong>
@@ -142,7 +139,6 @@
   </div>
 </section>
 
-<!-- ================= PERFIL ================= -->
 <section id="perfil" class="seccion">
   <h2>Mi Perfil</h2>
   <div class="perfil-card">
@@ -179,7 +175,6 @@
   <button class="boton" onclick="cerrarSesion()" style="width:100%; background:#dc2626; margin-top:20px;">Cerrar sesión</button>
 </section>
 
-<!-- ================= AJUSTES ================= -->
 <section id="ajustes" class="seccion">
   <h2>Ajustes Generales</h2>
   <h4>Modo de color</h4>
@@ -217,15 +212,8 @@
   <h4>Buzón de Recomendaciones</h4>
   <textarea id="txt-recomendacion" placeholder="Escribe aquí un error que encontraste o una idea para mejorar DARKCODE..." style="width:100%; height:100px; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px;"></textarea>
   <button class="boton" onclick="enviarRecomendacion()" style="width:100%;">Enviar Recomendación</button>
-
-  <h4 style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 15px;">Información y Créditos</h4>
-  <div class="card-creditos" style="font-size: 0.85rem; line-height: 1.8; margin-top: 10px;">
-    <p><strong>Desarrolladores:</strong> papiromesa</p>
-    <p><strong>Release actual:</strong> 20 de octubre (R3)</p>
-  </div>
 </section>
 
-<!-- ================= SALÓN ================= -->
 <section id="salon" class="seccion">
   <div class="salon-top">
     <button class="boton-salir" onclick="salirSalon()">Volver a la Escuela</button>
@@ -242,6 +230,7 @@
   <div class="salon-contenido">
     <div id="tab-bienvenida" class="salon-tab activo">
       <div class="minicode-chat">
+        <!-- CARITA ORIGINAL DE MINICODE -->
         <div class="minicode-face">
           <span class="mc-eye-left">&lt;</span>
           <span class="mc-eye-right">&gt;</span>
@@ -278,7 +267,6 @@
   </div>
 </section>
 
-<!-- TEORÍA -->
 <section id="pantalla-teoria" class="seccion-pantalla">
   <div class="leccion-header">
     <button class="boton-salir" onclick="abrirModalSalir()">SALIR</button>
@@ -295,7 +283,6 @@
   </div>
 </section>
 
-<!-- QUIZ -->
 <section id="pantalla-leccion" class="seccion-pantalla">
   <div class="leccion-header">
     <button class="boton-salir" onclick="abrirModalSalir()">SALIR</button>
@@ -306,6 +293,7 @@
   
   <div class="leccion-contenido">
     <div class="minicode-chat">
+      <!-- CARITA ORIGINAL EN EL QUIZ -->
       <div class="minicode-face" id="minicode-cara">
         <span class="mc-eye-left" id="mc-eye-left">&lt;</span>
         <span class="mc-eye-right" id="mc-eye-right">&gt;</span>
@@ -340,7 +328,6 @@
 
 </main>
 
-<!-- BOTÓN FLOTANTE DE MÚSICA -->
 <div id="floating-music-btn" onclick="toggleMusica()" style="position: fixed; bottom: 20px; right: 20px; background: var(--card); border: 2px solid var(--accent); border-radius: 50%; width: 55px; height: 55px; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 9999;">
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M9 18V5l12-2v13"></path>
