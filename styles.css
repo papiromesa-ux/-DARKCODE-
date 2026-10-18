@@ -81,6 +81,9 @@ body.dazer .lang-card:hover { box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2); }
   height: 65px;
   margin: 0 auto 5px auto;
   perspective: 1000px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
 }
 
 .logo-flip-inner {
@@ -90,7 +93,7 @@ body.dazer .lang-card:hover { box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2); }
   text-align: center;
   transition: transform 0.8s;
   transform-style: preserve-3d;
-  animation: girarLogo 6s infinite ease-in-out; /* Controla la velocidad del giro */
+  animation: girarLogo 6s infinite ease-in-out;
 }
 
 @keyframes girarLogo {
@@ -103,23 +106,20 @@ body.dazer .lang-card:hover { box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2); }
   position: absolute;
   top: 0;
   left: 0;
-  width: 100% !important;  /* El !important evita que se hagan gigantes */
-  height: 100% !important; /* El !important evita que se hagan gigantes */
+  width: 100% !important;
+  height: 100% !important;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   object-fit: contain;
+  padding: 5px;
 }
 
 .logo-back {
   transform: rotateY(180deg);
 }
 
-/* En modo Dazer, un fondito blanco para que resalten los logos al girar */
 body.dazer .logo-flip-container {
   background: #ffffff;
-  border-radius: 12px;
-  padding: 5px;
-  box-sizing: border-box;
 }
 
 /* Animaciones de entrada */
