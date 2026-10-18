@@ -1,5 +1,4 @@
-const CACHE = "darkcode-R3";
-
+const CACHE = "darkcode-R4"; 
 const LOCALES = [
   "./", 
   "./index.html", 
@@ -13,19 +12,12 @@ const LOCALES = [
   "./icon-96.png",
   "./icon-114.png",
   "./icon-192.png", 
-  "./icon-512.png",
-  "./icon-192-maskable.png",
-  "./icon-512-maskable.png"
+  "./icon-512.png"
 ];
 
 const NO_CACHEAR = [
-  "googleapis.com", 
-  "gstatic.com", 
-  "firebaseapp.com", 
-  "firebaseio.com", 
-  "google-analytics.com", 
-  "googletagmanager.com", 
-  "firestore.googleapis.com"
+  "googleapis.com", "gstatic.com", "firebaseapp.com", "firebaseio.com", 
+  "google-analytics.com", "googletagmanager.com", "firestore.googleapis.com"
 ];
 
 self.addEventListener("install", (e) => {
