@@ -166,18 +166,23 @@ body.dazer .salon-tabs button.activo { background: #fff; color: #000; }
 .info-mision small { color: var(--text-2); font-size: 0.8rem; }
 
 /* =========================================
-   MINICODE CON CARAS
+   MINICODE CON CARAS (CORREGIDO)
    ========================================= */
 .minicode-chat { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px; }
-.minicode-face { width: 55px; height: 55px; background: var(--card); border: 2px solid var(--accent); border-radius: 50%; position: relative; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); transition: all 0.3s; flex-shrink: 0; }
-.minicode-face.feliz { border-color: #4ade80; box-shadow: 0 0 15px rgba(74, 222, 128, 0.5); background: rgba(74, 222, 128, 0.1); }
-.minicode-face.triste { border-color: #dc2626; box-shadow: 0 0 15px rgba(220, 38, 38, 0.5); background: rgba(220, 38, 38, 0.1); }
+.minicode-face { 
+  width: 55px; height: 55px; background: var(--card); border: 2px solid var(--accent); border-radius: 50%; position: relative; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); transition: all 0.3s; flex-shrink: 0; 
+}
+/* Cara Feliz */
+.minicode-face.feliz { border-color: #4ade80 !important; box-shadow: 0 0 20px rgba(74, 222, 128, 0.6) !important; background: rgba(74, 222, 128, 0.1) !important; }
+.minicode-face.feliz .mc-eye-left, .minicode-face.feliz .mc-eye-right { color: #4ade80 !important; }
+.minicode-face.feliz .mc-smile { border-color: #4ade80 !important; border-radius: 10px 10px 0 0 !important; border-bottom: none !important; border-top: 2px solid #4ade80 !important; transform: translateY(3px); }
+/* Cara Triste */
+.minicode-face.triste { border-color: #dc2626 !important; box-shadow: 0 0 20px rgba(220, 38, 38, 0.6) !important; background: rgba(220, 38, 38, 0.1) !important; }
+.minicode-face.triste .mc-eye-left, .minicode-face.triste .mc-eye-right { color: #dc2626 !important; }
+.minicode-face.triste .mc-smile { border-color: #dc2626 !important; border-radius: 0 0 10px 10px !important; border-top: none !important; border-bottom: 2px solid #dc2626 !important; transform: translateY(-3px); }
+
 .mc-eye-left, .mc-eye-right { position: absolute; top: 12px; color: var(--accent); font-family: monospace; font-size: 1.3rem; font-weight: bold; }
-.minicode-face.feliz .mc-eye-left, .minicode-face.feliz .mc-eye-right { color: #4ade80; content: "^"; }
-.minicode-face.triste .mc-eye-left, .minicode-face.triste .mc-eye-right { color: #dc2626; content: "x"; }
 .mc-smile { width: 16px; height: 8px; border-bottom: 2px solid var(--accent); border-radius: 0 0 10px 10px; position: absolute; bottom: 10px; }
-.minicode-face.feliz .mc-smile { border-color: #4ade80; border-radius: 10px 10px 0 0; border-bottom: none; border-top: 2px solid #4ade80; transform: translateY(5px); }
-.minicode-face.triste .mc-smile { border-color: #dc2626; border-radius: 10px 10px 0 0; border-bottom: none; border-top: 2px solid #dc2626; transform: translateY(5px); }
 
 .minicode-speech { background: var(--card); border: 1px solid var(--border); padding: 16px; border-radius: 0 14px 14px 14px; position: relative; flex-grow: 1; }
 .minicode-speech::before { content: ''; position: absolute; left: -10px; top: 0; width: 0; height: 0; border-top: 0px solid transparent; border-bottom: 12px solid transparent; border-right: 10px solid var(--border); }
