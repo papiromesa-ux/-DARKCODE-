@@ -215,7 +215,7 @@ window.baseDePreguntas = {
         { instrucciones: "Parte 1: Escribe el archivo manifest.json (name, short_name, start_url, scope, display, orientation, background_color, theme_color). Parte 2: Escribe el código HTML para enlazar el manifiesto.", atajo: "El manifiesto se enlaza con <link rel='manifest'>. La propiedad scope define el conjunto de direcciones." }
       ]
     }
-  }
+  },
   depuracion: {
     fase1: {
       quiz1: [
