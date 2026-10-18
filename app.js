@@ -29,7 +29,6 @@ const state = {
   logros: JSON.parse(localStorage.getItem("dc_logros")) || []
 };
 
-// Lista de logros actualizada
 const TODOS_LOS_LOGROS = [
   { id: "hola_clase", titulo: "Hola Clase", desc: "Entrar a una clase" },
   { id: "esqueletico", titulo: "Esquelético", desc: "Fase 1 HTML: Completada" },
@@ -78,7 +77,6 @@ function lanzarError(codigo, mensaje) {
   reproducirSonido("error");
 }
 
-let audioCtx = null;
 function reproducirSonido(tipo) {
   if (!state.sonidoBotones) return;
   try {
@@ -166,7 +164,6 @@ async function cargarDatosNube(uid) {
       state.logros = data.logros || []; 
       state.modo = data.modo || "dark";
       
-      // Cargar perfil
       if(data.nombre) document.getElementById("input-nombre").value = data.nombre;
       if(data.institucion) document.getElementById("select-institucion").value = data.institucion;
       if(data.foto) document.getElementById("avatar-img").src = data.foto;
@@ -209,10 +206,8 @@ onAuthStateChanged(auth, (user) => {
     state.user = user;
     document.getElementById("login-screen").classList.add("oculto");
     
-    // Si no hay foto de perfil en Firebase, usar la de Google
-    if (!document.getElementById("avatar-img").src.includes("http")) {
-      document.getElementById("avatar-img").src = user.photoURL || "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png";
-    }
+    // Cargar foto de Google
+    document.getElementById("avatar-img").src = user.photoURL || "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png";
     if (!document.getElementById("input-nombre").value) {
       document.getElementById("input-nombre").value = user.displayName || "";
     }
@@ -233,7 +228,6 @@ window.cambiarSeccion = function(seccion) {
   document.querySelectorAll(".menu-principal button").forEach((x) => x.classList.remove("activo"));
   document.querySelectorAll(".seccion").forEach((s) => s.classList.remove("activa"));
   
-  // Ocultar pantallas de lección
   document.getElementById("salon").style.display = "none";
   document.getElementById("pantalla-teoria").classList.remove("activa");
   document.getElementById("pantalla-leccion").classList.remove("activa");
@@ -256,7 +250,6 @@ window.enviarRecomendacion = function() {
     mostrarToast("Aviso", "Escribe algo antes de enviar.", "error");
     return;
   }
-  // Aquí podrías guardarlo en Firebase, por ahora solo mostramos el mensaje
   mostrarToast("¡Gracias!", "Tu recomendación ha sido enviada.", "exito");
   document.getElementById("txt-recomendacion").value = "";
   reproducirSonido("ok");
@@ -324,16 +317,14 @@ function cargarListaAula() {
     return;
   }
 
-  // Aquí listamos los módulos que existen en clases.js
   const modulosDisponibles = Object.keys(window.teoria);
   
-  modulosDisponibles.forEach((modulo, index) => {
+  modulosDisponibles.forEach((modulo) => {
     const btn = document.createElement("button");
     btn.className = "boton";
     btn.style.marginBottom = "10px";
     btn.style.width = "100%";
     btn.style.textAlign = "left";
-    // Formatear el nombre (ej. "html" -> "Módulo HTML")
     const nombreModulo = modulo.charAt(0).toUpperCase() + modulo.slice(1);
     btn.innerHTML = `Módulo: ${nombreModulo}`;
     btn.onclick = () => abrirTeoriaSola(modulo);
@@ -347,9 +338,8 @@ function abrirTeoriaSola(moduloKey) {
   document.getElementById("teoria-texto").innerHTML = window.teoria[moduloKey];
   document.getElementById("teoria-titulo").textContent = `Módulo: ${moduloKey.toUpperCase()}`;
   
-  // Cargar audio si existe
   const audioPlayer = document.getElementById("audio-clase");
-  audioPlayer.src = `./audio${moduloKey}.mp3`; // Ej. audiohtml.mp3
+  audioPlayer.src = `./audio${moduloKey}.mp3`; 
   
   document.getElementById("btn-ir-a-practica").style.display = "block";
   document.getElementById("salon").style.display = "none";
@@ -360,9 +350,7 @@ function abrirTeoriaSola(moduloKey) {
 window.irAPractica = function() {
   reproducirSonido("click");
   document.getElementById("pantalla-teoria").classList.remove("activa");
-  // Iniciar el quiz del módulo actual (simplificado por ahora)
-  // En una versión más compleja, buscaríamos el índice del módulo actual.
-  iniciarLeccion(1); // Placeholder
+  iniciarLeccion(1); // Inicia el Quiz del módulo
 }
 
 // ==========================================
@@ -447,7 +435,6 @@ if (selectMusica) {
 
 window.toggleMusica = function() {
   if (!selectMusica || selectMusica.value === "") { 
-    // Si no hay seleccionada, intentar reproducir la del aula
     if(audioAula.paused) {
       audioAula.play().catch(()=>{});
       mostrarToast("Música", "Reproduciendo ambiente del aula", "exito");
@@ -457,13 +444,16 @@ window.toggleMusica = function() {
     }
     return; 
   }
-  if (musicaActiva) { 
-    musicaFondo.pause(); 
-  } else { 
-    musicaFondo.play().catch(() => console.log("Esperando clic"));
-    audioAula.pause(); 
-  }
-  musicaActiva = !musicaActiva;
+  
+  // Si hay una canción seleccionada, cambiamos a la siguiente
+  let nextIndex = (selectMusica.selectedIndex + 1) % selectMusica.options.length;
+  if(nextIndex === 0) nextIndex = 1;
+  selectMusica.selectedIndex = nextIndex;
+  musicaFondo.src = selectMusica.value; 
+  musicaFondo.play().catch(() => console.log("Esperando clic"));
+  musicaActiva = true; 
+  audioAula.pause();
+  mostrarToast("Música", `Cambiando a ${selectMusica.options[nextIndex].text}`, "exito");
 }
 
 // ==========================================
@@ -519,7 +509,7 @@ window.ejecutarSalon = function() {
 }
 
 // ==========================================
-// 13. LÓGICA DE LECCIONES (Adaptada a quiz.js)
+// 13. LÓGICA DE LECCIONES (QUIZZES)
 // ==========================================
 let leccionActual = [], indicePregunta = 0, opcionSeleccionada = null, aciertosLeccion = 0, moduloActual = "";
 let editorReto = null;
@@ -527,7 +517,6 @@ let editorReto = null;
 window.iniciarLeccion = function(moduloId) {
   moduloActual = moduloId;
   
-  // Aquí el app.js buscará en window.baseDePreguntas[moduloActual]
   if (!window.baseDePreguntas || !window.baseDePreguntas[moduloActual]) {
     mostrarToast("Próximamente", "Esta clase estará disponible pronto.", "error"); 
     return;
@@ -545,12 +534,10 @@ window.iniciarLeccion = function(moduloId) {
   reproducirSonido("click");
 }
 
-// Esta función simula el avance a los quizzes (la lógica final dependerá de cómo estructuraste quiz.js)
 window.irAPractica = function() {
   reproducirSonido("click");
   document.getElementById("pantalla-teoria").classList.remove("activa");
   
-  // Iniciar el Quiz 1 de la fase 1
   cargarQuiz(moduloActual, "fase1", "quiz1");
 }
 
@@ -562,7 +549,7 @@ function cargarQuiz(modulo, fase, tipoQuiz) {
     return;
   }
 
-  leccionActual = [...preguntas].sort(() => Math.random() - 0.5).slice(0, 3); // Tomar 3 aleatorias
+  leccionActual = [...preguntas].sort(() => Math.random() - 0.5).slice(0, 3); 
   indicePregunta = 0; 
   aciertosLeccion = 0;
   
@@ -574,7 +561,7 @@ function cargarQuiz(modulo, fase, tipoQuiz) {
   if (musicaActiva && musicaFondo) musicaFondo.pause(); 
   
   document.getElementById("pantalla-leccion").classList.add("activa");
-  document.getElementById("contenedor-editor-reto").style.display = "none"; // Ocultar editor por defecto
+  document.getElementById("contenedor-editor-reto").style.display = "none"; 
   cargarPregunta();
 }
 
@@ -582,7 +569,9 @@ function cargarPregunta() {
   if (indicePregunta >= leccionActual.length) { terminarLeccion(); return; }
   
   const p = leccionActual[indicePregunta];
-  document.getElementById("leccion-progreso").style.width = `${(indicePregunta / leccionActual.length) * 100}%`;
+  
+  // Actualizar barra de progreso
+  document.getElementById("leccion-progreso").style.width = `${((indicePregunta + 1) / leccionActual.length) * 100}%`;
   
   // Resetear caras de MiniCode
   const cara = document.getElementById("minicode-cara");
@@ -597,7 +586,6 @@ function cargarPregunta() {
   opcionSeleccionada = null;
   
   if (p.opciones) {
-    // Pregunta normal de opción múltiple
     p.opciones.forEach((opcion, index) => {
       const btn = document.createElement("button");
       btn.className = "opcion-btn";
@@ -612,13 +600,11 @@ function cargarPregunta() {
       contenedor.appendChild(btn);
     });
   } else if (p.codigoRoto) {
-    // Pregunta de depurar código (Ace Editor)
     document.getElementById("contenedor-editor-reto").style.display = "block";
     if(!editorReto) {
       editorReto = ace.edit("editor-reto");
       editorReto.setTheme("ace/theme/monokai");
     }
-    // Establecer el modo según el módulo (simplificado)
     editorReto.session.setMode("ace/mode/html"); 
     editorReto.setValue(p.codigoRoto);
     document.getElementById("btn-leccion-comprobar").disabled = false;
@@ -650,7 +636,6 @@ window.comprobarRespuesta = function() {
       botones[p.correcta].classList.add("correcta");
     }
   } else if (p.codigoRoto) {
-    // Evaluación simple de código
     const respuestaUsuario = editorReto.getValue().trim();
     esCorrecta = respuestaUsuario.length > 10; 
   }
@@ -662,7 +647,7 @@ window.comprobarRespuesta = function() {
     aciertosLeccion++; 
     ganarXP(10);
     
-    // CARA FELIZ
+    // CARA FELIZ (VERDE)
     cara.className = "minicode-face feliz";
     document.getElementById("mc-eye-left").textContent = "^";
     document.getElementById("mc-eye-right").textContent = "^";
@@ -671,7 +656,7 @@ window.comprobarRespuesta = function() {
     feedbackDiv.className = "feedback-container incorrecto";
     tituloFb.textContent = "Todavía no. MiniCode dice:";
     
-    // CARA TRISTE
+    // CARA TRISTE (ROJA)
     cara.className = "minicode-face triste";
     document.getElementById("mc-eye-left").textContent = "x";
     document.getElementById("mc-eye-right").textContent = "x";
