@@ -60,7 +60,6 @@
   <p>Este sitio es un lugar de <strong>autoaprendizaje</strong>. Elige tu lenguaje y empieza tu autoclase.</p>
   
   <div class="lenguajes">
-    <!-- Los logos ahora son texto estilizado. Los colores se los daremos en styles.css -->
     <button class="lang-card" data-lang="PHP">
       <span class="lang-icon lang-php">php</span>
       <small>Backend web</small>
@@ -103,11 +102,12 @@
   <div class="musica-config" style="margin-bottom: 20px;">
     <select id="select-musica" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px;">
       <option value="">Sin música</option>
-      <option value="./musica1.mp3">Música 1</option>
-      <option value="./musica2.mp3">Música 2</option>
-      <option value="./musica3.mp3">Música 3</option>
-      <option value="./musica4.mp3">Música 4</option>
-      <option value="./musica5.mp3">Música 5</option>
+      <option value="./SnapTube Audio/audio1.mp3">Música 1 (Relax)</option>
+      <option value="./SnapTube Audio/audio2.mp3">Música 2 (Relax)</option>
+      <option value="./SnapTube Audio/audio3.mp3">Música 3 (Relax)</option>
+      <option value="./SnapTube Audio/audio4.mp3">Música 4 (Relax)</option>
+      <option value="./SnapTube Audio/audio5.mp3">Música 5 (Relax)</option>
+      <option value="./SnapTube Audio/audio6.mp3">Música 6 (Relax)</option>
     </select>
     <button class="boton" onclick="toggleMusica()" id="btn-toggle-musica" style="width:100%;">Reproducir / Pausar</button>
   </div>
@@ -139,7 +139,8 @@
 
   <nav class="salon-tabs">
     <button data-tab="bienvenida" class="activo">SALÓN</button>
-    <button data-tab="clases">MAPA DE MISIONES</button>
+    <button data-tab="aula">AULA</button>
+    <button data-tab="misiones">MISIONES</button>
     <button data-tab="editor">EDITOR</button>
     <button data-tab="perfil">PERFIL Y LOGROS</button>
   </nav>
@@ -158,9 +159,17 @@
       </div>
     </div>
 
-    <div id="tab-clases" class="salon-tab">
+    <!-- NUEVA PESTAÑA AULA -->
+    <div id="tab-aula" class="salon-tab">
       <h3 class="titulo-3d-sec">AULA</h3>
       <p style="font-size:0.85rem; color:var(--text-2); margin-bottom:15px;">Avanza para entender el lenguaje que prefieras.</p>
+      <div id="aula-contenedor-lista"></div>
+    </div>
+
+    <!-- NUEVA PESTAÑA MISIONES -->
+    <div id="tab-misiones" class="salon-tab">
+      <h3 class="titulo-3d-sec">MAPA DE MISIONES</h3>
+      <p style="font-size:0.85rem; color:var(--text-2); margin-bottom:15px;">Demuestra lo que sabes en los Quizzes.</p>
       <div id="mapa-misiones-container" class="mapa-ruta"></div>
     </div>
 
