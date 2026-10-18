@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -129,7 +128,7 @@
 
     <!-- Python -->
     <button class="lang-card animar-entrada delay-4" data-lang="Python" style="position:relative;">
-      <span class="badge-recomendado">Recomendado</span>
+      <span class="badge-recomendado">Popular</span>
       <div class="logo-flip-container">
         <div class="logo-flip-inner">
           <img src="python1.png" alt="Python" class="logo-front">
@@ -156,7 +155,8 @@
       <label>Institución o Trabajo:</label>
       <select id="select-institucion" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px;">
         <option value="Instituto Nacional">Instituto Nacional</option>
-        <option value="Escuela Pública">Escuela Pública</option>
+        <option value="Refugio Sifontes">Refugio Sifontes</option>
+        <option value="Delmira Molina">Delmira Molina</option>
         <option value="Universidad">Universidad</option>
         <option value="Trabajo">Trabajo</option>
         <option value="Desempleado">Desempleado</option>
@@ -190,7 +190,7 @@
   
   <h4>Música de fondo</h4>
   <div class="musica-config" style="margin-bottom: 20px;">
-    <select id="select-musica" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px;">
+    <select id="select-musica" style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px; font-size: 1rem; outline: none;">
       <option value="">Sin música</option>
       <option value="./audio1.mp3">Música 1 (Relax)</option>
       <option value="./audio2.mp3">Música 2 (Relax)</option>
@@ -221,7 +221,6 @@
   <div class="card-creditos" style="font-size: 0.85rem; line-height: 1.8; margin-top: 10px;">
     <p><strong>Desarrolladores:</strong> papiromesa</p>
     <p><strong>Release actual:</strong> 20 de octubre (R3)</p>
-    <p><strong>Lenguaje de la plataforma:</strong> [JS]-DK</p>
   </div>
 </section>
 
@@ -233,38 +232,27 @@
   </div>
 
   <nav class="salon-tabs">
-    <button data-tab="bienvenida" class="activo">SALÓN</button>
-    <button data-tab="aula">AULA</button>
+    <button data-tab="aula" class="activo">AULA</button>
     <button data-tab="practica">PRÁCTICA</button>
     <button data-tab="editor">EDITOR</button>
   </nav>
 
   <div class="salon-contenido">
-    <div id="tab-bienvenida" class="salon-tab activo">
-      <div class="minicode-chat">
-        <div class="minicode-face">
-          <span class="mc-eye-left">&lt;</span>
-          <span class="mc-eye-right">&gt;</span>
-          <span class="mc-smile"></span>
-        </div>
-        <div class="minicode-speech">
-          <p style="margin:0;"><strong style="color:var(--accent);">MiniCode:</strong> ¡Hola! Soy tu compañero, seré el que te acompañe en tu carrera. ¿Empezamos?</p>
-        </div>
-      </div>
-    </div>
-
-    <div id="tab-aula" class="salon-tab">
-      <h3 class="titulo-3d-sec">AULA</h3>
+    <!-- PESTAÑA AULA -->
+    <div id="tab-aula" class="salon-tab activo">
+      <h3 class="titulo-3d-sec">MÓDULOS</h3>
       <p style="font-size:0.85rem; color:var(--text-2); margin-bottom:15px;">Avanza para entender el lenguaje que prefieras.</p>
       <div id="aula-contenedor-lista"></div>
     </div>
 
+    <!-- PESTAÑA PRÁCTICA -->
     <div id="tab-practica" class="salon-tab">
       <h3 class="titulo-3d-sec">PRÁCTICA</h3>
       <p style="font-size:0.85rem; color:var(--text-2); margin-bottom:15px;">Demuestra lo que sabes en los Quizzes.</p>
       <div id="mapa-misiones-container" class="mapa-ruta"></div>
     </div>
 
+    <!-- PESTAÑA EDITOR -->
     <div id="tab-editor" class="salon-tab">
       <h3 class="titulo-3d-sec">EDITOR</h3>
       <div class="editor-layout">
@@ -278,7 +266,7 @@
   </div>
 </section>
 
-<!-- PANTALLA 1: TEORÍA (LECTURA) -->
+<!-- ================= PANTALLA 1: TEORÍA (LECTURA) ================= -->
 <section id="pantalla-teoria" class="seccion-pantalla">
   <div class="leccion-header">
     <button class="boton-salir" onclick="abrirModalSalir()">SALIR</button>
@@ -286,7 +274,6 @@
   </div>
   <div class="leccion-contenido" id="teoria-texto"></div>
   
-  <!-- Reproductor de audio de clase -->
   <div style="text-align: center; margin-bottom: 10px;">
     <audio id="audio-clase" controls style="width: 100%; max-width: 300px;"></audio>
   </div>
@@ -296,7 +283,7 @@
   </div>
 </section>
 
-<!-- PANTALLA 2: PREGUNTAS (QUIZ) -->
+<!-- ================= PANTALLA 2: PREGUNTAS (QUIZ) ================= -->
 <section id="pantalla-leccion" class="seccion-pantalla">
   <div class="leccion-header">
     <button class="boton-salir" onclick="abrirModalSalir()">SALIR</button>
@@ -319,7 +306,6 @@
     
     <div id="leccion-opciones" class="opciones-container"></div>
     
-    <!-- Editor para Depurar/Crear Código -->
     <div id="contenedor-editor-reto" style="display: none; margin-top: 15px;">
       <div id="editor-reto" style="height: 200px; width: 100%; border-radius: 10px;"></div>
     </div>
@@ -343,8 +329,12 @@
 </main>
 
 <!-- BOTÓN FLOTANTE DE MÚSICA -->
-<div id="floating-music-btn" onclick="toggleMusica()" style="position: fixed; bottom: 20px; right: 20px; background: var(--card); border: 2px solid var(--accent); border-radius: 50%; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 9999;">
-  <span style="font-size: 1.5rem;">🎵</span>
+<div id="floating-music-btn" onclick="toggleMusica()" style="position: fixed; bottom: 20px; right: 20px; background: var(--card); border: 2px solid var(--accent); border-radius: 50%; width: 55px; height: 55px; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 9999;">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 18V5l12-2v13"></path>
+    <circle cx="6" cy="18" r="3"></circle>
+    <circle cx="18" cy="16" r="3"></circle>
+  </svg>
 </div>
 
 <footer>
