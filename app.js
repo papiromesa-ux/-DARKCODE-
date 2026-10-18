@@ -151,10 +151,7 @@ async function cargarDatosNube(uid) {
       actualizarPerfil(); 
       dibujarMapaMisiones();
     }
-  } catch (e) { 
-    // Ignorar error silencioso de conexión si no hay datos
-    console.log("Firebase sin conexión o error de red"); 
-  }
+  } catch (e) { console.log("Firebase sin conexión"); }
 }
 
 async function guardarDatosNube() {
@@ -278,14 +275,10 @@ document.querySelectorAll(".salon-tabs button").forEach((b) => {
   });
 });
 
-// ==========================================
-// ARREGLO: DIBUJAR MAPA (Blindado)
-// ==========================================
 function dibujarMapaMisiones() {
   const container = document.getElementById("mapa-misiones-container");
   if (!container) return;
   
-  // 1. Verificar si las misiones cargaron
   if (!window.mapaMisiones) {
     container.innerHTML = `
       <div style="background:rgba(220,38,38,0.2); border:1px solid #dc2626; padding:20px; border-radius:12px; text-align:center;">
@@ -336,14 +329,10 @@ function dibujarMapaMisiones() {
   }
 }
 
-// ==========================================
-// ARREGLO: CARGAR AULA (Blindado)
-// ==========================================
 function cargarListaAula() {
   const container = document.getElementById("aula-contenedor-lista");
   if (!container) return;
   
-  // 1. Verificar si la teoría cargó
   if (!window.teoria) {
     container.innerHTML = `
       <div style="background:rgba(220,38,38,0.2); border:1px solid #dc2626; padding:20px; border-radius:12px; text-align:center;">
@@ -408,13 +397,16 @@ function aplicarModo(modo) {
 }
 aplicarModo(state.modo);
 
-const audioAula = new Audio("./SnapTube Audio/audio1.mp3");
+// ==========================================
+// SISTEMA DE AUDIO (RUTAS CORREGIDAS)
+// ==========================================
+const audioAula = new Audio("./audio1.mp3");
 audioAula.loop = true;
 audioAula.volume = 0.2;
 
 const cancionesSuspenso = [
-  "./SnapTube Audio/audioquiz1.mp3",
-  "./SnapTube Audio/audioquiz2.mp3" 
+  "./audioquiz1.mp3",
+  "./audioquiz2.mp3" 
 ];
 const audioQuiz = new Audio();
 audioQuiz.loop = true;
@@ -434,7 +426,7 @@ if (selectMusica) {
       musicaActiva = false; 
     } else {
       musicaFondo.src = nuevaCancion;
-      musicaFondo.play().catch(() => lanzarError(400, "Haz clic para permitir el audio."));
+      musicaFondo.play().catch(() => console.log("Esperando clic para audio")); 
       musicaActiva = true;
       audioAula.pause(); 
     }
@@ -449,7 +441,7 @@ function toggleMusica() {
   if (musicaActiva) { 
     musicaFondo.pause(); 
   } else { 
-    musicaFondo.play().catch(() => lanzarError(400, "Toca de nuevo para dar permiso al audio."));
+    musicaFondo.play().catch(() => console.log("Esperando clic para audio"));
     audioAula.pause(); 
   }
   musicaActiva = !musicaActiva;
