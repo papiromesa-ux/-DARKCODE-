@@ -1,4 +1,5 @@
-const CACHE = "darkcode-R6"; 
+const CACHE = "darkcode-R12"; // <-- CAMBIADO A R12
+
 const LOCALES = [
   "./", 
   "./index.html", 
@@ -7,12 +8,12 @@ const LOCALES = [
   "./clases.js", 
   "./quiz.js", 
   "./manifest.json",
-  "./icon-48.png",
-  "./icon-72.png",
-  "./icon-96.png",
-  "./icon-114.png",
-  "./icon-192.png", 
-  "./icon-512.png"
+  "./bloqueo.html",
+  "./icon-48.png", "./icon-72.png", "./icon-96.png", "./icon-114.png", "./icon-192.png", "./icon-512.png",
+  "./audio1.mp3", "./audio2.mp3", "./audio3.mp3", "./audio4.mp3", "./audio5.mp3", 
+  "./audio6.mp3", "./audio7.mp3", "./audio8.mp3", "./audio9.mp3", "./audio10.mp3", 
+  "./audio11.mp3", "./audio12.mp3", "./audio13.mp3", "./audio14.mp3", "./audio15.mp3",
+  "./audioquiz1.mp3", "./audioquiz2.mp3"
 ];
 
 const NO_CACHEAR = [
