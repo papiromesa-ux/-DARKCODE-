@@ -229,9 +229,19 @@ document.querySelectorAll(".salon-tabs button").forEach((b) => {
   });
 });
 
-function cargarListaAula() {
-  const container = document.getElementById("aula-contenedor-lista"); if (!container) return; container.innerHTML = "";
-  if (!window.teoria) { container.innerHTML = `<p style="color:red;">Error: No se encontró clases.js</p>`; return; }
+function cargarListaPractica() {
+  const container = document.getElementById("mapa-misiones-container"); 
+  if (!container) return; 
+  container.innerHTML = "";
+  
+  // SALVAVIDAS: Si quiz.js falla, mostramos un mensaje de error en pantalla
+  if (!window.baseDePreguntas) {
+    container.innerHTML = `<div style="color: #dc2626; padding: 20px; background: var(--card); border-radius: 10px; border: 1px solid #dc2626; text-align: center; margin-top:20px;">
+      <p><strong>Error crítico:</strong> No se pudo cargar el archivo <b>quiz.js</b>.</p>
+      <p style="font-size: 0.8rem;">Es posible que se haya cortado al copiarlo o que falte una llave <b>};</b> al final.</p>
+    </div>`;
+    return;
+  }
   
   const modulosComunes = ["html", "css", "cyber", "api", "sw", "manifest", "debug", "repo", "files", "ia", "hacking", "json", "consola"];
   let moduloLenguaje = state.lenguaje.toLowerCase();
@@ -239,24 +249,13 @@ function cargarListaAula() {
   if (moduloLenguaje === "c++") moduloLenguaje = "cpp";
   const modulosPermitidos = [...modulosComunes, moduloLenguaje];
 
-  // Diccionario para nombres bonitos
-  const nombresBonitos = {
-    html: "Los Cimientos (HTML)", css: "El Diseño (CSS)", cyber: "El Escudo (Cyber)", 
-    api: "Comunicaciones (API)", sw: "Modo Offline (SW)", manifest: "Identidad (Manifest)", 
-    debug: "Laboratorio de Errores", repo: "El Lanzamiento (Git)", files: "El Mapa (Archivos)", 
-    ia: "Compañero IA", hacking: "Hacker Ético", json: "Datos (JSON)", consola: "La Consola",
-    js: "El Núcleo (JavaScript)", php: "El Gigante (PHP)", ruby: "El Elegante (Ruby)", 
-    python: "La Serpiente (Python)", c: "La Base (C)", cpp: "Alto Rendimiento (C++)"
-  };
-
-  Object.keys(window.teoria).forEach((modulo) => {
+  Object.keys(window.baseDePreguntas).forEach((modulo) => {
     if (modulosPermitidos.includes(modulo)) {
-      const btn = document.createElement("button"); btn.className = "boton";
-      btn.style.marginBottom = "10px"; btn.style.width = "100%"; btn.style.textAlign = "left";
-      const nombre = nombresBonitos[modulo] || modulo.toUpperCase();
-      btn.innerHTML = `<strong>${nombre}</strong>`; 
-      btn.onclick = () => abrirTeoriaSola(modulo); 
-      container.appendChild(btn);
+      const div = document.createElement("div");
+      div.className = "nodo-mision actual";
+      div.innerHTML = `<div class="circulo-mision">▶</div><div class="info-mision"><strong>Práctica: ${modulo.toUpperCase()}</strong><small>Demuestra lo que sabes</small></div>`;
+      div.onclick = () => { moduloActual = modulo; cargarQuiz(modulo, "fase1", "quiz1"); };
+      container.appendChild(div);
     }
   });
 }
