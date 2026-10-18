@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,6 +18,7 @@
 <div id="notificaciones-container"></div>
 <div id="confetti-container"></div>
 
+<!-- MODAL DE CONFIRMACIÓN -->
 <div id="modal-confirmacion" class="modal-overlay" style="display: none;">
   <div class="modal-box">
     <h3>¿Seguro que quieres salir?</h3>
@@ -28,6 +30,7 @@
   </div>
 </div>
 
+<!-- LOGIN -->
 <div id="login-screen" class="login-screen">
   <div class="login-box">
     <h1 class="logo-3d">&lt;DARKCODE&gt;</h1>
@@ -39,163 +42,143 @@
   </div>
 </div>
 
+<!-- HEADER -->
 <header id="main-header">
   <h1 class="logo-3d">&lt;DARKCODE&gt;</h1>
   <p class="sub">Aprende a usar diferentes lenguajes de programación</p>
 </header>
 
-<nav id="menu">
-  <button data-seccion="inicio" class="activo">Inicio</button>
-  <button data-seccion="ajustes">Ajustes y Créditos</button>
+<!-- MENÚ PRINCIPAL (3 BOTONES) -->
+<nav id="menu" class="menu-principal">
+  <button data-seccion="inicio" class="activo" onclick="cambiarSeccion('inicio')">Escuela</button>
+  <button data-seccion="perfil" onclick="cambiarSeccion('perfil')">Perfil</button>
+  <button data-seccion="ajustes" onclick="cambiarSeccion('ajustes')">Ajustes</button>
 </nav>
 
 <main>
 
+<!-- ================= SECCIÓN ESCUELA (INICIO) ================= -->
 <section id="inicio" class="seccion activa">
   <div class="hero-section">
-    <h2 class="animar-entrada">Bienvenido a &lt;DARKCODE&gt;</h2>
-    <p class="animar-entrada delay-1">Este sitio es un lugar de <strong>autoaprendizaje</strong>. Elige tu lenguaje, desbloquea misiones y conviértete en un maestro del código.</p>
+    <h2 class="animar-entrada">Bienvenido a la Escuela</h2>
+    <p class="animar-entrada delay-1">Elige tu lenguaje, desbloquea misiones y conviértete en un maestro del código.</p>
   </div>
   
-<div class="lenguajes">
-  <!-- PHP -->
-  <button class="lang-card animar-entrada delay-2" data-lang="PHP">
-    <div class="logo-flip-container">
-      <div class="logo-flip-inner">
-        <img src="php1.png" alt="PHP" class="logo-front">
-        <img src="php2.png" alt="PHP Elefante" class="logo-back">
+  <div class="lenguajes">
+    <!-- PHP -->
+    <button class="lang-card animar-entrada delay-2" data-lang="PHP">
+      <div class="logo-flip-container">
+        <div class="logo-flip-inner">
+          <img src="php1.png" alt="PHP" class="logo-front">
+          <img src="php2.png" alt="PHP Elefante" class="logo-back">
+        </div>
       </div>
-    </div>
-    <strong class="lang-name">PHP</strong>
-    <small>Backend web</small>
-  </button>
+      <strong class="lang-name">PHP</strong>
+      <small>Masivo y pesado</small>
+    </button>
 
-  <!-- Ruby -->
-  <button class="lang-card animar-entrada delay-2" data-lang="Ruby">
-    <div class="logo-flip-container">
-      <div class="logo-flip-inner">
-        <img src="ruby1.png" alt="Ruby" class="logo-front">
-        <img src="ruby2.png" alt="Ruby Alterno" class="logo-back">
+    <!-- Ruby -->
+    <button class="lang-card animar-entrada delay-2" data-lang="Ruby">
+      <div class="logo-flip-container">
+        <div class="logo-flip-inner">
+          <img src="ruby1.png" alt="Ruby" class="logo-front">
+          <img src="ruby2.png" alt="Ruby Alterno" class="logo-back">
+        </div>
       </div>
-    </div>
-    <strong class="lang-name">Ruby</strong>
-    <small>Lenguaje elegante</small>
-  </button>
+      <strong class="lang-name">Ruby</strong>
+      <small>Elegante y brillante</small>
+    </button>
 
-  <!-- JavaScript -->
-  <button class="lang-card animar-entrada delay-3" data-lang="JavaScript" style="position:relative;">
-    <span class="badge-recomendado">Popular</span>
-    <span class="badge-recomendado" style="background:#4CAF50; color:#fff; right: auto; left: -5px;">Recomendado</span>
-    <div class="logo-flip-container">
-      <div class="logo-flip-inner">
-        <img src="js1.png" alt="JavaScript" class="logo-front">
-        <img src="js2.png" alt="JavaScript Alterno" class="logo-back">
+    <!-- JavaScript -->
+    <button class="lang-card animar-entrada delay-3" data-lang="JavaScript" style="position:relative;">
+      <span class="badge-recomendado">Recomendado</span>
+      <div class="logo-flip-container">
+        <div class="logo-flip-inner">
+          <img src="js1.png" alt="JavaScript" class="logo-front">
+          <img src="js2.png" alt="JavaScript Alterno" class="logo-back">
+        </div>
       </div>
-    </div>
-    <strong class="lang-name">JavaScript</strong>
-    <small>Web interactiva</small>
-  </button>
+      <strong class="lang-name">JavaScript</strong>
+      <small>Común y faciliton</small>
+    </button>
 
-  <!-- C -->
-  <button class="lang-card animar-entrada delay-3" data-lang="C">
-    <div class="logo-flip-container">
-      <div class="logo-flip-inner">
-        <img src="c1.png" alt="C" class="logo-front">
-        <img src="c2.png" alt="C Alterno" class="logo-back">
+    <!-- C -->
+    <button class="lang-card animar-entrada delay-3" data-lang="C">
+      <div class="logo-flip-container">
+        <div class="logo-flip-inner">
+          <img src="c1.png" alt="C" class="logo-front">
+          <img src="c2.png" alt="C Alterno" class="logo-back">
+        </div>
       </div>
-    </div>
-    <strong class="lang-name">C</strong>
-    <small>Base de todo</small>
-  </button>
+      <strong class="lang-name">C</strong>
+      <small>Seco y sencillo</small>
+    </button>
 
-  <!-- C++ -->
-  <button class="lang-card animar-entrada delay-4" data-lang="C++" style="position:relative;">
-    <span class="badge-recomendado" style="background:#4CAF50; color:#fff;">Recomendado</span>
-    <div class="logo-flip-container">
-      <div class="logo-flip-inner">
-        <img src="cpp1.png" alt="C++" class="logo-front">
-        <img src="cpp2.png" alt="C++ Alterno" class="logo-back">
+    <!-- C++ -->
+    <button class="lang-card animar-entrada delay-4" data-lang="C++" style="position:relative;">
+      <span class="badge-recomendado">Recomendado</span>
+      <div class="logo-flip-container">
+        <div class="logo-flip-inner">
+          <img src="cpp1.png" alt="C++" class="logo-front">
+          <img src="cpp2.png" alt="C++ Alterno" class="logo-back">
+        </div>
       </div>
-    </div>
-<div class="lenguajes">
-  <!-- PHP -->
-  <button class="lang-card animar-entrada delay-2" data-lang="PHP">
-    <div class="logo-flip-container">
-      <div class="logo-flip-inner">
-        <img src="php1.png" alt="PHP" class="logo-front">
-        <img src="php2.png" alt="PHP Elefante" class="logo-back">
-      </div>
-    </div>
-    <strong class="lang-name">PHP</strong>
-    <small>Backend web</small>
-  </button>
+      <strong class="lang-name">C++</strong>
+      <small>Manifiesto y culmino</small>
+    </button>
 
-  <!-- Ruby -->
-  <button class="lang-card animar-entrada delay-2" data-lang="Ruby">
-    <div class="logo-flip-container">
-      <div class="logo-flip-inner">
-        <img src="ruby1.png" alt="Ruby" class="logo-front">
-        <img src="ruby2.png" alt="Ruby Alterno" class="logo-back">
+    <!-- Python -->
+    <button class="lang-card animar-entrada delay-4" data-lang="Python" style="position:relative;">
+      <span class="badge-recomendado">Recomendado</span>
+      <div class="logo-flip-container">
+        <div class="logo-flip-inner">
+          <img src="python1.png" alt="Python" class="logo-front">
+          <img src="python2.png" alt="Python Alterno" class="logo-back">
+        </div>
       </div>
-    </div>
-    <strong class="lang-name">Ruby</strong>
-    <small>Lenguaje elegante</small>
-  </button>
-
-  <!-- JavaScript -->
-  <button class="lang-card animar-entrada delay-3" data-lang="JavaScript" style="position:relative;">
-    <span class="badge-recomendado">Popular</span>
-    <span class="badge-recomendado" style="background:#4CAF50; color:#fff; right: auto; left: -5px;">Recomendado</span>
-    <div class="logo-flip-container">
-      <div class="logo-flip-inner">
-        <img src="js1.png" alt="JavaScript" class="logo-front">
-        <img src="js2.png" alt="JavaScript Alterno" class="logo-back">
-      </div>
-    </div>
-    <strong class="lang-name">JavaScript</strong>
-    <small>Web interactiva</small>
-  </button>
-
-  <!-- C -->
-  <button class="lang-card animar-entrada delay-3" data-lang="C">
-    <div class="logo-flip-container">
-      <div class="logo-flip-inner">
-        <img src="c1.png" alt="C" class="logo-front">
-        <img src="c2.png" alt="C Alterno" class="logo-back">
-      </div>
-    </div>
-    <strong class="lang-name">C</strong>
-    <small>Base de todo</small>
-  </button>
-
-  <!-- C++ -->
-  <button class="lang-card animar-entrada delay-4" data-lang="C++" style="position:relative;">
-    <span class="badge-recomendado" style="background:#4CAF50; color:#fff;">Recomendado</span>
-    <div class="logo-flip-container">
-      <div class="logo-flip-inner">
-        <img src="cpp1.png" alt="C++" class="logo-front">
-        <img src="cpp2.png" alt="C++ Alterno" class="logo-back">
-      </div>
-    </div>
-    <strong class="lang-name">C++</strong>
-    <small>Alto rendimiento</small>
-  </button>
-
-  <!-- Python -->
-  <button class="lang-card animar-entrada delay-4" data-lang="Python" style="position:relative;">
-    <span class="badge-recomendado">Popular</span>
-    <div class="logo-flip-container">
-      <div class="logo-flip-inner">
-        <img src="python1.png" alt="Python" class="logo-front">
-        <img src="python2.png" alt="Python Alterno" class="logo-back">
-      </div>
-    </div>
-    <strong class="lang-name">Python</strong>
-    <small>Lenguaje versátil</small>
-  </button>
-</div>
+      <strong class="lang-name">Python</strong>
+      <small>Venenozo y escabulloso</small>
+    </button>
+  </div>
 </section>
 
+<!-- ================= SECCIÓN PERFIL ================= -->
+<section id="perfil" class="seccion">
+  <h2>Mi Perfil</h2>
+  <div class="perfil-card">
+    <div class="perfil-avatar">
+      <img id="avatar-img" src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" alt="Avatar">
+    </div>
+    <div class="perfil-info">
+      <label>Nombre:</label>
+      <input type="text" id="input-nombre" placeholder="Tu nombre" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px;">
+      
+      <label>Institución o Trabajo:</label>
+      <select id="select-institucion" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px;">
+        <option value="Instituto Nacional">Instituto Nacional</option>
+        <option value="Escuela Pública">Escuela Pública</option>
+        <option value="Universidad">Universidad</option>
+        <option value="Trabajo">Trabajo</option>
+        <option value="Desempleado">Desempleado</option>
+      </select>
+
+      <button class="boton" onclick="guardarPerfil()" style="width:100%;">Guardar Cambios</button>
+    </div>
+  </div>
+  
+  <div class="xp-container" style="margin-top:20px;">
+    <p><strong>Nivel:</strong> <span id="perfil-nivel">1</span></p>
+    <div class="xp-bar-bg"><div id="xp-bar-fill" class="xp-bar-fill" style="width: 0%;"></div></div>
+    <p style="font-size: 0.8rem; text-align: right;"><span id="perfil-xp">0</span> / 100 XP</p>
+  </div>
+
+  <h3 class="titulo-3d-sec" style="margin-top: 30px;">LOGROS</h3>
+  <div id="lista-logros" class="logros-grid"></div>
+  
+  <button class="boton" onclick="cerrarSesion()" style="width:100%; background:#dc2626; margin-top:20px;">Cerrar sesión</button>
+</section>
+
+<!-- ================= SECCIÓN AJUSTES ================= -->
 <section id="ajustes" class="seccion">
   <h2>Ajustes Generales</h2>
   <h4>Modo de color</h4>
@@ -206,48 +189,46 @@
   </div>
   
   <h4>Música de fondo</h4>
-<select id="select-musica" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px;">
-  <option value="">Sin música</option>
-  <option value="./audio1.mp3">Música 1 (Relax)</option>
-  <option value="./audio2.mp3">Música 2 (Relax)</option>
-  <option value="./audio3.mp3">Música 3 (Relax)</option>
-  <option value="./audio4.mp3">Música 4 (Relax)</option>
-  <option value="./audio5.mp3">Música 5 (Relax)</option>
-  <option value="./audio6.mp3">Música 6 (Relax)</option>
-  <option value="./audio7.mp3">Música 7 (Relax)</option>
-  <option value="./audio8.mp3">Música 8 (Relax)</option>
-  <option value="./audio9.mp3">Música 9 (Relax)</option>
-  <option value="./audio10.mp3">Música 10 (Relax)</option>
-  <option value="./audio11.mp3">Música 11 (Relax)</option>
-  <option value="./audio12.mp3">Música 12 (Relax)</option>
-  <option value="./audio13.mp3">Música 13 (Relax)</option>
-  <option value="./audio14.mp3">Música 14 (Relax)</option>
-  <option value="./audio15.mp3">Música 15 (Relax)</option>
-</select>
-    <button class="boton" onclick="toggleMusica()" id="btn-toggle-musica" style="width:100%;">Reproducir / Pausar</button>
+  <div class="musica-config" style="margin-bottom: 20px;">
+    <select id="select-musica" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px;">
+      <option value="">Sin música</option>
+      <option value="./audio1.mp3">Música 1 (Relax)</option>
+      <option value="./audio2.mp3">Música 2 (Relax)</option>
+      <option value="./audio3.mp3">Música 3 (Relax)</option>
+      <option value="./audio4.mp3">Música 4 (Relax)</option>
+      <option value="./audio5.mp3">Música 5 (Relax)</option>
+      <option value="./audio6.mp3">Música 6 (Relax)</option>
+      <option value="./audio7.mp3">Música 7 (Relax)</option>
+      <option value="./audio8.mp3">Música 8 (Relax)</option>
+      <option value="./audio9.mp3">Música 9 (Relax)</option>
+      <option value="./audio10.mp3">Música 10 (Relax)</option>
+      <option value="./audio11.mp3">Música 11 (Relax)</option>
+      <option value="./audio12.mp3">Música 12 (Relax)</option>
+      <option value="./audio13.mp3">Música 13 (Relax)</option>
+      <option value="./audio14.mp3">Música 14 (Relax)</option>
+      <option value="./audio15.mp3">Música 15 (Relax)</option>
+    </select>
   </div>
   
   <h4>Sonidos de la app</h4>
   <label class="switch"><input type="checkbox" id="sonido-botones" checked><span>Sonido de botones</span></label>
   
-  <h4>Cuenta y Datos</h4>
-  <button class="boton" onclick="cerrarSesion()" style="width:100%; margin-bottom:10px;">Cerrar sesión</button>
-  <button class="boton" onclick="borrarMisDatos()" style="width:100%; background:#dc2626;">Borrar mis datos</button>
+  <h4>Buzón de Recomendaciones</h4>
+  <textarea id="txt-recomendacion" placeholder="Escribe aquí un error que encontraste o una idea para mejorar DARKCODE..." style="width:100%; height:100px; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px;"></textarea>
+  <button class="boton" onclick="enviarRecomendacion()" style="width:100%;">Enviar Recomendación</button>
 
   <h4 style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 15px;">Información y Créditos</h4>
   <div class="card-creditos" style="font-size: 0.85rem; line-height: 1.8; margin-top: 10px;">
     <p><strong>Desarrolladores:</strong> papiromesa</p>
-    <p><strong>Fecha de comienzo:</strong> 10 de enero de 2024</p>
-    <p><strong>Modelo antiguo:</strong> 10 de enero R1</p>
     <p><strong>Release actual:</strong> 20 de octubre (R3)</p>
-    <p><strong>Nueva Release:</strong> 15 de Noviembre (R4)</p>
     <p><strong>Lenguaje de la plataforma:</strong> [JS]-DK</p>
   </div>
 </section>
 
+<!-- ================= SALÓN (AULA Y PRÁCTICA) ================= -->
 <section id="salon" class="seccion">
   <div class="salon-top">
-    <button class="boton-salir" onclick="salirSalon()">Volver al Inicio</button>
+    <button class="boton-salir" onclick="salirSalon()">Volver a la Escuela</button>
     <h2 id="salon-lenguaje">&lt;&lt;&lt; JAVASCRIPT &gt;&gt;&gt;</h2>
   </div>
 
@@ -256,7 +237,6 @@
     <button data-tab="aula">AULA</button>
     <button data-tab="practica">PRÁCTICA</button>
     <button data-tab="editor">EDITOR</button>
-    <button data-tab="perfil">PERFIL Y LOGROS</button>
   </nav>
 
   <div class="salon-contenido">
@@ -294,38 +274,29 @@
         </div>
       </div>
       <button class="boton" onclick="ejecutarSalon()">Ejecutar (+5 XP)</button>
-      <h3>Consola</h3>
-      <pre id="consola-salon" class="consola"></pre>
-    </div>
-
-    <div id="tab-perfil" class="salon-tab">
-      <h3 class="titulo-3d-sec">PERFIL</h3>
-      <p><strong>Usuario:</strong> <span id="perfil-nombre">Invitado</span></p>
-      <p><strong>Email:</strong> <span id="perfil-email">—</span></p>
-      
-      <div class="xp-container">
-        <p><strong>Nivel:</strong> <span id="perfil-nivel">1</span></p>
-        <div class="xp-bar-bg"><div id="xp-bar-fill" class="xp-bar-fill" style="width: 0%;"></div></div>
-        <p style="font-size: 0.8rem; text-align: right;"><span id="perfil-xp">0</span> / 100 XP</p>
-      </div>
-
-      <h3 class="titulo-3d-sec" style="margin-top: 30px;">LOGROS</h3>
-      <div id="lista-logros" class="logros-grid"></div>
     </div>
   </div>
 </section>
 
+<!-- PANTALLA 1: TEORÍA (LECTURA) -->
 <section id="pantalla-teoria" class="seccion-pantalla">
   <div class="leccion-header">
     <button class="boton-salir" onclick="abrirModalSalir()">SALIR</button>
     <h2 id="teoria-titulo" style="color: var(--accent); margin: 0; font-size: 1.2rem;">CLASES</h2>
   </div>
   <div class="leccion-contenido" id="teoria-texto"></div>
+  
+  <!-- Reproductor de audio de clase -->
+  <div style="text-align: center; margin-bottom: 10px;">
+    <audio id="audio-clase" controls style="width: 100%; max-width: 300px;"></audio>
+  </div>
+
   <div class="leccion-footer">
     <button id="btn-ir-a-practica" class="boton" onclick="irAPractica()" style="width:100%; padding:16px; font-size:1.1rem;">Estoy preparado para responder</button>
   </div>
 </section>
 
+<!-- PANTALLA 2: PREGUNTAS (QUIZ) -->
 <section id="pantalla-leccion" class="seccion-pantalla">
   <div class="leccion-header">
     <button class="boton-salir" onclick="abrirModalSalir()">SALIR</button>
@@ -336,25 +307,26 @@
   
   <div class="leccion-contenido">
     <div class="minicode-chat">
-      <div class="minicode-face">
-        <span class="mc-eye-left">&lt;</span>
-        <span class="mc-eye-right">&gt;</span>
-        <span class="mc-smile"></span>
+      <div class="minicode-face" id="minicode-cara">
+        <span class="mc-eye-left" id="mc-eye-left">&lt;</span>
+        <span class="mc-eye-right" id="mc-eye-right">&gt;</span>
+        <span class="mc-smile" id="mc-smile"></span>
       </div>
-      <div class="minicode-speech">
+      <div class="minicode-speech" id="minicode-bubble">
         <h2 id="leccion-pregunta" style="color: var(--text); font-size: 1.1rem; margin: 0;">Lanzando!!!</h2>
       </div>
     </div>
+    
     <div id="leccion-opciones" class="opciones-container"></div>
+    
+    <!-- Editor para Depurar/Crear Código -->
+    <div id="contenedor-editor-reto" style="display: none; margin-top: 15px;">
+      <div id="editor-reto" style="height: 200px; width: 100%; border-radius: 10px;"></div>
+    </div>
   </div>
 
   <div id="leccion-feedback" class="feedback-container" style="display: none;">
     <div class="minicode-chat" style="margin-top: 10px;">
-      <div class="minicode-face">
-        <span class="mc-eye-left">&lt;</span>
-        <span class="mc-eye-right">&gt;</span>
-        <span class="mc-smile"></span>
-      </div>
       <div class="minicode-speech" id="feedback-bubble">
         <h3 id="feedback-titulo" style="margin:0 0 5px 0; color:var(--accent);">MiniCode</h3>
         <p id="feedback-texto" style="margin:0;">A su conjetura</p>
@@ -369,6 +341,11 @@
 </section>
 
 </main>
+
+<!-- BOTÓN FLOTANTE DE MÚSICA -->
+<div id="floating-music-btn" onclick="toggleMusica()" style="position: fixed; bottom: 20px; right: 20px; background: var(--card); border: 2px solid var(--accent); border-radius: 50%; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 9999;">
+  <span style="font-size: 1.5rem;">🎵</span>
+</div>
 
 <footer>
   <p>&lt;DARKCODE&gt; [R3] — aprende con DARKCODE gratuitamente.</p>
