@@ -111,7 +111,11 @@ body.dazer .lang-card:hover { box-shadow: 0 15px 30px rgba(255, 255, 255, 0.3); 
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   object-fit: contain;
-  mix-blend-mode: multiply;
+  mix-blend-mode: multiply; /* <-- ESTO QUITA EL FONDO BLANCO O CUADRITOS */
+}
+
+body.dazer .logo-front, body.dazer .logo-back {
+  mix-blend-mode: normal; /* En modo Dazer se ve normal */
 }
 body.dazer .logo-front, body.dazer .logo-back { mix-blend-mode: normal; }
 .logo-back { transform: rotateY(180deg); }
