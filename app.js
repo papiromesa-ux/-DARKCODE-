@@ -650,9 +650,8 @@ window.comprobarRespuesta = function() {
       botones[p.correcta].classList.add("correcta");
     }
   } else if (p.codigoRoto) {
-    // Evaluación simple de código (comparar si escribió algo similar)
+    // Evaluación simple de código
     const respuestaUsuario = editorReto.getValue().trim();
-    // En un caso real, evaluaríamos la lógica, aquí solo simulamos que acierta si no está vacío
     esCorrecta = respuestaUsuario.length > 10; 
   }
 
@@ -663,8 +662,8 @@ window.comprobarRespuesta = function() {
     aciertosLeccion++; 
     ganarXP(10);
     
-    // Cara feliz
-    cara.classList.add("feliz");
+    // CARA FELIZ
+    cara.className = "minicode-face feliz";
     document.getElementById("mc-eye-left").textContent = "^";
     document.getElementById("mc-eye-right").textContent = "^";
   } else {
@@ -672,8 +671,8 @@ window.comprobarRespuesta = function() {
     feedbackDiv.className = "feedback-container incorrecto";
     tituloFb.textContent = "Todavía no. MiniCode dice:";
     
-    // Cara triste
-    cara.classList.add("triste");
+    // CARA TRISTE
+    cara.className = "minicode-face triste";
     document.getElementById("mc-eye-left").textContent = "x";
     document.getElementById("mc-eye-right").textContent = "x";
   }
