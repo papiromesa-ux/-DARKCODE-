@@ -461,18 +461,39 @@ let leccionActual = [], indicePregunta = 0, opcionSeleccionada = null, aciertosL
 let editorReto = null;
 
 function cargarQuiz(modulo, fase, tipoQuiz) {
-  const preguntas = window.baseDePreguntas[modulo]?.[fase]?.[tipoQuiz];
-  if (!preguntas || preguntas.length === 0) { mostrarToast("Sin preguntas", "Aún no hay preguntas para este módulo.", "error"); return; }
-  leccionActual = [...preguntas].sort(() => Math.random() - 0.5).slice(0, 3); 
-  indicePregunta = 0; aciertosLeccion = 0;
+  window.tiempoInicioQuiz = Date.now();
+  const dataModulo = window.baseDePreguntas[modulo]?.[fase]?.[tipoQuiz];
+  
+  if (!dataModulo || dataModulo.length === 0) { 
+    if (tipoQuiz !== "quiz3") {
+      tipoQuizActual = SECUENCIA_QUIZ[SECUENCIA_QUIZ.indexOf(tipoQuiz) + 1];
+      cargarQuiz(modulo, fase, tipoQuizActual);
+      return;
+    } else {
+      finalizarFaseCompleta();
+      return; 
+    }
+  }
+
+  let preguntasRaw = dataModulo;
+  if (dataModulo.preguntas && Array.isArray(dataModulo.preguntas)) {
+    preguntasRaw = dataModulo.preguntas;
+  }
+
+  leccionActual = [...preguntasRaw].sort(() => Math.random() - 0.5).slice(0, 3); 
+  indicePregunta = 0; 
+  aciertosLeccion = 0;
+  
   const trackRandom = cancionesSuspenso[Math.floor(Math.random() * cancionesSuspenso.length)];
   audioQuiz.src = trackRandom; audioQuiz.play().catch(e => console.log("Esperando clic"));
   audioAula.pause(); if (musicaActiva && musicaFondo) musicaFondo.pause(); 
+  
   document.getElementById("pantalla-leccion").classList.add("activa");
   document.getElementById("contenedor-editor-reto").style.display = "none";
+  
+  mostrarToast("Evaluación", `Iniciando ${tipoQuiz.toUpperCase()}...`, "info");
   cargarPregunta();
 }
-
 function cargarPregunta() {
   if (indicePregunta >= leccionActual.length) { terminarLeccion(); return; }
   const p = leccionActual[indicePregunta];
