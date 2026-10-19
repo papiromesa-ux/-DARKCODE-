@@ -514,22 +514,9 @@ function cargarPregunta() {
       };
       contenedor.appendChild(btn);
     });
-  } else if (p.codigoRoto) {
-    document.getElementById("contenedor-editor-reto").style.display = "block";
-    if(!editorReto) { editorReto = ace.edit("editor-reto"); editorReto.setTheme("ace/theme/monokai"); }
-    editorReto.session.setMode("ace/mode/html"); editorReto.setValue(p.codigoRoto);
-    document.getElementById("btn-leccion-comprobar").disabled = false;
-  } else if (tipoQuizActual === "quiz3") {
-  document.getElementById("contenedor-editor-reto").style.display = "block";
-  if(!editorReto) { editorReto = ace.edit("editor-reto"); editorReto.setTheme("ace/theme/monokai"); }
-  editorReto.session.setMode("ace/mode/html"); 
-  editorReto.setValue(""); 
-  document.getElementById("btn-leccion-comprobar").disabled = false;
-}
-  document.getElementById("btn-leccion-comprobar").style.display = "block";
-  document.getElementById("btn-leccion-siguiente").style.display = "none";
-  document.getElementById("leccion-feedback").style.display = "none";
-}
+   }
+ } 
+
 
 window.comprobarRespuesta = function() {
   const p = leccionActual[indicePregunta]; let esCorrecta = false;
@@ -543,7 +530,20 @@ window.comprobarRespuesta = function() {
     if (esCorrecta) { botones[opcionSeleccionada].classList.add("correcta"); } 
     else { botones[opcionSeleccionada].classList.add("incorrecta"); botones[p.correcta].classList.add("correcta"); }
   } else if (p.codigoRoto) {
-    const respuestaUsuario = editorReto.getValue().trim(); esCorrecta = respuestaUsuario.length > 10; 
+    // VALIDACIÓN FASE 2
+    const respuestaUsuario = editorReto.getValue().trim(); 
+    if (p.solucion) {
+      const respLimpia = respuestaUsuario.replace(/\s+/g, '').replace(/['"]/g, '').toLowerCase();
+      const solLimpia = p.solucion.replace(/\s+/g, '').replace(/['"]/g, '').toLowerCase();
+      esCorrecta = respLimpia.includes(solLimpia);
+    } else {
+      esCorrecta = respuestaUsuario.length > 10; 
+    }
+  } else if (tipoQuizActual === "quiz3") {
+    // VALIDACIÓN FASE 3
+    const respuestaUsuario = editorReto.getValue().trim();
+    const tieneEtiquetas = respuestaUsuario.includes("<") && respuestaUsuario.includes(">");
+    esCorrecta = respuestaUsuario.length > 20 && tieneEtiquetas;
   }
 
   if (esCorrecta) {
@@ -569,6 +569,7 @@ window.comprobarRespuesta = function() {
   const btnSig = document.getElementById("btn-leccion-siguiente");
   btnSig.style.display = "block"; btnSig.textContent = "Continuar";
 }
+  
 
 window.siguientePregunta = function() { indicePregunta++; cargarPregunta(); }
 
