@@ -26,7 +26,8 @@ const provider = new GoogleAuthProvider();
 const state = {
   user: null, lenguaje: "JavaScript", modo: localStorage.getItem("dc_modo") || "dark",
   sonidoBotones: localStorage.getItem("dc_sb") !== "0", xp: 0, nivel: 1,
-  logros: JSON.parse(localStorage.getItem("dc_logros")) || []
+  logros: JSON.parse(localStorage.getItem("dc_logros")) || [],
+  progreso:{}
 };
 
 const TODOS_LOS_LOGROS = [
@@ -306,38 +307,7 @@ if (!tieneFase && faseActualNum > 0) {
     }
   });
 }
-
-// SOLO UNA FUNCIÓN CARGAR LISTA PRACTICA (SIN DUPLICADOS)
-function cargarListaPractica() {
-  const container = document.getElementById("mapa-misiones-container"); 
-  if (!container) return; 
-  container.innerHTML = "";
   
-  if (!window.baseDePreguntas) {
-    container.innerHTML = `<div style="color: #dc2626; padding: 20px; background: var(--card); border-radius: 10px; border: 1px solid #dc2626; text-align: center; margin-top:20px;">
-      <p><strong>Error crítico:</strong> No se pudo cargar el archivo <b>quiz.js</b>.</p>
-      <p style="font-size: 0.8rem;">Es posible que se haya cortado al copiarlo o que falte una llave <b>};</b> al final.</p>
-    </div>`;
-    return;
-  }
-  
-  const modulosComunes = ["html", "css", "cyber", "api", "sw", "manifest", "debug", "repo", "files", "ia", "hacking", "json", "consola"];
-  let moduloLenguaje = state.lenguaje.toLowerCase();
-  if (moduloLenguaje === "javascript") moduloLenguaje = "js";
-  if (moduloLenguaje === "c++") moduloLenguaje = "cpp";
-  const modulosPermitidos = [...modulosComunes, moduloLenguaje];
-
-  Object.keys(window.baseDePreguntas).forEach((modulo) => {
-    if (modulosPermitidos.includes(modulo)) {
-      const div = document.createElement("div");
-      div.className = "nodo-mision actual";
-      div.innerHTML = `<div class="circulo-mision">▶</div><div class="info-mision"><strong>Práctica: ${modulo.toUpperCase()}</strong><small>Demuestra lo que sabes</small></div>`;
-      div.onclick = () => { moduloActual = modulo; cargarQuiz(modulo, "fase1", "quiz1"); };
-      container.appendChild(div);
-    }
-  });
-}
-
 function abrirTeoriaSola(moduloKey) {
   if (!window.teoria || !window.teoria[moduloKey]) return;
   document.getElementById("teoria-texto").innerHTML = window.teoria[moduloKey];
