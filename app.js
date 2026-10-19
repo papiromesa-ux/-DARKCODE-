@@ -536,7 +536,6 @@ function cargarPregunta() {
   document.getElementById("leccion-feedback").style.display = "none";
 }
 
-
 window.comprobarRespuesta = function() {
   const p = leccionActual[indicePregunta]; let esCorrecta = false;
   const botones = document.querySelectorAll(".opcion-btn"); botones.forEach(b => b.disabled = true);
