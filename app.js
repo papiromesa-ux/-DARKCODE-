@@ -499,12 +499,20 @@ function cargarPregunta() {
   if (indicePregunta >= leccionActual.length) { terminarLeccion(); return; }
   const p = leccionActual[indicePregunta];
   document.getElementById("leccion-progreso").style.width = `${((indicePregunta + 1) / leccionActual.length) * 100}%`;
-  const cara = document.getElementById("minicode-cara"); cara.className = "minicode-face";
-  document.getElementById("mc-eye-left").textContent = "<"; document.getElementById("mc-eye-right").textContent = ">";
+  
+  const cara = document.getElementById("minicode-cara"); 
+  cara.className = "minicode-face";
+  document.getElementById("mc-eye-left").textContent = "<"; 
+  document.getElementById("mc-eye-right").textContent = ">";
+  
   document.getElementById("leccion-pregunta").innerHTML = p.pregunta || p.instrucciones;
   const contenedor = document.getElementById("leccion-opciones"); contenedor.innerHTML = ""; opcionSeleccionada = null;
   
   if (p.opciones) {
+    // APAGAMOS EL BOTÓN COMPROBAR HASTA QUE EL ALUMNO ELIJA UNA OPCIÓN
+    document.getElementById("btn-leccion-comprobar").disabled = true;
+    document.getElementById("contenedor-editor-reto").style.display = "none";
+
     p.opciones.forEach((opcion, index) => {
       const btn = document.createElement("button"); btn.className = "opcion-btn"; btn.textContent = opcion;
       btn.onclick = () => {
@@ -514,8 +522,19 @@ function cargarPregunta() {
       };
       contenedor.appendChild(btn);
     });
-   }
- } 
+  } else if (p.codigoRoto || tipoQuizActual === "quiz3") {
+    // ABRIMOS EL EDITOR PARA LA FASE 2 Y 3
+    document.getElementById("contenedor-editor-reto").style.display = "block";
+    if(!editorReto) { editorReto = ace.edit("editor-reto"); editorReto.setTheme("ace/theme/monokai"); }
+    editorReto.session.setMode("ace/mode/html"); 
+    editorReto.setValue(p.codigoRoto || ""); 
+    document.getElementById("btn-leccion-comprobar").disabled = false;
+  }
+  
+  document.getElementById("btn-leccion-comprobar").style.display = "block";
+  document.getElementById("btn-leccion-siguiente").style.display = "none";
+  document.getElementById("leccion-feedback").style.display = "none";
+}
 
 
 window.comprobarRespuesta = function() {
