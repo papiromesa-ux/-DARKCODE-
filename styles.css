@@ -126,20 +126,25 @@ body.dazer .salon-tabs button.activo { background: #fff; color: #000; }
    MINICODE (CARA CORREGIDA Y LIMPIA)
    ========================================= */
 .minicode-chat { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px; }
-.minicode-face { width: 60px; height: 60px; background: var(--card); border: 2px solid var(--accent); border-radius: 50%; position: relative; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); transition: all 0.3s; flex-shrink: 0; }
-
-/* Ojos */
-.mc-eye-left { position: absolute; top: 12px; left: 12px; color: var(--accent); font-family: monospace; font-size: 1.2rem; font-weight: bold; line-height: 1; }
-.mc-eye-right { position: absolute; top: 12px; right: 12px; color: var(--accent); font-family: monospace; font-size: 1.2rem; font-weight: bold; line-height: 1; }
-
-/* Boca Normal (Sonrisa) */
-.mc-smile { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 20px; height: 10px; border-bottom: 3px solid var(--accent); border-radius: 0 0 15px 15px; display: block; }
-
 /* Modificadores: Feliz */
 .minicode-face.feliz { border-color: #4ade80 !important; box-shadow: 0 0 20px rgba(74, 222, 128, 0.6) !important; background: rgba(74, 222, 128, 0.1) !important; }
 .minicode-face.feliz .mc-eye-left, .minicode-face.feliz .mc-eye-right { color: #4ade80 !important; }
-.minicode-face.feliz .mc-smile { border-color: #4ade80 !important; border-top: 3px solid #4ade80 !important; border-bottom: none !important; border-radius: 15px 15px 0 0 !important; bottom: 14px; }
+.minicode-face.feliz .mc-smile { 
+  border-color: #4ade80 !important; 
+  border-bottom: 3px solid #4ade80 !important; /* Curva de sonrisa */
+  border-top: none !important;
+  border-radius: 0 0 15px 15px !important; 
+}
 
+/* Modificadores: Triste */
+.minicode-face.triste { border-color: #dc2626 !important; box-shadow: 0 0 20px rgba(220, 38, 38, 0.6) !important; background: rgba(220, 38, 38, 0.1) !important; }
+.minicode-face.triste .mc-eye-left, .minicode-face.triste .mc-eye-right { color: #dc2626 !important; }
+.minicode-face.triste .mc-smile { 
+  border-color: #dc2626 !important; 
+  border-top: 3px solid #dc2626 !important; /* Curva de tristeza */
+  border-bottom: none !important;
+  border-radius: 15px 15px 0 0 !important; 
+}
 /* Modificadores: Triste */
 .minicode-face.triste { border-color: #dc2626 !important; box-shadow: 0 0 20px rgba(220, 38, 38, 0.6) !important; background: rgba(220, 38, 38, 0.1) !important; }
 .minicode-face.triste .mc-eye-left, .minicode-face.triste .mc-eye-right { color: #dc2626 !important; }
