@@ -500,7 +500,7 @@ function cargarPregunta() {
   const p = leccionActual[indicePregunta];
   document.getElementById("leccion-progreso").style.width = `${((indicePregunta + 1) / leccionActual.length) * 100}%`;
   const cara = document.getElementById("minicode-cara"); cara.className = "minicode-face";
-  document.getElementById("mc-eye-left").textContent = "^"; document.getElementById("mc-eye-right").textContent = "^";
+  document.getElementById("mc-eye-left").textContent = "<"; document.getElementById("mc-eye-right").textContent = ">";
   document.getElementById("leccion-pregunta").innerHTML = p.pregunta || p.instrucciones;
   const contenedor = document.getElementById("leccion-opciones"); contenedor.innerHTML = ""; opcionSeleccionada = null;
   
@@ -560,8 +560,8 @@ window.comprobarRespuesta = function() {
     
     // CARA TRISTE
     cara.className = "minicode-face triste"; 
-    document.getElementById("mc-eye-left").textContent = "x"; 
-    document.getElementById("mc-eye-right").textContent = "x";
+    document.getElementById("mc-eye-left").textContent = "<"; 
+    document.getElementById("mc-eye-right").textContent = ">";
   }
   
   document.getElementById("feedback-texto").textContent = p.explicacion || p.atajo || "Revisa la teoría.";
