@@ -348,4 +348,10 @@ body.dazer .boton { background: #fff; color: #000; box-shadow: none; }
   border-radius: 20px 20px 0 0; /* Hace la curva hacia arriba para estar triste */
   margin-top: 15px; 
 }
-
+/* Separar los ojos y la boca */
+.mc-eye-left {
+  margin-right: 12px !important;
+}
+.mc-smile {
+  margin-top: 8px !important;
+}
