@@ -122,14 +122,31 @@ async function cargarDatosNube(uid) {
     const docSnap = await getDoc(doc(db, "usuarios", uid));
     if (docSnap.exists()) {
       const data = docSnap.data();
-      state.xp = data.xp || 0; state.nivel = data.nivel || 1; state.logros = data.logros || []; state.modo = data.modo || "dark";
+      state.modo = data.modo || "dark";
+      
+      if (data.progreso) {
+        state.progreso = data.progreso;
+      } else {
+        const langKey = state.lenguaje.toLowerCase() === "javascript" ? "js" : state.lenguaje.toLowerCase();
+        state.progreso = { [langKey]: { xp: data.xp || 0, nivel: data.nivel || 1, logros: data.logros || [], fasesCompletadas: {} } };
+      }
+
+      const langKey = state.lenguaje.toLowerCase() === "javascript" ? "js" : state.lenguaje.toLowerCase();
+      if (!state.progreso[langKey]) {
+        state.progreso[langKey] = { xp: 0, nivel: 1, logros: [], fasesCompletadas: {} };
+      }
+      
+      state.xp = state.progreso[langKey].xp;
+      state.nivel = state.progreso[langKey].nivel;
+      state.logros = state.progreso[langKey].logros || [];
+
       if(data.nombre) document.getElementById("input-nombre").value = data.nombre;
       if(data.institucion) document.getElementById("select-institucion").value = data.institucion;
       if(data.foto) document.getElementById("avatar-img").src = data.foto;
-      localStorage.setItem("dc_logros", JSON.stringify(state.logros));
+      
       aplicarModo(state.modo); actualizarPerfil();
     }
-  } catch (e) { console.log("Firebase sin conexión"); }
+  } catch (e) { console.log("Firebase sin conexión", e); }
 }
 
 async function guardarDatosNube() {
@@ -137,12 +154,26 @@ async function guardarDatosNube() {
   try {
     const nombre = document.getElementById("input-nombre")?.value || "";
     const institucion = document.getElementById("select-institucion")?.value || "";
-    await setDoc(doc(db, "usuarios", state.user.uid), {
-      xp: state.xp, nivel: state.nivel, lenguaje: state.lenguaje, modo: state.modo, logros: state.logros, nombre: nombre, institucion: institucion, fechaActualizacion: new Date()
-    }, { merge: true });
-  } catch (e) { console.log("Error al guardar"); }
-}
+    
+    const langKey = state.lenguaje.toLowerCase() === "javascript" ? "js" : state.lenguaje.toLowerCase();
+    if (!state.progreso[langKey]) {
+      state.progreso[langKey] = { xp: 0, nivel: 1, logros: [], fasesCompletadas: {} };
+    }
+    
+    state.progreso[langKey].xp = state.xp;
+    state.progreso[langKey].nivel = state.nivel;
+    state.progreso[langKey].logros = state.logros;
 
+    await setDoc(doc(db, "usuarios", state.user.uid), {
+      progreso: state.progreso, 
+      lenguajeActual: state.lenguaje,
+      modo: state.modo, 
+      nombre: nombre, 
+      institucion: institucion, 
+      fechaActualizacion: new Date()
+    }, { merge: true });
+  } catch (e) { console.log("Error al guardar", e); }
+}n 
 // ==========================================
 // 6. LOGIN Y SESIÓN
 // ==========================================
@@ -197,8 +228,16 @@ document.querySelectorAll(".lang-card").forEach((card) => {
 function entrarSalon(lang) {
   state.lenguaje = lang;
   document.getElementById("salon-lenguaje").textContent = `<<< ${lang.toUpperCase()} >>>`;
-  document.querySelectorAll(".seccion").forEach((s) => s.classList.remove("activa"));
   
+  const langKey = lang.toLowerCase() === "javascript" ? "js" : lang.toLowerCase();
+  if (!state.progreso[langKey]) state.progreso[langKey] = { xp: 0, nivel: 1, logros: [], fasesCompletadas: {} };
+  
+  state.xp = state.progreso[langKey].xp;
+  state.nivel = state.progreso[langKey].nivel;
+  state.logros = state.progreso[langKey].logros || [];
+  actualizarPerfil();
+
+  document.querySelectorAll(".seccion").forEach((s) => s.classList.remove("activa"));
   document.getElementById("main-header").style.display = "none";
   document.querySelector(".menu-principal").style.display = "none";
   
@@ -209,8 +248,6 @@ function entrarSalon(lang) {
   desbloquearLogro("hola_clase"); guardarDatosNube(); 
   cargarListaAula(); 
   cargarListaPractica();
-  
-  if (!musicaActiva && typeof audioAula !== 'undefined') audioAula.play().catch(() => console.log("Esperando clic"));
 }
 
 window.salirSalon = function() {
@@ -332,7 +369,7 @@ if (!tieneFase && faseActualNum > 0) {
           return;
         }
         moduloActual = moduloReal; 
-        iniciarSecuenciaFase(moduloReal, faseString); 
+        abrirMenuFases(moduloReal)
       };
       container.appendChild(div);
     }
@@ -341,17 +378,30 @@ if (!tieneFase && faseActualNum > 0) {
   
 function abrirTeoriaSola(moduloKey) {
   if (!window.teoria || !window.teoria[moduloKey]) return;
+  moduloActual = moduloKey; // FIX: Guardar el módulo actual para que la práctica sepa a dónde ir
   document.getElementById("teoria-texto").innerHTML = window.teoria[moduloKey];
   document.getElementById("teoria-titulo").textContent = `Módulo: ${moduloKey.toUpperCase()}`;
   const audioPlayer = document.getElementById("audio-clase"); audioPlayer.src = `./audio${moduloKey}.mp3`;
   document.getElementById("btn-ir-a-practica").style.display = "block";
-  document.getElementById("salon").style.display = "none"; document.getElementById("pantalla-teoria").classList.add("activa");
+  
+  document.getElementById("salon").style.display = "none"; 
+  document.getElementById("pantalla-teoria").classList.add("activa");
   reproducirSonido("click");
 }
-
 window.irAPractica = function() {
-  reproducirSonido("click"); document.getElementById("pantalla-teoria").classList.remove("activa");
-  cargarQuiz(moduloActual, "fase1", "quiz1");
+  reproducirSonido("click"); 
+  document.getElementById("pantalla-teoria").classList.remove("activa");
+  document.body.style.overflow = "auto"; 
+
+  let moduloReal = moduloActual === "debug" ? "depuracion" : moduloActual;
+
+  document.querySelectorAll(".salon-tabs button").forEach((x) => x.classList.remove("activo"));
+  document.querySelectorAll(".salon-tab").forEach((x) => x.classList.remove("activo"));
+  document.querySelector('.salon-tabs button[data-tab="practica"]').classList.add("activo");
+  document.getElementById("tab-practica").classList.add("activo");
+
+  abrirMenuFases(moduloReal);
+}
 }
 
 // ==========================================
