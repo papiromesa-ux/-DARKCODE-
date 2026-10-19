@@ -251,7 +251,7 @@ function cargarListaAula() {
   const nombresBonitos = {
     html: "Los Cimientos (HTML)", css: "El Diseño (CSS)", cyber: "El Escudo (Cyber)", 
     api: "Comunicaciones (API)", sw: "Modo Offline (SW)", manifest: "Identidad (Manifest)", 
-    debug: "Laboratorio de Errores", repo: "El Lanzamiento (Git)", files: "El Mapa (Archivos)", 
+    debug: "Laboratorio de Errores (DEPURACIÓN)", repo: "El Lanzamiento (Git)", files: "El Mapa (Archivos)", 
     ia: "Compañero IA", hacking: "Hacker Ético", json: "Datos (JSON)", consola: "La Consola",
     js: "El Núcleo (JavaScript)", php: "El Gigante (PHP)", ruby: "El Elegante (Ruby)", 
     python: "La Serpiente (Python)", c: "La Base (C)", cpp: "Alto Rendimiento (C++)"
@@ -537,18 +537,20 @@ function cargarPregunta() {
 }
 
 window.comprobarRespuesta = function() {
-  const p = leccionActual[indicePregunta]; let esCorrecta = false;
-  const botones = document.querySelectorAll(".opcion-btn"); botones.forEach(b => b.disabled = true);
+  const p = leccionActual[indicePregunta]; 
+  let esCorrecta = false;
+  const botones = document.querySelectorAll(".opcion-btn"); 
+  botones.forEach(b => b.disabled = true);
   document.getElementById("btn-leccion-comprobar").style.display = "none";
   const feedbackDiv = document.getElementById("leccion-feedback");
-  const tituloFb = document.getElementById("feedback-titulo"); const cara = document.getElementById("minicode-cara");
+  const tituloFb = document.getElementById("feedback-titulo"); 
+  const cara = document.getElementById("minicode-cara");
   
   if (p.opciones) {
     esCorrecta = (opcionSeleccionada === p.correcta);
     if (esCorrecta) { botones[opcionSeleccionada].classList.add("correcta"); } 
     else { botones[opcionSeleccionada].classList.add("incorrecta"); botones[p.correcta].classList.add("correcta"); }
   } else if (p.codigoRoto) {
-    // VALIDACIÓN FASE 2
     const respuestaUsuario = editorReto.getValue().trim(); 
     if (p.solucion) {
       const respLimpia = respuestaUsuario.replace(/\s+/g, '').replace(/['"]/g, '').toLowerCase();
@@ -558,7 +560,6 @@ window.comprobarRespuesta = function() {
       esCorrecta = respuestaUsuario.length > 10; 
     }
   } else if (tipoQuizActual === "quiz3") {
-    // VALIDACIÓN FASE 3
     const respuestaUsuario = editorReto.getValue().trim();
     const tieneEtiquetas = respuestaUsuario.includes("<") && respuestaUsuario.includes(">");
     esCorrecta = respuestaUsuario.length > 20 && tieneEtiquetas;
@@ -568,7 +569,6 @@ window.comprobarRespuesta = function() {
     reproducirSonido("ok"); feedbackDiv.className = "feedback-container correcto";
     tituloFb.textContent = "¡Correcto! MiniCode dice:"; aciertosLeccion++; ganarXP(10);
     
-    // CARA FELIZ
     cara.className = "minicode-face feliz"; 
     document.getElementById("mc-eye-left").textContent = "^"; 
     document.getElementById("mc-eye-right").textContent = "^";
@@ -576,7 +576,6 @@ window.comprobarRespuesta = function() {
     reproducirSonido("error"); feedbackDiv.className = "feedback-container incorrecto";
     tituloFb.textContent = "Todavía no. MiniCode dice:";
     
-    // CARA TRISTE
     cara.className = "minicode-face triste"; 
     document.getElementById("mc-eye-left").textContent = "<"; 
     document.getElementById("mc-eye-right").textContent = ">";
@@ -584,8 +583,21 @@ window.comprobarRespuesta = function() {
   
   document.getElementById("feedback-texto").textContent = p.explicacion || p.atajo || "Revisa la teoría.";
   feedbackDiv.style.display = "block";
+  
+  // LÓGICA DEL BOTÓN CONTINUAR
   const btnSig = document.getElementById("btn-leccion-siguiente");
-  btnSig.style.display = "block"; btnSig.textContent = "Continuar";
+  btnSig.style.display = "block"; 
+  btnSig.textContent = "Continuar";
+  
+  // Quitamos cualquier evento anterior y ponemos el nuevo
+  btnSig.onclick = function() {
+    indicePregunta++;
+    if (indicePregunta < leccionActual.length) {
+      cargarPregunta();
+    } else {
+      terminarLeccion();
+    }
+  };
 }
   
 
