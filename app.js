@@ -173,7 +173,7 @@ async function guardarDatosNube() {
       fechaActualizacion: new Date()
     }, { merge: true });
   } catch (e) { console.log("Error al guardar", e); }
-}n 
+}
 // ==========================================
 // 6. LOGIN Y SESIÓN
 // ==========================================
@@ -402,8 +402,41 @@ window.irAPractica = function() {
 
   abrirMenuFases(moduloReal);
 }
-}
+window.abrirMenuFases = function(modulo) {
+  const modal = document.getElementById("modal-fases");
+  const contenedor = document.getElementById("fases-botones");
+  document.getElementById("fases-titulo").textContent = `Práctica: ${modulo.toUpperCase()}`;
+  contenedor.innerHTML = "";
 
+  const fases = ["Fase 1", "Fase 2", "Fase 3"];
+  
+  fases.forEach((faseTexto, index) => {
+    const faseString = `fase${index + 1}`;
+    const tieneFase = window.baseDePreguntas[modulo] && window.baseDePreguntas[modulo][faseString];
+    
+    const btn = document.createElement("button");
+    btn.className = "boton";
+    btn.style.width = "100%";
+    btn.style.padding = "15px 10px";
+    btn.style.fontSize = "1rem";
+    btn.textContent = faseTexto;
+    
+    if (!tieneFase) {
+      btn.disabled = true;
+      btn.style.opacity = "0.5";
+      btn.style.background = "#333";
+      btn.textContent = `${faseTexto} (Pronto)`;
+    } else {
+      btn.onclick = () => {
+        modal.style.display = "none";
+        iniciarSecuenciaFase(modulo, faseString);
+      };
+    }
+    contenedor.appendChild(btn);
+  });
+
+  modal.style.display = "flex";
+}
 // ==========================================
 // 10. REPRODUCTOR DE MÚSICA Y AJUSTES
 // ==========================================
