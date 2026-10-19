@@ -28,6 +28,16 @@
     </div>
   </div>
 </div>
+ <!-- MODAL DE SELECCIÓN DE FASE -->
+<div id="modal-fases" class="modal-overlay" style="display: none; z-index: 10001;">
+  <div class="modal-box">
+    <h3 id="fases-titulo">Elige la Fase</h3>
+    <div id="fases-botones" style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+      <!-- Aquí JavaScript inyectará los botones de Fase 1, 2 y 3 -->
+    </div>
+    <button class="boton-cancelar" onclick="document.getElementById('modal-fases').style.display='none'" style="margin-top: 20px; width: 100%;">Cancelar</button>
+  </div>
+</div> 
 
 <!-- LOGIN -->
 <div id="login-screen" class="login-screen">
