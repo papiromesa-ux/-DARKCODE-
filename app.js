@@ -519,7 +519,13 @@ function cargarPregunta() {
     if(!editorReto) { editorReto = ace.edit("editor-reto"); editorReto.setTheme("ace/theme/monokai"); }
     editorReto.session.setMode("ace/mode/html"); editorReto.setValue(p.codigoRoto);
     document.getElementById("btn-leccion-comprobar").disabled = false;
-  }
+  } else if (tipoQuizActual === "quiz3") {
+  document.getElementById("contenedor-editor-reto").style.display = "block";
+  if(!editorReto) { editorReto = ace.edit("editor-reto"); editorReto.setTheme("ace/theme/monokai"); }
+  editorReto.session.setMode("ace/mode/html"); 
+  editorReto.setValue(""); 
+  document.getElementById("btn-leccion-comprobar").disabled = false;
+}
   document.getElementById("btn-leccion-comprobar").style.display = "block";
   document.getElementById("btn-leccion-siguiente").style.display = "none";
   document.getElementById("leccion-feedback").style.display = "none";
@@ -564,9 +570,6 @@ window.comprobarRespuesta = function() {
   btnSig.style.display = "block"; btnSig.textContent = "Continuar";
 }
 
-window.siguientePregunta = function() { indicePregunta++; cargarPregunta(); }
-
-// ... línea 566
 window.siguientePregunta = function() { indicePregunta++; cargarPregunta(); }
 
 // ==========================================
