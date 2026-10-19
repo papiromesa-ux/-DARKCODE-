@@ -238,6 +238,37 @@ document.querySelectorAll(".salon-tabs button").forEach((b) => {
 // ==========================================
 // 9. CARGAR AULA Y PRÁCTICA
 // ==========================================
+function cargarListaAula() {
+  const container = document.getElementById("aula-contenedor-lista"); if (!container) return; container.innerHTML = "";
+  if (!window.teoria) { container.innerHTML = `<p style="color:red;">Error: No se encontró clases.js</p>`; return; }
+  
+  const modulosComunes = ["html", "css", "cyber", "api", "sw", "manifest", "debug", "repo", "files", "ia", "hacking", "json", "consola"];
+  let moduloLenguaje = state.lenguaje.toLowerCase();
+  if (moduloLenguaje === "javascript") moduloLenguaje = "js";
+  if (moduloLenguaje === "c++") moduloLenguaje = "cpp";
+  const modulosPermitidos = [...modulosComunes, moduloLenguaje];
+
+  const nombresBonitos = {
+    html: "Los Cimientos (HTML)", css: "El Diseño (CSS)", cyber: "El Escudo (Cyber)", 
+    api: "Comunicaciones (API)", sw: "Modo Offline (SW)", manifest: "Identidad (Manifest)", 
+    debug: "Laboratorio de Errores", repo: "El Lanzamiento (Git)", files: "El Mapa (Archivos)", 
+    ia: "Compañero IA", hacking: "Hacker Ético", json: "Datos (JSON)", consola: "La Consola",
+    js: "El Núcleo (JavaScript)", php: "El Gigante (PHP)", ruby: "El Elegante (Ruby)", 
+    python: "La Serpiente (Python)", c: "La Base (C)", cpp: "Alto Rendimiento (C++)"
+  };
+
+  Object.keys(window.teoria).forEach((modulo) => {
+    if (modulosPermitidos.includes(modulo)) {
+      const btn = document.createElement("button"); btn.className = "boton";
+      btn.style.marginBottom = "10px"; btn.style.width = "100%"; btn.style.textAlign = "left";
+      const nombre = nombresBonitos[modulo] || modulo.toUpperCase();
+      btn.innerHTML = `<strong>${nombre}</strong>`; 
+      btn.onclick = () => abrirTeoriaSola(modulo); 
+      container.appendChild(btn);
+    }
+  });
+}
+
 function cargarListaPractica() {
   const container = document.getElementById("mapa-misiones-container"); 
   if (!container) return; 
