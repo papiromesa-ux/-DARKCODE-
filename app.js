@@ -565,17 +565,85 @@ window.comprobarRespuesta = function() {
 
 window.siguientePregunta = function() { indicePregunta++; cargarPregunta(); }
 
+// ... línea 566
+window.siguientePregunta = function() { indicePregunta++; cargarPregunta(); }
+
+// ==========================================
+// 13. LÓGICA DE QUIZZES SECUENCIALES (FASES)
+// ==========================================
+let faseActualString = "";
+let tipoQuizActual = ""; 
+const SECUENCIA_QUIZ = ["quiz1", "quiz2", "quiz3"];
+
+window.iniciarSecuenciaFase = function(modulo, fase) {
+  moduloActual = modulo;
+  faseActualString = fase;
+  tipoQuizActual = "quiz1";
+  cargarQuiz(modulo, fase, tipoQuizActual);
+}
+
+function siguienteQuizDeFase() {
+  const indexActual = SECUENCIA_QUIZ.indexOf(tipoQuizActual);
+  
+  if (indexActual < SECUENCIA_QUIZ.length - 1) {
+    tipoQuizActual = SECUENCIA_QUIZ[indexActual + 1];
+    document.getElementById("pantalla-leccion").classList.remove("activa");
+    
+    setTimeout(() => {
+      const existeSiguiente = window.baseDePreguntas[moduloActual]?.[faseActualString]?.[tipoQuizActual];
+      if (existeSiguiente) {
+        cargarQuiz(moduloActual, faseActualString, tipoQuizActual);
+      } else {
+        siguienteQuizDeFase(); 
+      }
+    }, 1000);
+  } else {
+    finalizarFaseCompleta();
+  }
+}
+
 function terminarLeccion() {
   audioQuiz.pause(); audioQuiz.currentTime = 0;
   if (musicaActiva && musicaFondo) { musicaFondo.play().catch(()=>{}); } else { audioAula.play().catch(()=>{}); }
-  document.getElementById("pantalla-leccion").classList.remove("activa");
-  document.getElementById("salon").style.display = "block";
+  
   const porcentajeAcierto = (aciertosLeccion / leccionActual.length) * 100;
+  
   if (porcentajeAcierto >= 60) {
-    ganarXP(20); mostrarToast("¡Módulo Superado!", `Has acertado ${aciertosLeccion} de ${leccionActual.length}.`, "exito");
+    ganarXP(20); 
+    mostrarToast("¡Superado!", `Has acertado ${aciertosLeccion} de ${leccionActual.length} en ${tipoQuizActual.toUpperCase()}.`, "exito");
+    siguienteQuizDeFase();
   } else {
     mostrarToast("Casi lo logras", `Acertaste ${aciertosLeccion} de ${leccionActual.length}. Repasa e intenta de nuevo.`, "error");
+    document.getElementById("pantalla-leccion").classList.remove("activa");
+    document.getElementById("salon").style.display = "block";
+    cargarListaPractica(); 
   }
+}
+
+function finalizarFaseCompleta() {
+  document.getElementById("pantalla-leccion").classList.remove("activa");
+  document.getElementById("salon").style.display = "block";
+  
+  const langKey = state.lenguaje.toLowerCase() === "javascript" ? "js" : state.lenguaje.toLowerCase();
+  if (!state.progreso[langKey].fasesCompletadas) state.progreso[langKey].fasesCompletadas = {};
+  
+  const numFase = parseInt(faseActualString.replace("fase", ""));
+  state.progreso[langKey].fasesCompletadas[moduloActual] = numFase;
+  
+  guardarDatosNube();
+  cargarListaPractica(); 
+  
+  const faseSiguienteString = `fase${numFase + 1}`;
+  const hayFaseSiguiente = window.baseDePreguntas[moduloActual] && window.baseDePreguntas[moduloActual][faseSiguienteString];
+
+  if (!hayFaseSiguiente) {
+    mostrarToast("¡Módulo Terminado!", `Has completado todo el contenido disponible de ${moduloActual.toUpperCase()}.`, "logro");
+  }
+  
+  lanzarConfeti();
+  mostrarToast("¡Fase Completada!", `Has terminado ${moduloActual.toUpperCase()} ${faseActualString.toUpperCase()}.`, "logro");
+  reproducirSonido("ok");
+
 }
 
 // ==========================================
