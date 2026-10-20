@@ -104,8 +104,25 @@ body.dazer .logo-front, body.dazer .logo-back { mix-blend-mode: normal; }
    SALÓN Y MAPA
    ========================================= */
 .salon-top { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 12px; }
-.boton-salir { background: transparent; color: var(--text-2); border: none; font-size: 0.9rem; cursor: pointer; margin-bottom: 10px; display: block; text-align: left; transition: color 0.2s; flex-shrink: 0; }
-.boton-salir:hover { color: var(--accent); }
+/* Botón de Salir Estilo Rojo */
+.boton-salir {
+  background-color: #dc2626 !important; 
+  color: #ffffff !important;
+  border: 2px solid #b91c1c !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  font-weight: bold !important;
+  font-size: 0.9rem !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5) !important;
+  transition: transform 0.1s, background 0.2s !important;
+  display: inline-block !important;
+  margin-bottom: 10px !important;
+}
+.boton-salir:active {
+  transform: scale(0.95) !important;
+  background-color: #b91c1c !important;
+}
 .salon-tabs { display: flex; overflow-x: auto; gap: 6px; padding: 8px 0; margin-bottom: 12px; border-bottom: 1px solid var(--border); }
 .salon-tabs button { background: transparent; color: var(--text-2); border: 1px solid var(--border); padding: 6px 12px; border-radius: 999px; font-size: 0.75rem; white-space: nowrap; cursor: pointer; transition: all 0.2s; }
 .salon-tabs button.activo { background: var(--accent-2); color: #fff; border-color: var(--accent-3); }
