@@ -488,7 +488,8 @@ window.toggleMusica = function() {
     audioAula.play().catch(() => console.log("Esperando clic"));
     mostrarToast("Música", `Cambiando a la pista ${indiceRelax + 1}`, "exito");
   }
-  reproducirSonido("click");FUNCIONESCUENTA EN FUNCIONES
+  reproducirSonido("click");
+}
 function ganarXP(cantidad) {
   state.xp += cantidad;
   if (state.xp >= 100) {
