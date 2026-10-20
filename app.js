@@ -769,14 +769,25 @@ const observerExamen = new MutationObserver(() => {
 observerExamen.observe(document.getElementById("pantalla-leccion"), { attributes: true, attributeFilter: ["class"] });
 
 document.addEventListener('contextmenu', (event) => {
+  // Si el alumno está en la Teoría, ignoramos el anti-trampa (para que pueda hacer zoom)
+  const enTeoria = document.getElementById("pantalla-teoria").classList.contains("activa");
+  if (enTeoria) return; 
+
   if (enExamen) { event.preventDefault(); window.location.href = "bloqueo.html"; }
 });
 
 document.addEventListener('dblclick', (event) => {
+  const enTeoria = document.getElementById("pantalla-teoria").classList.contains("activa");
+  if (enTeoria) return; 
+
   if (enExamen) { event.preventDefault(); window.location.href = "bloqueo.html"; }
 });
 
 document.addEventListener("visibilitychange", () => {
+  // Si el alumno está en la Teoría, no hacemos nada (así el zoom no lo expulsa)
+  const enTeoria = document.getElementById("pantalla-teoria").classList.contains("activa");
+  if (enTeoria) return;
+
   if (document.hidden && enExamen) { window.location.href = "bloqueo.html"; }
 });
 
