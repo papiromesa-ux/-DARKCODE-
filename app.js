@@ -133,7 +133,13 @@ async function cargarDatosNube(uid) {
       if(data.nombre) document.getElementById("input-nombre").value = data.nombre;
       if(data.institucion) document.getElementById("select-institucion").value = data.institucion;
       if(data.foto) document.getElementById("avatar-img").src = data.foto;
-      
+    
+      // VALIDACIÓN DEL REGISTRO OBLIGATORIO
+if (!data.alias || !data.institucion) {
+  document.getElementById("modal-registro").style.display = "flex";
+} else {
+  document.getElementById("modal-registro").style.display = "none";
+}
       aplicarModo(state.modo); actualizarPerfil();
     }
   } catch (e) { console.log("Firebase sin conexión", e); }
@@ -199,20 +205,22 @@ window.cambiarSeccion = function(seccion) {
 window.guardarPerfil = function() { reproducirSonido("ok"); guardarDatosNube(); mostrarToast("Perfil", "Datos guardados correctamente", "exito"); }
 window.enviarRecomendacion = function() {
   const txt = document.getElementById("txt-recomendacion").value;
+  const tipo = document.getElementById("tipo-recomendacion").value;
+  const web = document.getElementById("web-origen").value;
   
   if(txt.trim() === "") { 
     mostrarToast("Aviso", "Escribe algo antes de enviar.", "error"); 
     return; 
   }
 
-  // 8 IDENTIDAD linea de código 208
   const miNumero = "50368405099";
-  const nombreAlumno = state.user ? (state.user.displayName || "Alumno de DARKCODE") : "Alumno Anónimo";
-  const mensaje = ` ZALGERT ARESIVIR ${nombreAlumno}.\n\nMi recomendación/error en <DARKCODE> es:\n"${txt}"\n\n---\nA FIRMA ZALGERT-FOR-YOU\nDAZER SYSTEM`;
-  const url = `https://wa.me/${miNumero}?text=${encodeURIComponent(mensaje)}`;
-  window.open(url, '_blank');
+  const nombreAlumno = state.user ? (state.user.displayName || "Alumno") : "Alumno Anónimo";
   
-  mostrarToast("¡Gracias!", "Abriendo WhatsApp para enviar tu recomendación.", "exito");
+  const mensaje = `ZALGERT FOR YOU\n\nDe: ${nombreAlumno}\nWeb: ${web}\nTipo: ${tipo}\n\nMensaje:\n"${txt}"`;
+  const url = `https://wa.me/${miNumero}?text=${encodeURIComponent(mensaje)}`;
+  
+  window.open(url, '_blank');
+  mostrarToast("¡Gracias!", "Abriendo WhatsApp...", "exito");
   document.getElementById("txt-recomendacion").value = ""; 
   reproducirSonido("ok");
 }
@@ -400,39 +408,60 @@ window.irAPractica = function() {
   abrirMenuFases(moduloReal);
 }
 window.abrirMenuFases = function(modulo) {
-  const modal = document.getElementById("modal-fases");
-  const contenedor = document.getElementById("fases-botones");
-  document.getElementById("fases-titulo").textContent = `Práctica: ${modulo.toUpperCase()}`;
-  contenedor.innerHTML = "";
+  // Si ya hay un panel abierto para este módulo, lo cerramos (efecto acordeón)
+  const panelViejo = document.getElementById("panel-fases-" + modulo);
+  if (panelViejo) { panelViejo.remove(); return; }
 
-  const fases = ["Fase 1", "Fase 2", "Fase 3"];
+  // Cerramos cualquier otro panel que esté abierto
+  document.querySelectorAll(".panel-fases-desplegable").forEach(p => p.remove());
+
+  // Buscamos el nodo del módulo que el usuario tocó
+  const nodo = document.querySelector(`.nodo-mision[data-modulo="${modulo}"]`);
+  if (!nodo) return;
+
+  const langKey = state.lenguaje.toLowerCase() === "javascript" ? "js" : state.lenguaje.toLowerCase();
+  const progresoActual = state.progreso[langKey]?.fasesCompletadas || {};
+  const faseActualNum = progresoActual[modulo] || 0; 
+
+  const panel = document.createElement("div");
+  panel.id = "panel-fases-" + modulo;
+  panel.className = "panel-fases-desplegable";
   
+  const fases = ["Fase 1", "Fase 2", "Fase 3"];
+  let htmlBotones = `<div style="display:flex; gap:10px; padding: 10px; justify-content: center;">`;
+
   fases.forEach((faseTexto, index) => {
-    const faseString = `fase${index + 1}`;
+    const numFase = index + 1;
+    const faseString = `fase${numFase}`;
     const tieneFase = window.baseDePreguntas[modulo] && window.baseDePreguntas[modulo][faseString];
     
-    const btn = document.createElement("button");
-    btn.className = "boton";
-    btn.style.width = "100%";
-    btn.style.padding = "15px 10px";
-    btn.style.fontSize = "1rem";
-    btn.textContent = faseTexto;
-    
-    if (!tieneFase) {
-      btn.disabled = true;
-      btn.style.opacity = "0.5";
-      btn.style.background = "#333";
-      btn.textContent = `${faseTexto} (Pronto)`;
-    } else {
-      btn.onclick = () => {
-        modal.style.display = "none";
-        iniciarSecuenciaFase(modulo, faseString);
-      };
-    }
-    contenedor.appendChild(btn);
-  });
+    let icono = "";
+    let bloqueado = false;
 
-  modal.style.display = "flex";
+    // Lógica de Candados y Checks
+    if (numFase <= faseActualNum) {
+      icono = "✔ "; // Ya la completó
+    } else if (numFase === faseActualNum + 1) {
+      icono = "▶ "; // Es la siguiente, puede jugar
+    } else {
+      icono = "🔒 "; // Bloqueada
+      bloqueado = true;
+    }
+
+    if (!tieneFase) {
+      htmlBotones += `<button class="boton" disabled style="padding: 10px; opacity: 0.3; font-size: 0.8rem; background: #333;">${faseTexto} (Pronto)</button>`;
+    } else if (bloqueado) {
+      htmlBotones += `<button class="boton" disabled style="padding: 10px; opacity: 0.5; font-size: 0.8rem; background: #333;">🔒 ${faseTexto}</button>`;
+    } else {
+      htmlBotones += `<button class="boton" onclick="iniciarSecuenciaFase('${modulo}', '${faseString}')" style="padding: 10px; font-size: 0.8rem;">${icono}${faseTexto}</button>`;
+    }
+  });
+  
+  htmlBotones += `</div>`;
+  panel.innerHTML = htmlBotones;
+
+  // Inserta el panel justo debajo del nodo clickeado
+  nodo.parentNode.insertBefore(panel, nodo.nextSibling);
 }
 // 12 DEEZER STAFF línea de código 437 \\
 document.querySelectorAll(".modo-btn").forEach((b) => {
