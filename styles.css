@@ -245,6 +245,67 @@ body.dazer .boton { background: #fff; color: #000; box-shadow: none; }
 #teoria-texto ul, #teoria-texto ol { margin: 16px 0; padding-left: 24px; }
 #teoria-texto li { margin-bottom: 8px; color: var(--text-2); }
 #teoria-texto pre { background: var(--code-bg); padding: 10px; border-radius: 8px; overflow-x: auto; border: 1px solid var(--border); }
+/* =========================================
+   MODAL DE CONFIRMACIÓN (SALIR DEL QUIZ)
+   ========================================= */
+#modal-confirmacion {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  display: none; 
+  justify-content: center;
+  align-items: center;
+  z-index: 999999; /* Por encima del Quiz (z-index: 500) */
+}
+
+#modal-confirmacion .modal-box {
+  background: var(--card);
+  border: 2px solid var(--accent);
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 350px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+}
+
+#modal-confirmacion h3 {
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+#modal-confirmacion p {
+  color: var(--text-2);
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+#modal-confirmacion .modal-botones {
+  display: flex;
+  gap: 12px;
+}
+
+#modal-confirmacion .boton-cancelar {
+  flex: 1;
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#modal-confirmacion .boton-aceptar {
+  flex: 1;
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
 /* =========================================
    ARREGLOS DE DISEÑO Y ANIMACIONES (MODAL DE FASES CORREGIDO)
