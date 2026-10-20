@@ -344,6 +344,7 @@ function cargarListaPractica() {
       const hayFaseSiguiente = window.baseDePreguntas[moduloReal] && window.baseDePreguntas[moduloReal][faseSiguienteString];
 
       const div = document.createElement("div");
+      div.dataset.modulo= moduloReal;
       
       let icono = ">";
 let textoEstado = `Fase ${faseActualNum + 1}`;
