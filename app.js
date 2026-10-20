@@ -484,21 +484,19 @@ if (selectMusica) {
 }
 
 window.toggleMusica = function() {
-  if (!selectMusica || selectMusica.value === "") {
-    selectMusica.selectedIndex = 1;
+  // Si la música estaba pausada, la reanudamos
+  if (audioAula.paused) {
+    audioAula.play().catch(() => console.log("Esperando clic"));
+    mostrarToast("Música", "Reproduciendo música de fondo", "exito");
   } else {
-    let nextIndex = selectMusica.selectedIndex + 1;
-    if (nextIndex >= selectMusica.options.length) nextIndex = 1;
-    selectMusica.selectedIndex = nextIndex;
+    // Si ya estaba sonando, pasamos a la siguiente canción
+    indiceRelax = (indiceRelax + 1) % listaRelax.length;
+    audioAula.src = listaRelax[indiceRelax];
+    audioAula.play().catch(() => console.log("Esperando clic"));
+    mostrarToast("Música", `Cambiando a la pista ${indiceRelax + 1}`, "exito");
   }
-  musicaFondo.src = selectMusica.value;
-  musicaFondo.play().catch(() => console.log("Esperando clic para audio"));
-  musicaActiva = true;
-  audioAula.pause();
-  mostrarToast("Música", `Reproduciendo: ${selectMusica.options[selectMusica.selectedIndex].text}`, "exito");
   reproducirSonido("click");
 }
-
 // ==========================================
 // 11. SISTEMA DE XP Y PERFIL
 // ==========================================
