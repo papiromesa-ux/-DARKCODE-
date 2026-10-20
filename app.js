@@ -784,3 +784,53 @@ history.pushState(null, null, location.href);
 window.onpopstate = function () {
   if (enExamen) { window.location.href = "bloqueo.html"; }
 };
+
+// ==========================================
+// 15. ZOOM CON PELLIZCO (PINCH-TO-ZOOM) PARA TEORÍA
+// ==========================================
+let distanciaInicial = 0;
+
+document.addEventListener("touchstart", function(e) {
+  // Si detecta 2 dedos en la pantalla (solo si estamos en la teoría)
+  if (e.touches.length === 2 && document.getElementById("pantalla-teoria").classList.contains("activa")) {
+    const teoria = document.getElementById("teoria-texto");
+    // Calculamos la distancia entre los dos dedos
+    distanciaInicial = Math.hypot(
+      e.touches[0].pageX - e.touches[1].pageX,
+      e.touches[0].pageY - e.touches[1].pageY
+    );
+    teoria.classList.add("zoom-activo"); // Activa el brillo neón
+  }
+}, { passive: false });
+
+document.addEventListener("touchmove", function(e) {
+  if (e.touches.length === 2 && document.getElementById("pantalla-teoria").classList.contains("activa")) {
+    e.preventDefault(); // Evita que la pantalla entera haga zoom (bloquea el zoom nativo)
+    
+    const teoria = document.getElementById("teoria-texto");
+    const distanciaActual = Math.hypot(
+      e.touches[0].pageX - e.touches[1].pageX,
+      e.touches[0].pageY - e.touches[1].pageY
+    );
+
+    if (distanciaInicial > 0) {
+      // Calculamos la escala (limitada entre 1 y 2.5 para que no se rompa)
+      let escala = distanciaActual / distanciaInicial;
+      escala = Math.min(Math.max(escala, 1), 2.5); 
+      
+      // Aplicamos la transformación al texto
+      teoria.style.transform = `scale(${escala})`;
+    }
+  }
+}, { passive: false });
+
+document.addEventListener("touchend", function(e) {
+  if (e.touches.length < 2) {
+    const teoria = document.getElementById("teoria-texto");
+    if (teoria) {
+      distanciaInicial = 0;
+      // Al soltar, quitamos el brillo pero dejamos el texto en el tamaño que el alumno eligió
+      setTimeout(() => teoria.classList.remove("zoom-activo"), 500);
+    }
+  }
+});
