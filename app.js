@@ -352,7 +352,7 @@ window.irAPractica = function() {
   document.querySelectorAll(".salon-tab").forEach((x) => x.classList.remove("activo"));
   document.querySelector('.salon-tabs button[data-tab="practica"]').classList.add("activo");
   document.getElementById("tab-practica").classList.add("activo");
-  abrirMenuFases(moduloReal);
+  iniciarSecuenciaFase(moduloReal,"fase1");
 }
 window.abrirMenuFases = function(modulo) {
   const panelViejo = document.getElementById("panel-fases-" + modulo);
@@ -376,11 +376,11 @@ window.abrirMenuFases = function(modulo) {
     let bloqueado = false;
     // AKJUNTOS linea de codigo 432
     if (numFase <= faseActualNum) {
-      icono = "✔ "; 
+      icono = " Completeiro "; 
     } else if (numFase === faseActualNum + 1) {
-      icono = "▶ ";
+      icono = " Te falto crack ";
     } else {
-      icono = "🔒 "; 
+      icono = " Bloquedo por tung tung sahur "; 
       bloqueado = true;
     }
     if (!tieneFase) {
@@ -691,13 +691,11 @@ document.addEventListener('dblclick', (event) => {
   if (enExamen) { event.preventDefault(); window.location.href = "bloqueo.html"; }
 });
 document.addEventListener("visibilitychange", () => {
-  // Si el alumno está en la Teoría, no hacemos nada (así el zoom no lo expulsa)
   const enTeoria = document.getElementById("pantalla-teoria").classList.contains("activa");
   if (enTeoria) return;
 
   if (document.hidden && enExamen) { window.location.href = "bloqueo.html"; }
 });
-
 history.pushState(null, null, location.href);
 window.onpopstate = function () {
   if (enExamen) { window.location.href = "bloqueo.html"; }
@@ -733,8 +731,31 @@ document.addEventListener("touchend", function(e) {
     const teoria = document.getElementById("teoria-texto");
     if (teoria) {
       distanciaInicial = 0;
-      // Al soltar, quitamos el brillo pero dejamos el texto en el tamaño que el alumno eligió
       setTimeout(() => teoria.classList.remove("zoom-activo"), 500);
     }
   }
 });
+window.guardarRegistroObligatorio = async function() {
+  const alias = document.getElementById("reg-alias").value.trim();
+  const institucion = document.getElementById("reg-institucion").value;
+
+  if (!alias || !institucion) {
+    mostrarToast("Aviso", "Por favor, llena tu alias y elige una institución.", "error");
+    return;
+  }
+
+  if (state.user) {
+    await setDoc(doc(db, "usuarios", state.user.uid), {
+      alias: alias,
+      institucion: institucion,
+      perfilCompleto: true
+    }, { merge: true });
+
+    document.getElementById("modal-registro").style.display = "none";
+    document.getElementById("select-institucion").value = institucion;
+    document.getElementById("input-nombre").value = alias;
+    
+    mostrarToast("¡Bienvenido!", `Prepárate para dominar el código, ${alias}.`, "exito");
+    lanzarConfeti();
+  }
+}
