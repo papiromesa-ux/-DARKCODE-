@@ -1,10 +1,8 @@
+// 1 MODULO PARA NO OLVIDAR MIS ARTEFACTOS \\
+// 1 FIREBASE linea de codigo 2\\
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
-
-// ==========================================
-// 1. CONFIGURACIÓN DE FIREBASE
-// ==========================================
 const firebaseConfig = {
   apiKey: "AIzaSyCJLUtvrmiCuGqFu4_gj5P9vH4kUhDa2yA",
   authDomain: "darkcode-3691d.firebaseapp.com",
@@ -20,9 +18,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// ==========================================
-// 2. ESTADO GLOBAL Y LOGROS
-// ==========================================
+//  2 JSONS COMPLEJOS Y SISTEMA DE LOGROS A MI LÓGICA linea de codigo 21 \\
 const state = {
   user: null, lenguaje: "JavaScript", modo: localStorage.getItem("dc_modo") || "dark",
   sonidoBotones: localStorage.getItem("dc_sb") !== "0", xp: 0, nivel: 1,
@@ -50,9 +46,7 @@ const TODOS_LOS_LOGROS = [
   { id: "escupe_agua", titulo: "Escupe Agua", desc: "Terminar casi todo PHP" }
 ];
 
-// ==========================================
-// 3. SISTEMA DE NOTIFICACIONES Y SONIDOS
-// ==========================================
+// 3 LOGICA DE NOTIFICACIONES linea de codigo 49 \\
 function mostrarToast(titulo, mensaje, tipo = "error") {
   const container = document.getElementById("notificaciones-container");
   const toast = document.createElement("div");
@@ -78,9 +72,7 @@ function reproducirSonido(tipo) {
   } catch (e) {}
 }
 
-// ==========================================
-// 4. LOGROS Y CONFETI
-// ==========================================
+// 4 CONFETI Y ARCHIVO LET linea de código 75 \\
 function lanzarConfeti() {
   const container = document.getElementById("confetti-container");
   for (let i = 0; i < 50; i++) {
@@ -114,9 +106,7 @@ function renderizarLogros() {
   });
 }
 
-// ==========================================
-// 5. FIRESTORE (NUBE)
-// ==========================================
+// 5 NUBE linea de código 109 \\
 async function cargarDatosNube(uid) {
   try {
     const docSnap = await getDoc(doc(db, "usuarios", uid));
@@ -174,9 +164,7 @@ async function guardarDatosNube() {
     }, { merge: true });
   } catch (e) { console.log("Error al guardar", e); }
 }
-// ==========================================
-// 6. LOGIN Y SESIÓN
-// ==========================================
+// 6 LOGIN SAYKO  linea de codigo 167 sixseven jajaja\\
 document.getElementById("btn-google")?.addEventListener("click", async () => {
   try { await signInWithPopup(auth, provider); reproducirSonido("ok"); } catch (error) { lanzarError(403, "Acceso denegado."); }
 });
@@ -195,9 +183,7 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// ==========================================
-// 7. NAVEGACIÓN PRINCIPAL
-// ==========================================
+// 7 NAVEGADOR linea de código 186\\
 window.cambiarSeccion = function(seccion) {
   reproducirSonido("click");
   document.querySelectorAll(".menu-principal button").forEach((x) => x.classList.remove("activo"));
@@ -213,14 +199,25 @@ window.cambiarSeccion = function(seccion) {
 window.guardarPerfil = function() { reproducirSonido("ok"); guardarDatosNube(); mostrarToast("Perfil", "Datos guardados correctamente", "exito"); }
 window.enviarRecomendacion = function() {
   const txt = document.getElementById("txt-recomendacion").value;
-  if(txt.trim() === "") { mostrarToast("Aviso", "Escribe algo antes de enviar.", "error"); return; }
-  mostrarToast("¡Gracias!", "Tu recomendación ha sido enviada.", "exito");
-  document.getElementById("txt-recomendacion").value = ""; reproducirSonido("ok");
+  
+  if(txt.trim() === "") { 
+    mostrarToast("Aviso", "Escribe algo antes de enviar.", "error"); 
+    return; 
+  }
+
+  // 8 IDENTIDAD linea de código 208
+  const miNumero = "50368405099";
+  const nombreAlumno = state.user ? (state.user.displayName || "Alumno de DARKCODE") : "Alumno Anónimo";
+  const mensaje = ` ZALGERT ARESIVIR ${nombreAlumno}.\n\nMi recomendación/error en <DARKCODE> es:\n"${txt}"\n\n---\nA FIRMA ZALGERT-FOR-YOU\nDAZER SYSTEM`;
+  const url = `https://wa.me/${miNumero}?text=${encodeURIComponent(mensaje)}`;
+  window.open(url, '_blank');
+  
+  mostrarToast("¡Gracias!", "Abriendo WhatsApp para enviar tu recomendación.", "exito");
+  document.getElementById("txt-recomendacion").value = ""; 
+  reproducirSonido("ok");
 }
 
-// ==========================================
-// 8. ENTRAR AL SALÓN
-// ==========================================
+// 9 SELECTOR Y PREGUNTADOR JS línea de código 220 \\
 document.querySelectorAll(".lang-card").forEach((card) => {
   card.addEventListener("click", () => { reproducirSonido("ok"); entrarSalon(card.dataset.lang); });
 });
@@ -272,9 +269,7 @@ document.querySelectorAll(".salon-tabs button").forEach((b) => {
   });
 });
 
-// ==========================================
-// 9. CARGAR AULA Y PRÁCTICA
-// ==========================================
+// 10 CEREBRO DE CARGA DE LISTA DE AULA línea de código 272 \\
 function cargarListaAula() {
   const container = document.getElementById("aula-contenedor-lista"); if (!container) return; container.innerHTML = "";
   if (!window.teoria) { container.innerHTML = `<p style="color:red;">Error: No se encontró clases.js</p>`; return; }
@@ -375,10 +370,12 @@ if (!tieneFase && faseActualNum > 0) {
     }
   });
 }
+
+// 11 TEORIA línea de código 374 \\
   
 function abrirTeoriaSola(moduloKey) {
   if (!window.teoria || !window.teoria[moduloKey]) return;
-  moduloActual = moduloKey; // FIX: Guardar el módulo actual para que la práctica sepa a dónde ir
+  moduloActual = moduloKey; 
   document.getElementById("teoria-texto").innerHTML = window.teoria[moduloKey];
   document.getElementById("teoria-titulo").textContent = `Módulo: ${moduloKey.toUpperCase()}`;
   const audioPlayer = document.getElementById("audio-clase"); audioPlayer.src = `./audio${moduloKey}.mp3`;
@@ -437,9 +434,7 @@ window.abrirMenuFases = function(modulo) {
 
   modal.style.display = "flex";
 }
-// ==========================================
-// 10. REPRODUCTOR DE MÚSICA Y AJUSTES
-// ==========================================
+// 12 DEEZER STAFF línea de código 437 \\
 document.querySelectorAll(".modo-btn").forEach((b) => {
   b.addEventListener("click", () => {
     reproducirSonido("click"); state.modo = b.dataset.modo; localStorage.setItem("dc_modo", state.modo);
@@ -484,22 +479,16 @@ if (selectMusica) {
 }
 
 window.toggleMusica = function() {
-  // Si la música estaba pausada, la reanudamos
   if (audioAula.paused) {
     audioAula.play().catch(() => console.log("Esperando clic"));
     mostrarToast("Música", "Reproduciendo música de fondo", "exito");
   } else {
-    // Si ya estaba sonando, pasamos a la siguiente canción
     indiceRelax = (indiceRelax + 1) % listaRelax.length;
     audioAula.src = listaRelax[indiceRelax];
     audioAula.play().catch(() => console.log("Esperando clic"));
     mostrarToast("Música", `Cambiando a la pista ${indiceRelax + 1}`, "exito");
   }
-  reproducirSonido("click");
-}
-// ==========================================
-// 11. SISTEMA DE XP Y PERFIL
-// ==========================================
+  reproducirSonido("click");FUNCIONESCUENTA EN FUNCIONES
 function ganarXP(cantidad) {
   state.xp += cantidad;
   if (state.xp >= 100) {
@@ -518,9 +507,7 @@ function actualizarPerfil() {
 
 window.cerrarSesion = function() { signOut(auth).then(() => location.reload()); }
 
-// ==========================================
-// 12. EDITOR DE CÓDIGO
-// ==========================================
+// 13 EDITOR ACE línea de código 510 \\
 let editorSalon;
 window.addEventListener("load", () => {
   if (typeof ace === "undefined") return;
@@ -536,9 +523,7 @@ window.ejecutarSalon = function() {
   ganarXP(5);
 }
 
-// ==========================================
-// 13. LÓGICA DE QUIZZES (MINICODE CARAS)
-// ==========================================
+// 14 SALTADOR INICIADOR ÍNDICE PREGUNTA LAPSO OX línea de código 526\\
 let leccionActual = [], indicePregunta = 0, opcionSeleccionada = null, aciertosLeccion = 0, moduloActual = "";
 let editorReto = null;
 
@@ -590,7 +575,6 @@ function cargarPregunta() {
   const contenedor = document.getElementById("leccion-opciones"); contenedor.innerHTML = ""; opcionSeleccionada = null;
   
   if (p.opciones) {
-    // APAGAMOS EL BOTÓN COMPROBAR HASTA QUE EL ALUMNO ELIJA UNA OPCIÓN
     document.getElementById("btn-leccion-comprobar").disabled = true;
     document.getElementById("contenedor-editor-reto").style.display = "none";
 
@@ -604,7 +588,6 @@ function cargarPregunta() {
       contenedor.appendChild(btn);
     });
   } else if (p.codigoRoto || tipoQuizActual === "quiz3") {
-    // ABRIMOS EL EDITOR PARA LA FASE 2 Y 3
     document.getElementById("contenedor-editor-reto").style.display = "block";
     if(!editorReto) { editorReto = ace.edit("editor-reto"); editorReto.setTheme("ace/theme/monokai"); }
     editorReto.session.setMode("ace/mode/html"); 
@@ -665,12 +648,12 @@ window.comprobarRespuesta = function() {
   document.getElementById("feedback-texto").textContent = p.explicacion || p.atajo || "Revisa la teoría.";
   feedbackDiv.style.display = "block";
   
-  // LÓGICA DEL BOTÓN CONTINUAR
+  // LÓGICA DEL BOTÓN CONTINUAR linea de código 651\\
   const btnSig = document.getElementById("btn-leccion-siguiente");
   btnSig.style.display = "block"; 
   btnSig.textContent = "Continuar";
   
-  // Quitamos cualquier evento anterior y ponemos el nuevo
+  // SaK \\
   btnSig.onclick = function() {
     indicePregunta++;
     if (indicePregunta < leccionActual.length) {
@@ -684,9 +667,7 @@ window.comprobarRespuesta = function() {
 
 window.siguientePregunta = function() { indicePregunta++; cargarPregunta(); }
 
-// ==========================================
-// 13. LÓGICA DE QUIZZES SECUENCIALES (FASES)
-// ==========================================
+// LOGICA QUIZ \\
 let faseActualString = "";
 let tipoQuizActual = ""; 
 const SECUENCIA_QUIZ = ["quiz1", "quiz2", "quiz3"];
@@ -762,9 +743,7 @@ function finalizarFaseCompleta() {
 
 }
 
-// ==========================================
-// 14. MODALES Y SISTEMA ANTI-TRAMPA
-// ==========================================
+// MODAL DE MIERDA Y SISTEMA ANTIPERROS \\
 window.abrirModalSalir = function() { document.getElementById("modal-confirmacion").style.display = "flex"; }
 window.cerrarModalConfirmacion = function() { document.getElementById("modal-confirmacion").style.display = "none"; }
 window.confirmarSalida = function() {
