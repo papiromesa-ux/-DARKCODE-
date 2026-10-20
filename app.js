@@ -161,13 +161,14 @@ async function guardarDatosNube() {
     state.progreso[langKey].logros = state.logros;
 
     await setDoc(doc(db, "usuarios", state.user.uid), {
-      progreso: state.progreso, 
-      lenguajeActual: state.lenguaje,
-      modo: state.modo, 
-      nombre: nombre, 
-      institucion: institucion, 
-      fechaActualizacion: new Date()
-    }, { merge: true });
+  progreso: state.progreso, 
+  lenguajeActual: state.lenguaje,
+  modo: state.modo, 
+  nombre: nombre, 
+  alias: document.getElementById("reg-alias")?.value || "", 
+  institucion: institucion, 
+  fechaActualizacion: new Date()
+}, { merge: true });
   } catch (e) { console.log("Error al guardar", e); }
 }
 // 6 LOGIN SAYKO  linea de codigo 167 sixseven jajaja\\
