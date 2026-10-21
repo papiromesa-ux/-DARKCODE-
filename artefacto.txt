@@ -1,1 +1,49 @@
+=== DOCUMENTACION DARKCODE ===
 
+--- 1. NUCLEO (Los que hacen que todo funcione) ---
+index.html: Interfaz grafica principal.
+ropa.css: TODOS los estilos visuales del proyecto.
+cerebro.js: Logica central (XP, navegacion, modales, musica).
+firebase.js: Configuracion de Firebase y base de datos (Conexion).
+sw.js: Service Worker (Control de cache PWA).
+manifest.json: Configuracion de la PWA.
+pantalla_anti-trampa.html: Bloqueo de seguridad.
+
+--- 2. BASES DE DATOS (Contenido masivo) ---
+clases.js: Textos de teoria (7000+ lineas).
+quiz.js: Preguntas de los quizzes (7000+ lineas).
+
+--- 3. MODULOS DE FUNCIONALIDAD (Logica separada) ---
+kiosco.js: Tienda, inventario y compras.
+chibis.js: Logica y animaciones de las mascotas.
+minijuego.js: El nuevo juego para ganar monedas.
+cosméticos.js: Marcos, titulos, temas y personalizacion.
+minicode.js: Logica del asistente MiniCode (el que te habla en el salon).
+descargas.js: Gestion de archivos y descargas.
+
+--- 4. EXTRAS Y UTILIDADES ---
+créditos.js: Pantalla de agradecimientos y creditos.
+gráficos.js: Posibles graficos o estadisticas (XP, historial).
+deepseek.js: Integracion o conexion con la IA (si es el caso).
+ablandador.js: (Si es un modulo de utilidades o animaciones).
+artefacto.txt / libreta.txt: Este archivo de documentacion.
+
+--- 5. IMAGENES Y LOGOS ---
+icon-*.png: Iconos de la PWA.
+php1.png / php2.png: Logos de PHP.
+ruby1.png / ruby2.png: Logos de Ruby.
+js1.png / js2.png: Logos de JavaScript.
+c1.png / c2.png: Logos de C.
+cpp1.png / cpp2.png: Logos de C++.
+python1.png / python2.png: Logos de Python.
+
+--- 6. AUDIOS RELAX (Salon) ---
+audio1.mp3 a audio15.mp3
+
+--- 7. AUDIOS QUIZ (Suspenso) ---
+audioquiz1.mp3, audioquiz2.mp3
+
+--- 8. AUDIOS DE TEORIA (Voz de profesor) ---
+Se cargan dinamicamente buscando: audio[modulo].mp3
+Ejemplos: audiohtml.mp3, audiocss.mp3, audiojs.mp3, etc.
+NOTA: No van en el sw.js para no saturar la PWA.
