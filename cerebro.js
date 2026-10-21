@@ -695,15 +695,26 @@ function finalizarFaseCompleta() {
   document.getElementById("salon").style.display = "block";
   const langKey = state.lenguaje.toLowerCase() === "javascript" ? "js" : state.lenguaje.toLowerCase();
   if (!state.progreso[langKey].fasesCompletadas) state.progreso[langKey].fasesCompletadas = {};
+  
   const numFase = parseInt(faseActualString.replace("fase", ""));
   state.progreso[langKey].fasesCompletadas[moduloActual] = numFase;
+
+  // RECOMPENSA POR FASE
+  agregarMonedas(10, 0, `Fase ${numFase} de ${moduloActual.toUpperCase()}`);
+
   guardarDatosNube();
   cargarListaPractica(); 
+  
   const faseSiguienteString = `fase${numFase + 1}`;
   const hayFaseSiguiente = window.baseDePreguntas[moduloActual] && window.baseDePreguntas[moduloActual][faseSiguienteString];
+  
   if (!hayFaseSiguiente) {
     mostrarToast("¡Módulo Terminado!", `Has completado todo el contenido disponible de ${moduloActual.toUpperCase()}.`, "logro");
+    
+    // RECOMPENSA POR MÓDULO COMPLETO (Bills)
+    agregarMonedas(30, 1, `¡Módulo ${moduloActual.toUpperCase()} completado!`);
   }
+  
   lanzarConfeti();
   mostrarToast("¡Fase Completada!", `Has terminado ${moduloActual.toUpperCase()} ${faseActualString.toUpperCase()}.`, "logro");
   reproducirSonido("ok");
@@ -718,6 +729,8 @@ window.confirmarSalida = function() {
   document.getElementById("pantalla-teoria").classList.remove("activa");
   document.getElementById("pantalla-leccion").classList.remove("activa");
   document.getElementById("salon").style.display = "block";
+  cargarListaAula(); 
+}
 }
 let enExamen = false;
 const observerExamen = new MutationObserver(() => {
@@ -834,4 +847,27 @@ window.borrarMisDatos = async function() {
       mostrarToast("Error", "No se pudo borrar la información.", "error");
     }
   }
+}
+window.reclamarRecompensaDiaria = function() {
+  const hoy = new Date().toDateString();
+  if (state.ultimaRecompensa === hoy) {
+    mostrarToast("Aviso", "Ya reclamaste tu recompensa hoy. Vuelve mañana.", "error");
+    return;
+  }
+  
+  const rand = Math.random() * 100;
+  let dc = 0, db = 0, rareza = "Común";
+
+  if (rand < 49) { dc = 10; }
+  else if (rand < 59) { dc = 20; }
+  else if (rand < 69) { dc = 30; }
+  else if (rand < 79) { dc = 40; }
+  else if (rand < 89) { dc = 50; }
+  else if (rand < 99) { db = 1; rareza = "Raro"; }
+  else { db = 10; rareza = "¡LEGENDARIO!"; }
+
+  state.ultimaRecompensa = hoy;
+  lanzarConfeti();
+  agregarMonedas(dc, db, `Recompensa Diaria (${rareza})`);
+  document.getElementById("modal-recompensa").style.display = "none";
 }
