@@ -21,7 +21,11 @@ const state = {
   user: null, lenguaje: "JavaScript", modo: localStorage.getItem("dc_modo") || "dark",
   sonidoBotones: localStorage.getItem("dc_sb") !== "0", xp: 0, nivel: 1,
   logros: JSON.parse(localStorage.getItem("dc_logros")) || [],
-  progreso:{}
+  progreso:{},
+  billetera: { dc: 0, db: 0 },
+  lenguajesVistos: [],
+  ejecucionesEditor: 0,
+  ultimaRecompensa: ""
 };
 const TODOS_LOS_LOGROS = [
   { id: "hola_clase", titulo: "Hola Clase", desc: "Entrar a una clase" },
