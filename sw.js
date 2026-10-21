@@ -8,7 +8,7 @@ const LOCALES = [
   "./clases.js", 
   "./quiz.js", 
   "./manifest.json",
-  "./pantalla anti-trampa.html",
+  "./pantalla_anti-trampa.html",
   "./icon-48.png", "./icon-72.png", "./icon-96.png", "./icon-114.png", "./icon-192.png", "./icon-512.png",
   "./audio1.mp3", "./audio2.mp3", "./audio3.mp3", "./audio4.mp3", "./audio5.mp3", 
   "./audio6.mp3", "./audio7.mp3", "./audio8.mp3", "./audio9.mp3", "./audio10.mp3", 
