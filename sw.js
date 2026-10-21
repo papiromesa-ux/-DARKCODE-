@@ -1,5 +1,4 @@
 const CACHE = "darkcode-Release3.1"; 
-
 const LOCALES = [
   "./", 
   "./index.html", 
@@ -16,19 +15,16 @@ const LOCALES = [
   "./audioquiz1.mp3", "./audioquiz2.mp3" "./audiohtml.mp3", "./audiocss.mp3", "./audiojs.mp3", 
   "./audiophp.mp3","./audioruby.mp3","./audiopy.mp3","./audioc.mp3","./audiocpp.mp3",
 ];
-
 const NO_CACHEAR = [
   "googleapis.com", "gstatic.com", "firebaseapp.com", "firebaseio.com", 
   "google-analytics.com", "googletagmanager.com", "firestore.googleapis.com"
 ];
-
 self.addEventListener("install", (e) => {
   self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE).then((c) => c.addAll(LOCALES).catch(() => {}))
   );
 });
-
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches.keys().then((claves) => 
@@ -36,14 +32,11 @@ self.addEventListener("activate", (e) => {
     ).then(() => self.clients.claim())
   );
 });
-
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = req.url;
-
   if (NO_CACHEAR.some((d) => url.includes(d))) return;
-
   if (req.mode === "navigate") {
     e.respondWith(
       fetch(req).then((res) => {
@@ -54,7 +47,6 @@ self.addEventListener("fetch", (e) => {
     );
     return;
   }
-
   e.respondWith(
     caches.match(req).then((res) => {
       return res || fetch(req).then((r) => {
