@@ -197,16 +197,18 @@ window.cambiarSeccion = function(seccion) {
 window.guardarPerfil = function() { reproducirSonido("ok"); guardarDatosNube(); mostrarToast("Perfil", "Datos guardados correctamente", "exito"); }
 window.enviarRecomendacion = function() {
   const txt = document.getElementById("txt-recomendacion").value;
-  const tipo = document.getElementById("tipo-recomendacion").value;
-  const web = document.getElementById("web-origen").value;
+  
   if(txt.trim() === "") { 
     mostrarToast("Aviso", "Escribe algo antes de enviar.", "error"); 
     return; 
   }
+
   const miNumero = "50368405099";
   const nombreAlumno = state.user ? (state.user.displayName || "Alumno") : "Alumno Anónimo";
-  const mensaje = `ZALGERT FOR YOU\n\nDe: ${nombreAlumno}\nWeb: ${web}\nTipo: ${tipo}\n\nMensaje:\n"${txt}"`;
+  
+  const mensaje = `ZALGERT FOR YOU\n\nDe: ${nombreAlumno}\n\nManifiesto:\n"${txt}"`;
   const url = `https://wa.me/${miNumero}?text=${encodeURIComponent(mensaje)}`;
+  
   window.open(url, '_blank');
   mostrarToast("¡Gracias!", "Abriendo WhatsApp...", "exito");
   document.getElementById("txt-recomendacion").value = ""; 
@@ -396,7 +398,7 @@ window.abrirMenuFases = function(modulo) {
     if (!tieneFase) {
       htmlBotones += `<button class="boton" disabled style="padding: 10px; opacity: 0.3; font-size: 0.8rem; background: #333;">${faseTexto} (Pronto)</button>`;
     } else if (bloqueado) {
-      htmlBotones += `<button class="boton" disabled style="padding: 10px; opacity: 0.5; font-size: 0.8rem; background: #333;">🔒 ${faseTexto}</button>`;
+      htmlBotones += `<button class="boton" disabled style="padding: 10px; opacity: 0.5; font-size: 0.8rem; background: #333;">${faseTexto}</button>`;
     } else {
       htmlBotones += `<button class="boton" onclick="iniciarSecuenciaFase('${modulo}', '${faseString}')" style="padding: 10px; font-size: 0.8rem;">${icono}${faseTexto}</button>`;
     }
