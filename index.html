@@ -204,25 +204,17 @@
   
   <h4>Música de fondo</h4>
   <div class="musica-config" style="margin-bottom: 20px;">
-    <select id="select-musica" style="width:100%; padding:15px; border-radius:10px; border:1px solid var(--accent); background:var(--card); color:var(--text); font-size:1rem; font-weight:bold; outline:none; appearance:none; -webkit-appearance:none; -moz-appearance:none; cursor:pointer; background-image: url('data:image/svg+xml;utf8,<svg fill=\'%23a855f7\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>'); background-repeat:no-repeat; background-position:right 10px center;">
-  <option value="" style="color: #000; background: #fff;">Sin música</option>
-  <option value="./audio1.mp3">Música 1 (Relax)</option>
-  <option value="./audio2.mp3">Música 2 (Relax)</option>
-  <option value="./audio3.mp3">Música 3 (Relax)</option>
-  <option value="./audio4.mp3">Música 4 (Relax)</option>
-  <option value="./audio5.mp3">Música 5 (Relax)</option>
-  <option value="./audio6.mp3">Música 6 (Relax)</option>
-  <option value="./audio7.mp3">Música 7 (Relax)</option>
-  <option value="./audio8.mp3">Música 8 (Relax)</option>
-  <option value="./audio9.mp3">Música 9 (Relax)</option>
-  <option value="./audio10.mp3">Música 10 (Relax)</option>
-  <option value="./audio11.mp3">Música 11 (Relax)</option>
-  <option value="./audio12.mp3">Música 12 (Relax)</option>
-  <option value="./audio13.mp3">Música 13 (Relax)</option>
-  <option value="./audio14.mp3">Música 14 (Relax)</option>
-  <option value="./audio15.mp3">Música 15 (Relax)</option>
-  </select>
- </div>
+    <button class="boton" onclick="abrirMenuMusica()" style="width:100%; text-align:left; background: var(--card); border: 1px solid var(--accent);">
+  Música de fondo (Toca aquí para elegir)
+</button>
+<div id="modal-musica" class="modal-overlay" style="display: none; z-index: 20000;">
+  <div class="modal-box" style="max-height: 80vh; overflow-y: auto;">
+    <h3 style="color: var(--accent); margin-bottom: 15px;">Selecciona una Pista</h3>
+    <div id="lista-musica" style="display: flex; flex-direction: column; gap: 8px;">
+    </div>
+    <button class="boton-cancelar" onclick="document.getElementById('modal-musica').style.display='none'" style="margin-top: 15px; width: 100%;">Cerrar</button>
+  </div>
+</div>
   
   <h4>Sonidos de la app</h4>
   <label class="switch"><input type="checkbox" id="sonido-botones" checked><span>Sonido de botones</span></label>
