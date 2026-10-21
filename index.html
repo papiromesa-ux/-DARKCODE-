@@ -47,6 +47,30 @@
     </button>
   </div>
 </div>
+  <!-- MODAL DE REGISTRO OBLIGATORIO -->
+<div id="modal-registro" class="modal-overlay" style="display: none; z-index: 20000;">
+  <div class="modal-box" style="max-width: 450px; width: 90%; text-align: left;">
+    <h2 class="logo-3d" style="text-align: center; margin-bottom: 15px;">&lt;BIENVENIDO&gt;</h2>
+    <p style="text-align: center; color: var(--text-2); margin-bottom: 20px;">Antes de empezar, cuéntanos quién eres.</p>
+    
+    <label>Alias (¿Cómo te llamamos?):</label>
+    <input type="text" id="reg-alias" placeholder="Ej. brr brr patapim" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-2); color: var(--text); margin-bottom: 15px;">
+
+    <label>sitio de aloho:</label>
+    <select id="reg-institucion" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-2); color: var(--text); margin-bottom: 15px;">
+      <option value="">-- Selecciona tu centro de estudios --</option>
+      <option value="Instituto Nacional">Instituto Nacional</option>
+      <option value="Refugio Sifontes">Refugio Sifontes</option>
+      <option value="Delmira Molina">Delmira Molina</option>
+    <select id="reg-Generles" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-2); color: var(--text); margin-bottom: 15px;">
+      <option value="JSON">JSON</option>
+      <option value="Vocalista">Vocalista</option>
+      <option value="Directiva">Directiva</option>
+    </select>
+
+    <button class="boton" onclick="guardarRegistroObligatorio()" style="width: 100%; margin-top: 10px;">¡Comenzar a Aprender!</button>
+  </div>
+</div>
 <!-- HEADER -->
 <header id="main-header">
   <h1 class="logo-3d">&lt;DARKCODE&gt;</h1>
