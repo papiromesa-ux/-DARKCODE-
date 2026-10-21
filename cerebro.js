@@ -3,6 +3,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyCJLUtvrmiCuGqFu4_gj5P9vH4kUhDa2yA",
   authDomain: "darkcode-3691d.firebaseapp.com",
@@ -16,6 +17,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
+
 //  2 JSONS COMPLEJOS Y SISTEMA DE LOGROS A MI LÓGICA linea de codigo 21 \\
 const state = {
   user: null, lenguaje: "JavaScript", modo: localStorage.getItem("dc_modo") || "dark",
@@ -27,6 +29,7 @@ const state = {
   ejecucionesEditor: 0,
   ultimaRecompensa: ""
 };
+
 const TODOS_LOS_LOGROS = [
   { id: "hola_clase", titulo: "Hola Clase", desc: "Entrar a una clase" },
   { id: "esqueletico", titulo: "Esquelético", desc: "Fase 1 HTML: Completada" },
@@ -46,6 +49,7 @@ const TODOS_LOS_LOGROS = [
   { id: "serpiente", titulo: "Serpiente", desc: "Terminar la mitad de Python" },
   { id: "escupe_agua", titulo: "Escupe Agua", desc: "Terminar casi todo PHP" }
 ];
+
 // 3 LOGICA DE NOTIFICACIONES linea de codigo 49 \\
 function mostrarToast(titulo, mensaje, tipo = "error") {
   const container = document.getElementById("notificaciones-container");
@@ -69,6 +73,7 @@ function reproducirSonido(tipo) {
     osc.start(); osc.stop(ctx.currentTime + 0.15);
   } catch (e) {}
 }
+
 // 4 CONFETI Y ARCHIVO LET linea de código 75 \\
 function lanzarConfeti() {
   const container = document.getElementById("confetti-container");
@@ -105,6 +110,7 @@ function renderizarLogros() {
     container.appendChild(div);
   });
 }
+
 // 5 NUBE linea de código 109 \\
 async function cargarDatosNube(uid) {
   try {
@@ -113,21 +119,21 @@ async function cargarDatosNube(uid) {
       const data = docSnap.data();
       state.modo = data.modo || "dark";
       
-if (data.billetera) state.billetera = data.billetera;
-if (data.lenguajesVistos) state.lenguajesVistos = data.lenguajesVistos;
-if (data.ejecucionesEditor) state.ejecucionesEditor = data.ejecucionesEditor;
-if (data.ultimaRecompensa) state.ultimaRecompensa = data.ultimaRecompensa;
+      if (data.billetera) state.billetera = data.billetera;
+      if (data.lenguajesVistos) state.lenguajesVistos = data.lenguajesVistos;
+      if (data.ejecucionesEditor) state.ejecucionesEditor = data.ejecucionesEditor;
+      if (data.ultimaRecompensa) state.ultimaRecompensa = data.ultimaRecompensa;
       
       if (data.progreso) {
         state.progreso = data.progreso;
       } else {
         const langKey = state.lenguaje.toLowerCase() === "javascript" ? "js" : state.lenguaje.toLowerCase();
-        state.progreso = { [langKey]: { xp: data.xp || 0, nivel: data.nivel || 1, logros: data.logros || [], fasesCompletadas: {} } };
+        state.progreso = { [langKey]: { xp: data.xp || 0, nivel: data.nivel || 1, logros: data.logros || [], fasesCompletadas: {}, clasesVistas: [] } };
       }
 
       const langKey = state.lenguaje.toLowerCase() === "javascript" ? "js" : state.lenguaje.toLowerCase();
       if (!state.progreso[langKey]) {
-        state.progreso[langKey] = { xp: 0, nivel: 1, logros: [], fasesCompletadas: {} };
+        state.progreso[langKey] = { xp: 0, nivel: 1, logros: [], fasesCompletadas: {}, clasesVistas: [] };
       }
       
       state.xp = state.progreso[langKey].xp;
@@ -138,20 +144,17 @@ if (data.ultimaRecompensa) state.ultimaRecompensa = data.ultimaRecompensa;
       if(data.institucion) document.getElementById("select-institucion").value = data.institucion;
       if(data.foto) document.getElementById("avatar-img").src = data.foto;
       
-      
       if (!data.alias || !data.institucion) {
         document.getElementById("modal-registro").style.display = "flex";
       } else {
         document.getElementById("modal-registro").style.display = "none";
       }
-
       aplicarModo(state.modo); actualizarPerfil();
       
     } else {
-      // EL DOCUMENTO NO EXISTE (Cuenta borrada o nueva)
       document.getElementById("input-nombre").value = "";
-      localStorage.removeItem("dc_logros"); // Limpiamos la memoria del celular
-      document.getElementById("modal-registro").style.display = "flex"; // Forzamos el registro
+      localStorage.removeItem("dc_logros"); 
+      document.getElementById("modal-registro").style.display = "flex"; 
     }
   } catch (e) { console.log("Firebase sin conexión", e); }
 }
@@ -163,22 +166,28 @@ async function guardarDatosNube() {
     
     const langKey = state.lenguaje.toLowerCase() === "javascript" ? "js" : state.lenguaje.toLowerCase();
     if (!state.progreso[langKey]) {
-      state.progreso[langKey] = { xp: 0, nivel: 1, logros: [], fasesCompletadas: {} };
+      state.progreso[langKey] = { xp: 0, nivel: 1, logros: [], fasesCompletadas: {}, clasesVistas: [] };
     }    
     state.progreso[langKey].xp = state.xp;
     state.progreso[langKey].nivel = state.nivel;
     state.progreso[langKey].logros = state.logros;
+
     await setDoc(doc(db, "usuarios", state.user.uid), {
-  progreso: state.progreso, 
-  lenguajeActual: state.lenguaje,
-  modo: state.modo, 
-  nombre: nombre, 
-  alias: document.getElementById("reg-alias")?.value || "", 
-  institucion: institucion, 
-  fechaActualizacion: new Date()
-}, { merge: true });
+      progreso: state.progreso, 
+      lenguajeActual: state.lenguaje,
+      modo: state.modo, 
+      nombre: nombre, 
+      alias: document.getElementById("reg-alias")?.value || "", 
+      institucion: institucion, 
+      fechaActualizacion: new Date(),
+      billetera: state.billetera,
+      lenguajesVistos: state.lenguajesVistos,
+      ejecucionesEditor: state.ejecucionesEditor,
+      ultimaRecompensa: state.ultimaRecompensa
+    }, { merge: true });
   } catch (e) { console.log("Error al guardar", e); }
 }
+
 // 6 LOGIN SAYKO  linea de codigo 174 \\
 document.getElementById("btn-google")?.addEventListener("click", async () => {
   try { await signInWithPopup(auth, provider); reproducirSonido("ok"); } catch (error) { lanzarError(403, "Acceso denegado."); }
@@ -196,6 +205,7 @@ onAuthStateChanged(auth, (user) => {
     renderizarLogros();
   }
 });
+
 // 7 NAVEGADOR linea de código 193 \\
 window.cambiarSeccion = function(seccion) {
   reproducirSonido("click");
@@ -211,23 +221,17 @@ window.cambiarSeccion = function(seccion) {
 window.guardarPerfil = function() { reproducirSonido("ok"); guardarDatosNube(); mostrarToast("Perfil", "Datos guardados correctamente", "exito"); }
 window.enviarRecomendacion = function() {
   const txt = document.getElementById("txt-recomendacion").value;
-  
-  if(txt.trim() === "") { 
-    mostrarToast("Aviso", "Escribe algo antes de enviar.", "error"); 
-    return; 
-  }
-
+  if(txt.trim() === "") { mostrarToast("Aviso", "Escribe algo antes de enviar.", "error"); return; }
   const miNumero = "50368405099";
   const nombreAlumno = state.user ? (state.user.displayName || "Alumno") : "Alumno Anónimo";
-  
   const mensaje = `ZALGERT FOR YOU\n\nDe: ${nombreAlumno}\n\nManifiesto:\n"${txt}"`;
   const url = `https://wa.me/${miNumero}?text=${encodeURIComponent(mensaje)}`;
-  
   window.open(url, '_blank');
   mostrarToast("¡Gracias!", "Abriendo WhatsApp...", "exito");
   document.getElementById("txt-recomendacion").value = ""; 
   reproducirSonido("ok");
 }
+
 // 9 SELECTOR Y PREGUNTADOR JS línea de código 229 \\
 document.querySelectorAll(".lang-card").forEach((card) => {
   card.addEventListener("click", () => { reproducirSonido("ok"); entrarSalon(card.dataset.lang); });
@@ -235,8 +239,15 @@ document.querySelectorAll(".lang-card").forEach((card) => {
 function entrarSalon(lang) {
   state.lenguaje = lang;
   document.getElementById("salon-lenguaje").textContent = `<<< ${lang.toUpperCase()} >>>`;
+  
+  if (!state.lenguajesVistos) state.lenguajesVistos = [];
+  if (!state.lenguajesVistos.includes(lang)) {
+    state.lenguajesVistos.push(lang);
+    agregarMonedas(50, 0, `¡Nuevo lenguaje explorado: ${lang}!`);
+  }
+
   const langKey = lang.toLowerCase() === "javascript" ? "js" : lang.toLowerCase();
-  if (!state.progreso[langKey]) state.progreso[langKey] = { xp: 0, nivel: 1, logros: [], fasesCompletadas: {} };
+  if (!state.progreso[langKey]) state.progreso[langKey] = { xp: 0, nivel: 1, logros: [], fasesCompletadas: {}, clasesVistas: [] };
   state.xp = state.progreso[langKey].xp;
   state.nivel = state.progreso[langKey].nivel;
   state.logros = state.progreso[langKey].logros || [];
@@ -251,7 +262,6 @@ function entrarSalon(lang) {
   cargarListaAula(); 
   cargarListaPractica();
 }
-
 window.salirSalon = function() {
   reproducirSonido("click");
   document.querySelectorAll(".seccion").forEach((s) => s.classList.remove("activa"));
@@ -270,6 +280,7 @@ document.querySelectorAll(".salon-tabs button").forEach((b) => {
     b.classList.add("activo"); document.getElementById("tab-" + b.dataset.tab).classList.add("activo");
   });
 });
+
 // 10 CEREBRO DE CARGA DE LISTA DE AULA línea de código 281 \\
 function cargarListaAula() {
   const container = document.getElementById("aula-contenedor-lista"); if (!container) return; container.innerHTML = "";
@@ -287,12 +298,20 @@ function cargarListaAula() {
     js: "El Núcleo (JavaScript)", php: "El Gigante (PHP)", ruby: "El Elegante (Ruby)", 
     python: "La Serpiente (Python)", c: "La Base (C)", cpp: "Alto Rendimiento (C++)"
   };
+  
+  const langKey = state.lenguaje.toLowerCase() === "javascript" ? "js" : state.lenguaje.toLowerCase();
+  const clasesVistas = state.progreso[langKey]?.clasesVistas || [];
+
   Object.keys(window.teoria).forEach((modulo) => {
     if (modulosPermitidos.includes(modulo)) {
       const btn = document.createElement("button"); btn.className = "boton";
       btn.style.marginBottom = "10px"; btn.style.width = "100%"; btn.style.textAlign = "left";
       const nombre = nombresBonitos[modulo] || modulo.toUpperCase();
-      btn.innerHTML = `<strong>${nombre}</strong>`; 
+      
+      const yaVista = clasesVistas.includes(modulo);
+      const prefijo = yaVista ? "[OK] " : "";
+      btn.innerHTML = `<strong>${prefijo}${nombre}</strong>`; 
+
       btn.onclick = () => abrirTeoriaSola(modulo); 
       container.appendChild(btn);
     }
@@ -323,23 +342,21 @@ function cargarListaPractica() {
       const faseActualNum = progresoActual[moduloReal] || 0;
       const faseString = `fase${faseActualNum + 1}`;    
       const tieneFase = window.baseDePreguntas[moduloReal] && window.baseDePreguntas[moduloReal][faseString];
-      const faseSiguienteString = `fase${faseActualNum + 2}`;
-      const hayFaseSiguiente = window.baseDePreguntas[moduloReal] && window.baseDePreguntas[moduloReal][faseSiguienteString];
       const div = document.createElement("div");
       div.dataset.modulo= moduloReal;    
       let icono = ">";
-let textoEstado = `Fase ${faseActualNum + 1}`;
-if (!tieneFase && faseActualNum > 0) {
-  div.className = "nodo-mision completado";
-  icono = "OK";
-  textoEstado = "Completado";
-} else if (!tieneFase) {
-  div.className = "nodo-mision bloqueado";
-  icono = "X";
-  textoEstado = "Proximamente...";
-} else {
-  div.className = "nodo-mision actual";
-}
+      let textoEstado = `Fase ${faseActualNum + 1}`;
+      if (!tieneFase && faseActualNum > 0) {
+        div.className = "nodo-mision completado";
+        icono = "OK";
+        textoEstado = "Completado";
+      } else if (!tieneFase) {
+        div.className = "nodo-mision bloqueado";
+        icono = "X";
+        textoEstado = "Proximamente...";
+      } else {
+        div.className = "nodo-mision actual";
+      }
       div.innerHTML = `<div class="circulo-mision">${icono}</div><div class="info-mision"><strong>Práctica: ${modulo.toUpperCase()}</strong><small>${textoEstado}</small></div>`;
       div.onclick = () => { 
         if (!tieneFase && faseActualNum > 0) {
@@ -357,20 +374,44 @@ if (!tieneFase && faseActualNum > 0) {
     }
   });
 }
+
 // 11 TEORIA línea de código 383 \\  
+let timerTeoria = null;
 function abrirTeoriaSola(moduloKey) {
   if (!window.teoria || !window.teoria[moduloKey]) return;
   moduloActual = moduloKey; 
+  
+  const langKey = state.lenguaje.toLowerCase() === "javascript" ? "js" : state.lenguaje.toLowerCase();
+  if (!state.progreso[langKey]) state.progreso[langKey] = { xp: 0, nivel: 1, logros: [], fasesCompletadas: {}, clasesVistas: [] };
+  if (!state.progreso[langKey].clasesVistas) state.progreso[langKey].clasesVistas = [];
+  if (!state.progreso[langKey].clasesVistas.includes(moduloKey)) {
+    state.progreso[langKey].clasesVistas.push(moduloKey);
+    guardarDatosNube(); 
+  }
+
   document.getElementById("teoria-texto").innerHTML = window.teoria[moduloKey];
   document.getElementById("teoria-titulo").textContent = `Módulo: ${moduloKey.toUpperCase()}`;
-  const audioPlayer = document.getElementById("audio-clase"); audioPlayer.src = `./audio${moduloKey}.mp3`;
+  const audioPlayer = document.getElementById("audio-clase"); 
+  audioPlayer.src = `./audio${moduloKey}.mp3`;
   document.getElementById("btn-ir-a-practica").style.display = "block";
   document.getElementById("salon").style.display = "none"; 
   document.getElementById("pantalla-teoria").classList.add("activa");
   reproducirSonido("click");
+
+  if (timerTeoria) clearInterval(timerTeoria);
+  timerTeoria = setInterval(() => {
+    const pantallaTeoria = document.getElementById("pantalla-teoria");
+    if (pantallaTeoria.classList.contains("activa")) {
+      agregarMonedas(10, 0, "Lectura de teoría (1 min)");
+      clearInterval(timerTeoria);
+    } else {
+      clearInterval(timerTeoria);
+    }
+  }, 60000);
 }
 window.irAPractica = function() {
   reproducirSonido("click"); 
+  if (timerTeoria) clearInterval(timerTeoria);
   document.getElementById("pantalla-teoria").classList.remove("activa");
   document.body.style.overflow = "auto"; 
   let moduloReal = moduloActual === "debug" ? "depuracion" : moduloActual;
@@ -400,7 +441,6 @@ window.abrirMenuFases = function(modulo) {
     const tieneFase = window.baseDePreguntas[modulo] && window.baseDePreguntas[modulo][faseString];
     let icono = "";
     let bloqueado = false;
-    // AKJUNTOS linea de codigo 432
     if (numFase <= faseActualNum) {
       icono = " Completeiro "; 
     } else if (numFase === faseActualNum + 1) {
@@ -421,6 +461,7 @@ window.abrirMenuFases = function(modulo) {
   panel.innerHTML = htmlBotones;
   nodo.parentNode.insertBefore(panel, nodo.nextSibling);
 }
+
 // 12 DEEZER STAFF línea de código 437 \\
 document.querySelectorAll(".modo-btn").forEach((b) => {
   b.addEventListener("click", () => {
@@ -438,6 +479,7 @@ function aplicarModo(modo) {
   });
 }
 aplicarModo(state.modo);
+
 const listaRelax = ["./audio1.mp3", "./audio2.mp3", "./audio3.mp3", "./audio4.mp3", "./audio5.mp3", "./audio6.mp3", "./audio7.mp3", "./audio8.mp3", "./audio9.mp3", "./audio10.mp3", "./audio11.mp3", "./audio12.mp3", "./audio13.mp3", "./audio14.mp3", "./audio15.mp3"];
 let indiceRelax = 0;
 const audioAula = new Audio(listaRelax[indiceRelax]);
@@ -448,26 +490,21 @@ audioAula.addEventListener('ended', () => {
 const cancionesSuspenso = ["./audioquiz1.mp3", "./audioquiz2.mp3"];
 const audioQuiz = new Audio(); audioQuiz.loop = true; audioQuiz.volume = 0.3;
 let musicaFondo = new Audio(); musicaFondo.loop = false; musicaFondo.volume = 0.3; let musicaActiva = false;
-// Lógica centralizada para evitar que se traslapen las músicas
 function detenerTodaMusica() {
   musicaFondo.pause();
   audioAula.pause();
   audioQuiz.pause();
   musicaActiva = false;
 }
-
 window.abrirMenuMusica = function() {
   const modal = document.getElementById("modal-musica");
   const lista = document.getElementById("lista-musica");
   lista.innerHTML = "";
-
-  // Botón para apagar la música
   const btnOff = document.createElement("button");
   btnOff.className = "boton"; btnOff.textContent = "Sin música";
   btnOff.onclick = () => { detenerTodaMusica(); modal.style.display = "none"; mostrarToast("Música", "Apagada", "exito"); };
   lista.appendChild(btnOff);
 
-  // Botones para las 15 pistas
   for (let i = 1; i <= 15; i++) {
     const btn = document.createElement("button");
     btn.className = "boton";
@@ -475,7 +512,7 @@ window.abrirMenuMusica = function() {
     btn.style.background = "transparent";
     btn.style.border = "1px solid var(--border)";
     btn.onclick = () => {
-      detenerTodaMusica(); // PRIMERO apaga TODO para que no se traslapen
+      detenerTodaMusica();
       musicaFondo.src = `./audio${i}.mp3`;
       musicaFondo.play().catch(() => console.log("Esperando clic"));
       musicaActiva = true;
@@ -486,14 +523,12 @@ window.abrirMenuMusica = function() {
   }
   modal.style.display = "flex";
 }
-
-// El botón flotante ahora también reinicia todo para no traslapar
 window.toggleMusica = function() {
   if (musicaActiva || !audioAula.paused) {
     detenerTodaMusica();
     mostrarToast("Música", "Música apagada", "exito");
   } else {
-    detenerTodaMusica(); // Apaga todo antes de empezar
+    detenerTodaMusica();
     indiceRelax = (indiceRelax + 1) % listaRelax.length;
     audioAula.src = listaRelax[indiceRelax];
     audioAula.play().catch(() => console.log("Esperando clic"));
@@ -501,6 +536,7 @@ window.toggleMusica = function() {
   }
   reproducirSonido("click");
 }
+
 function ganarXP(cantidad) {
   state.xp += cantidad;
   if (state.xp >= 100) {
@@ -509,6 +545,24 @@ function ganarXP(cantidad) {
   }
   actualizarPerfil(); guardarDatosNube();
 }
+function agregarMonedas(dc, db, motivo) {
+  if (!state.billetera) state.billetera = { dc: 0, db: 0 };
+  state.billetera.dc += dc;
+  state.billetera.db += db;
+  
+  let texto = "";
+  if (dc > 0) texto += `+${dc} DC `;
+  if (db > 0) texto += `+${db} DB`;
+  
+  mostrarToast("Recompensa", `${motivo} | ${texto}`, "exito");
+  
+  const walletDC = document.getElementById("wallet-dc");
+  const walletDB = document.getElementById("wallet-db");
+  if (walletDC) walletDC.textContent = state.billetera.dc;
+  if (walletDB) walletDB.textContent = state.billetera.db;
+  
+  guardarDatosNube();
+}
 function actualizarPerfil() {
   document.getElementById("perfil-nivel").textContent = state.nivel;
   document.getElementById("perfil-xp").textContent = state.xp;
@@ -516,6 +570,7 @@ function actualizarPerfil() {
   renderizarLogros();
 }
 window.cerrarSesion = function() { signOut(auth).then(() => location.reload()); }
+
 // 13 EDITOR ACE línea de código 510 \\
 let editorSalon;
 window.addEventListener("load", () => {
@@ -528,8 +583,16 @@ window.ejecutarSalon = function() {
   const iframe = document.getElementById("preview-salon"); if (!editorSalon || !iframe) return;
   const codigo = editorSalon.getValue();
   iframe.srcdoc = `<!DOCTYPE html><html><head><style>body { font-family: sans-serif; padding: 10px; color: #333; background: #fff; margin: 0; }</style></head><body>${codigo}</body></html>`;
+  
+  if (state.ejecucionesEditor < 10) {
+    state.ejecucionesEditor++;
+    agregarMonedas(1, 0, "Código ejecutado");
+  } else {
+    mostrarToast("Límite alcanzado", "Mejora tu suscripción para seguir ganando monedas en el editor.", "error");
+  }
   ganarXP(5);
 }
+
 // 14 SALTADOR INICIADOR ÍNDICE PREGUNTA LAPSO OX línea de código 526\\
 let leccionActual = [], indicePregunta = 0, opcionSeleccionada = null, aciertosLeccion = 0, moduloActual = "";
 let editorReto = null;
@@ -637,12 +700,10 @@ window.comprobarRespuesta = function() {
   }
   document.getElementById("feedback-texto").textContent = p.explicacion || p.atajo || "Revisa la teoría.";
   feedbackDiv.style.display = "block";
-  // LÓGICA DEL BOTÓN CONTINUAR linea de código 651\\
   const btnSig = document.getElementById("btn-leccion-siguiente");
   btnSig.style.display = "block"; 
   btnSig.textContent = "Continuar";
   
-  // SaK \\
   btnSig.onclick = function() {
     indicePregunta++;
     if (indicePregunta < leccionActual.length) {
@@ -653,6 +714,7 @@ window.comprobarRespuesta = function() {
   };
 }
 window.siguientePregunta = function() { indicePregunta++; cargarPregunta(); }
+
 // LOGICA QUIZ \\
 let faseActualString = "";
 let tipoQuizActual = ""; 
@@ -704,9 +766,7 @@ function finalizarFaseCompleta() {
   const numFase = parseInt(faseActualString.replace("fase", ""));
   state.progreso[langKey].fasesCompletadas[moduloActual] = numFase;
 
-  // RECOMPENSA POR FASE
   agregarMonedas(10, 0, `Fase ${numFase} de ${moduloActual.toUpperCase()}`);
-
   guardarDatosNube();
   cargarListaPractica(); 
   
@@ -715,15 +775,13 @@ function finalizarFaseCompleta() {
   
   if (!hayFaseSiguiente) {
     mostrarToast("¡Módulo Terminado!", `Has completado todo el contenido disponible de ${moduloActual.toUpperCase()}.`, "logro");
-    
-    // RECOMPENSA POR MÓDULO COMPLETO (Bills)
     agregarMonedas(30, 1, `¡Módulo ${moduloActual.toUpperCase()} completado!`);
   }
-  
   lanzarConfeti();
   mostrarToast("¡Fase Completada!", `Has terminado ${moduloActual.toUpperCase()} ${faseActualString.toUpperCase()}.`, "logro");
   reproducirSonido("ok");
 }
+
 // MODAL DE MIERDA Y SISTEMA ANTIPERROS linea de codigo 716 \\
 window.abrirModalSalir = function() { document.getElementById("modal-confirmacion").style.display = "flex"; }
 window.cerrarModalConfirmacion = function() { document.getElementById("modal-confirmacion").style.display = "none"; }
@@ -731,12 +789,13 @@ window.confirmarSalida = function() {
   cerrarModalConfirmacion();
   if(typeof audioQuiz !== 'undefined') { audioQuiz.pause(); audioQuiz.currentTime = 0; }
   if (musicaActiva && musicaFondo) { musicaFondo.play().catch(()=>{}); } else if(typeof audioAula !== 'undefined') { audioAula.play().catch(()=>{}); }
+  if (timerTeoria) clearInterval(timerTeoria);
   document.getElementById("pantalla-teoria").classList.remove("activa");
   document.getElementById("pantalla-leccion").classList.remove("activa");
   document.getElementById("salon").style.display = "block";
   cargarListaAula(); 
 }
-}
+
 let enExamen = false;
 const observerExamen = new MutationObserver(() => {
   const pantallaLeccion = document.getElementById("pantalla-leccion");
@@ -755,13 +814,11 @@ document.addEventListener('contextmenu', (event) => {
 document.addEventListener('dblclick', (event) => {
   const enTeoria = document.getElementById("pantalla-teoria").classList.contains("activa");
   if (enTeoria) return; 
-
   if (enExamen) { event.preventDefault(); window.location.href = "bloqueo.html"; }
 });
 document.addEventListener("visibilitychange", () => {
   const enTeoria = document.getElementById("pantalla-teoria").classList.contains("activa");
   if (enTeoria) return;
-
   if (document.hidden && enExamen) { window.location.href = "bloqueo.html"; }
 });
 history.pushState(null, null, location.href);
@@ -803,31 +860,27 @@ document.addEventListener("touchend", function(e) {
     }
   }
 });
+
 window.guardarRegistroObligatorio = async function() {
   const alias = document.getElementById("reg-alias").value.trim();
   const inst1 = document.getElementById("reg-institucion").value;
   const inst2 = document.getElementById("reg-Generales").value;
   const inst3 = document.getElementById("reg-Trabajo").value;
-
-  // Juntamos lo que el usuario haya elegido en los 3 menús
   const institucionFinal = [inst1, inst2, inst3].filter(Boolean).join(" - ");
 
   if (!alias || !institucionFinal) {
     mostrarToast("Aviso", "Por favor, llena tu alias y elige al menos una opción en los menús.", "error");
     return;
   }
-
   if (state.user) {
     await setDoc(doc(db, "usuarios", state.user.uid), {
       alias: alias,
       institucion: institucionFinal,
       perfilCompleto: true
     }, { merge: true });
-
     document.getElementById("modal-registro").style.display = "none";
     document.getElementById("select-institucion").value = institucionFinal;
     document.getElementById("input-nombre").value = alias;
-    
     mostrarToast("¡Bienvenido!", `Prepárate para dominar el código, ${alias}.`, "exito");
     lanzarConfeti();
   }
@@ -835,24 +888,20 @@ window.guardarRegistroObligatorio = async function() {
 window.borrarMisDatos = async function() {
   if (!state.user) return;
   const confirmar = confirm("¿Estás seguro de que quieres borrar TODA tu información? Tendrás que registrarte de nuevo y perderás tu progreso.");
-  
   if (confirmar) {
     try {
       await deleteDoc(doc(db, "usuarios", state.user.uid));
       localStorage.removeItem("dc_logros");
       localStorage.removeItem("dc_quizzes_hoy");
-      
       mostrarToast("Cuenta reiniciada", "Volviendo al registro...", "exito");
-      setTimeout(() => {
-        location.reload();
-      }, 1500);
-
+      setTimeout(() => { location.reload(); }, 1500);
     } catch (e) {
       console.error("Error al borrar", e);
       mostrarToast("Error", "No se pudo borrar la información.", "error");
     }
   }
 }
+
 window.reclamarRecompensaDiaria = function() {
   const hoy = new Date().toDateString();
   if (state.ultimaRecompensa === hoy) {
