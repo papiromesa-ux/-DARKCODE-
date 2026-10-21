@@ -108,6 +108,11 @@ async function cargarDatosNube(uid) {
       const data = docSnap.data();
       state.modo = data.modo || "dark";
       
+if (data.billetera) state.billetera = data.billetera;
+if (data.lenguajesVistos) state.lenguajesVistos = data.lenguajesVistos;
+if (data.ejecucionesEditor) state.ejecucionesEditor = data.ejecucionesEditor;
+if (data.ultimaRecompensa) state.ultimaRecompensa = data.ultimaRecompensa;
+      
       if (data.progreso) {
         state.progreso = data.progreso;
       } else {
@@ -128,7 +133,7 @@ async function cargarDatosNube(uid) {
       if(data.institucion) document.getElementById("select-institucion").value = data.institucion;
       if(data.foto) document.getElementById("avatar-img").src = data.foto;
       
-      // Si los datos existen pero faltan el alias o la institución, mostramos el modal
+      
       if (!data.alias || !data.institucion) {
         document.getElementById("modal-registro").style.display = "flex";
       } else {
