@@ -1,4 +1,4 @@
-const CACHE = "darkcode-R67"; 
+const CACHE = "darkcode-Release3"; 
 
 const LOCALES = [
   "./", 
