@@ -759,3 +759,24 @@ window.guardarRegistroObligatorio = async function() {
     lanzarConfeti();
   }
 }
+window.borrarMisDatos = async function() {
+  if (!state.user) return;
+  const confirmar = confirm("¿Estás seguro de que quieres borrar TODA tu información? Tendrás que registrarte de nuevo y perderás tu progreso.");
+  
+  if (confirmar) {
+    try {
+      await deleteDoc(doc(db, "usuarios", state.user.uid));
+      localStorage.removeItem("dc_logros");
+      localStorage.removeItem("dc_quizzes_hoy");
+      
+      mostrarToast("Cuenta reiniciada", "Volviendo al registro...", "exito");
+      setTimeout(() => {
+        location.reload();
+      }, 1500);
+
+    } catch (e) {
+      console.error("Error al borrar", e);
+      mostrarToast("Error", "No se pudo borrar la información.", "error");
+    }
+  }
+}
