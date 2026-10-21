@@ -778,22 +778,27 @@ document.addEventListener("touchend", function(e) {
 });
 window.guardarRegistroObligatorio = async function() {
   const alias = document.getElementById("reg-alias").value.trim();
-  const institucion = document.getElementById("reg-institucion").value;
+  const inst1 = document.getElementById("reg-institucion").value;
+  const inst2 = document.getElementById("reg-Generales").value;
+  const inst3 = document.getElementById("reg-Trabajo").value;
 
-  if (!alias || !institucion) {
-    mostrarToast("Aviso", "Por favor, llena tu alias y elige una institución.", "error");
+  // Juntamos lo que el usuario haya elegido en los 3 menús
+  const institucionFinal = [inst1, inst2, inst3].filter(Boolean).join(" - ");
+
+  if (!alias || !institucionFinal) {
+    mostrarToast("Aviso", "Por favor, llena tu alias y elige al menos una opción en los menús.", "error");
     return;
   }
 
   if (state.user) {
     await setDoc(doc(db, "usuarios", state.user.uid), {
       alias: alias,
-      institucion: institucion,
+      institucion: institucionFinal,
       perfilCompleto: true
     }, { merge: true });
 
     document.getElementById("modal-registro").style.display = "none";
-    document.getElementById("select-institucion").value = institucion;
+    document.getElementById("select-institucion").value = institucionFinal;
     document.getElementById("input-nombre").value = alias;
     
     mostrarToast("¡Bienvenido!", `Prepárate para dominar el código, ${alias}.`, "exito");
