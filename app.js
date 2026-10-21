@@ -110,27 +110,37 @@ async function cargarDatosNube(uid) {
         const langKey = state.lenguaje.toLowerCase() === "javascript" ? "js" : state.lenguaje.toLowerCase();
         state.progreso = { [langKey]: { xp: data.xp || 0, nivel: data.nivel || 1, logros: data.logros || [], fasesCompletadas: {} } };
       }
+
       const langKey = state.lenguaje.toLowerCase() === "javascript" ? "js" : state.lenguaje.toLowerCase();
       if (!state.progreso[langKey]) {
         state.progreso[langKey] = { xp: 0, nivel: 1, logros: [], fasesCompletadas: {} };
       }
+      
       state.xp = state.progreso[langKey].xp;
       state.nivel = state.progreso[langKey].nivel;
       state.logros = state.progreso[langKey].logros || [];
+
       if(data.nombre) document.getElementById("input-nombre").value = data.nombre;
       if(data.institucion) document.getElementById("select-institucion").value = data.institucion;
       if(data.foto) document.getElementById("avatar-img").src = data.foto;
-      // VALIDACIÓN DEL REGISTRO OBLIGATORIO
-if (!data.alias || !data.institucion) {
-  document.getElementById("modal-registro").style.display = "flex";
-} else {
-  document.getElementById("modal-registro").style.display = "none";
-}
+      
+      // Si los datos existen pero faltan el alias o la institución, mostramos el modal
+      if (!data.alias || !data.institucion) {
+        document.getElementById("modal-registro").style.display = "flex";
+      } else {
+        document.getElementById("modal-registro").style.display = "none";
+      }
+
       aplicarModo(state.modo); actualizarPerfil();
+      
+    } else {
+      // EL DOCUMENTO NO EXISTE (Cuenta borrada o nueva)
+      document.getElementById("input-nombre").value = "";
+      localStorage.removeItem("dc_logros"); // Limpiamos la memoria del celular
+      document.getElementById("modal-registro").style.display = "flex"; // Forzamos el registro
     }
   } catch (e) { console.log("Firebase sin conexión", e); }
 }
-
 async function guardarDatosNube() {
   if (!state.user) return;
   try {
