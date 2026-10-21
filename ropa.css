@@ -400,26 +400,27 @@ body.dazer .boton { background: #fff; color: #000; box-shadow: none; }
   animation: slideUpFade 0.4s ease-out forwards;
 }
 /* Efecto para cuando estén haciendo pellizco en la teoría */
+/* Efecto de líneas de velocidad (Anime Speed) */
 #teoria-texto.zoom-activo {
-  transform: scale(1.15) translateY(10px) !important;
   border-color: #fff !important;
-  box-shadow: 0 0 20px #fff, 0 0 40px #a855f7 !important;
+  box-shadow: 0 0 20px #fff, 0 0 40px #a855f7, inset 0 0 20px rgba(255,255,255,0.5) !important;
   z-index: 1000;
   position: relative;
-  /* Aquí creamos las líneas de velocidad estilo anime */
-  background-image: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 10px,
-    rgba(255, 255, 255, 0.1) 10px,
-    rgba(255, 255, 255, 0.1) 20px
+  overflow: hidden;
+  /* Efecto de líneas radiales estilo anime */
+  background-image: repeating-radial-gradient(
+    circle at center,
+    transparent 0,
+    transparent 15px,
+    rgba(255, 255, 255, 0.4) 15px,
+    rgba(255, 255, 255, 0.4) 17px
   ) !important;
-  animation: animeSpeed 0.3s linear infinite !important;
+  animation: animeSpeed 0.4s linear infinite !important;
 }
 
 @keyframes animeSpeed {
-  0% { background-position: 0 0; }
-  100% { background-position: 40px 40px; }
+  0% { background-size: 100% 100%; background-position: center; }
+  100% { background-size: 150% 150%; background-position: center; }
 }
 /* =========================================
    ACORDEÓN DE FASES (TIPO DUOLINGO)
