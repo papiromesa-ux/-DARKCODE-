@@ -84,7 +84,12 @@ function desbloquearLogro(idLogro) {
   state.logros.push(idLogro);
   localStorage.setItem("dc_logros", JSON.stringify(state.logros));
   const logro = TODOS_LOS_LOGROS.find(l => l.id === idLogro);
-  if (logro) { mostrarToast("¡Misión Completada!", logro.titulo, "logro"); lanzarConfeti(); guardarDatosNube(); }
+  if (logro) { 
+    mostrarToast("¡Misión Completada!", logro.titulo, "logro"); 
+    lanzarConfeti(); 
+    agregarMonedas(50, 1, `Insignia: ${logro.titulo}`); 
+    guardarDatosNube(); 
+  }
   renderizarLogros();
 }
 function renderizarLogros() {
