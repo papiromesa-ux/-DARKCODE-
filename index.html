@@ -69,8 +69,8 @@
 <!-- ================= ESCUELA ================= -->
 <section id="inicio" class="seccion activa">
   <div class="hero-section">
-    <h2 class="animar-entrada">Bienvenido a la Escuela</h2>
-    <p class="animar-entrada delay-1">Elige tu lenguaje, desbloquea misiones y conviértete en un maestro del código.</p>
+    <h2 class="animar-entrada">ESCUELA</h2>
+    <p class="animar-entrada delay-1">Elige tu aula, la que prefieres aprender.</p>
   </div>
   
   <div class="lenguajes">
@@ -162,12 +162,14 @@
       <label>Nombre:</label>
       <input type="text" id="input-nombre" placeholder="Tu nombre" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px;">
       
-      <label>Institución o Trabajo:</label>
+      <label>sitio aloho:</label>
       <select id="select-institucion" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px;">
-        <option value="Instituto Nacional">Instituto Nacional</option>
+        <option value="Instituto Nacional">Instituto Nacional General Francisco Menéndez</option>
         <option value="Refugio Sifontes">Refugio Sifontes</option>
         <option value="Delmira Molina">Delmira Molina</option>
-        <option value="Universidad">Universidad</option>
+        <option value="JSON">JSON</option>
+        <option value="Vocalista">Vocalista</option>
+        <option value="Director">Director</option>
         <option value="Trabajo">Trabajo</option>
         <option value="Desempleado">Desempleado</option>
       </select>
@@ -182,7 +184,7 @@
     <p style="font-size: 0.8rem; text-align: right;"><span id="perfil-xp">0</span> / 100 XP</p>
   </div>
 
-  <h3 class="titulo-3d-sec" style="margin-top: 30px;">LOGROS</h3>
+  <h3 class="titulo-3d-sec" style="margin-top: 30px;">ISIGNIAS</h3>
   <div id="lista-logros" class="logros-grid"></div>
   
   <button class="boton" onclick="cerrarSesion()" style="width:100%; background:#dc2626; margin-top:20px;">Cerrar sesión</button>
@@ -190,8 +192,8 @@
 
 <!-- ================= AJUSTES ================= -->
 <section id="ajustes" class="seccion">
-  <h2>Ajustes Generales</h2>
-  <h4>Modo de color</h4>
+  <h2>ENGRANAJE</h2>
+  <h4> MODO </h4>
   <div class="modos">
     <button class="modo-btn activo" data-modo="dark">Dark (morado/negro)</button>
     <button class="modo-btn" data-modo="light">Light (blanco/amarillo)</button>
@@ -202,10 +204,10 @@
   Borrar mis datos y reiniciar
 </button>
   
-  <h4>Música de fondo</h4>
+  <h4>MUSICA</h4>
   <div class="musica-config" style="margin-bottom: 20px;">
     <button class="boton" onclick="abrirMenuMusica()" style="width:100%; text-align:left; background: var(--card); border: 1px solid var(--accent);">
-  Música de fondo (Toca aquí para elegir)
+  MUSICA-Toca aquí para elegir
 </button>
 <div id="modal-musica" class="modal-overlay" style="display: none; z-index: 20000;">
   <div class="modal-box" style="max-height: 80vh; overflow-y: auto;">
@@ -216,24 +218,25 @@
   </div>
 </div>
   
-  <h4>Sonidos de la app</h4>
+  <h4>Sonidos De Toque</h4>
   <label class="switch"><input type="checkbox" id="sonido-botones" checked><span>Sonido de botones</span></label>
   
-  <h4>Buzón de Recomendaciones</h4>
-  <textarea id="txt-recomendacion" placeholder="Escribe aquí un error que encontraste o una idea para mejorar DARKCODE..." style="width:100%; height:100px; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px;"></textarea>
-  <button class="boton" onclick="enviarRecomendacion()" style="width:100%;">Enviar Recomendación</button>
+  <h4>Manifestar</h4>
+  <textarea id="txt-Manifestacion" placeholder="Escribe/mejorar/error/contrato" style="width:100%; height:100px; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text); margin-bottom:10px;"></textarea>
+  <button class="boton" onclick="enviarRecomendacion()" style="width:100%;">Enviar Manifiesto</button>
 
-  <h4 style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 15px;">Información y Créditos</h4>
+  <h4 style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 15px;">Información</h4>
   <div class="card-creditos" style="font-size: 0.85rem; line-height: 1.8; margin-top: 10px;">
     <p><strong>Desarrolladores:</strong> papiromesa</p>
-    <p><strong>Release actual:</strong> 20 de octubre (R3)</p>
+    <p><strong>Release actual:</strong> 20 de octubre (Relsease-3)</p>
+    <p><strong>Firma</strong> ZALGERT-FOR-YOU</p>
   </div>
 </section>
 
 <!-- ================= SALÓN ================= -->
 <section id="salon" class="seccion">
   <div class="salon-top">
-    <button class="boton-salir" onclick="salirSalon()">Volver a la Escuela</button>
+    <button class="boton-salir" onclick="salirSalon()"></button>
     <h2 id="salon-lenguaje">&lt;&lt;&lt; JAVASCRIPT &gt;&gt;&gt;</h2>
   </div>
 
@@ -253,7 +256,7 @@
           <span class="mc-smile" id="mc-smile"></span>
         </div>
         <div class="minicode-speech">
-          <p style="margin:0;"><strong style="color:var(--accent);">MiniCode:</strong> ¡Hola! Soy tu compañero, seré el que te acompañe en tu carrera. ¿Empezamos?</p>
+          <p style="margin:0;"><strong style="color:var(--accent);">MiniCode:</strong> ¡Hola! Soy tu compañero, seré el que te acompañe en tu a tu momento de práctica. ¿Empezamos?</p>
         </div>
       </div>
     </div>
@@ -266,7 +269,7 @@
 
     <div id="tab-practica" class="salon-tab">
       <h3 class="titulo-3d-sec">PRÁCTICA</h3>
-      <p style="font-size:0.85rem; color:var(--text-2); margin-bottom:15px;">Demuestra lo que sabes en los Quizzes.</p>
+      <p style="font-size:0.85rem; color:var(--text-2); margin-bottom:15px;">Demuestra tu poder.</p>
       <div id="mapa-misiones-container" class="mapa-ruta"></div>
     </div>
 
@@ -278,7 +281,7 @@
           <iframe id="preview-salon" class="preview-iframe" sandbox="allow-scripts" title="Vista previa"></iframe>
         </div>
       </div>
-      <button class="boton" onclick="ejecutarSalon()">Ejecutar (+5 XP)</button>
+      <button class="boton" onclick="ejecutarSalon()">Ejecutar</button>
     </div>
   </div>
 </section>
@@ -296,7 +299,7 @@
   </div>
 
   <div class="leccion-footer">
-    <button id="btn-ir-a-practica" class="boton" onclick="irAPractica()" style="width:100%; padding:16px; font-size:1.1rem;">Estoy preparado para responder</button>
+    <button id="btn-ir-a-practica" class="boton" onclick="irAPractica()" style="width:100%; padding:16px; font-size:1.1rem;">Estoy preparado para la práctica</button>
   </div>
 </section>
 
@@ -332,13 +335,13 @@
     <div class="minicode-chat" style="margin-top: 10px;">
       <div class="minicode-speech" id="feedback-bubble">
         <h3 id="feedback-titulo" style="margin:0 0 5px 0; color:var(--accent);">MiniCode</h3>
-        <p id="feedback-texto" style="margin:0;">A su conjetura</p>
+        <p id="feedback-texto" style="margin:0;">A mi conjetura</p>
       </div>
     </div>
   </div>
 
   <div class="leccion-footer">
-    <button id="btn-leccion-comprobar" class="boton" onclick="comprobarRespuesta()" disabled>Comprobar</button>
+    <button id="btn-leccion-comprobar" class="boton" onclick="comprobarRespuesta()" disabled>Chekiar</button>
     <button id="btn-leccion-siguiente" class="boton" style="display: none;">Continuar</button>
   </div>
 </section>
@@ -360,15 +363,15 @@
     <strong>Desarrolladores:</strong> papiromesa
   </p>
   <p style="font-size: 0.85rem; color: var(--text-2); margin-bottom: 5px;">
-    <strong>Release actual:</strong> 20 de octubre (R100016)
+    <strong>Release actual:</strong> 20 de octubre (Release-3)
   </p>
   <p style="font-size: 0.75rem; color: var(--accent); margin-top: 15px; font-weight: bold; letter-spacing: 2px;">
-    &lt;DARKCODE&gt; ECOSYSTEM
+    &lt;DARKCODE&gt; 
   </p>
 </div>
 
 <script src="clases.js"></script>
 <script src="quiz.js"></script>
-<script type="module" src="app.js"></script>
+<script type="module" src="cerebro.js"></script>
 </body>
 </html>
