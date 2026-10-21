@@ -422,27 +422,56 @@ audioAula.addEventListener('ended', () => {
 const cancionesSuspenso = ["./audioquiz1.mp3", "./audioquiz2.mp3"];
 const audioQuiz = new Audio(); audioQuiz.loop = true; audioQuiz.volume = 0.3;
 let musicaFondo = new Audio(); musicaFondo.loop = false; musicaFondo.volume = 0.3; let musicaActiva = false;
-const selectMusica = document.getElementById("select-musica");
-if (selectMusica) {
-  selectMusica.addEventListener("change", (e) => {
-    const nuevaCancion = e.target.value;
-    if (nuevaCancion === "") { 
-      musicaFondo.pause(); musicaActiva = false; 
-    } else {
-      musicaFondo.src = nuevaCancion; musicaFondo.play().catch(() => console.log("Esperando clic")); 
-      musicaActiva = true; audioAula.pause(); 
-    }
-  });
+// Lógica centralizada para evitar que se traslapen las músicas
+function detenerTodaMusica() {
+  musicaFondo.pause();
+  audioAula.pause();
+  audioQuiz.pause();
+  musicaActiva = false;
 }
+
+window.abrirMenuMusica = function() {
+  const modal = document.getElementById("modal-musica");
+  const lista = document.getElementById("lista-musica");
+  lista.innerHTML = "";
+
+  // Botón para apagar la música
+  const btnOff = document.createElement("button");
+  btnOff.className = "boton"; btnOff.textContent = "Sin música";
+  btnOff.onclick = () => { detenerTodaMusica(); modal.style.display = "none"; mostrarToast("Música", "Apagada", "exito"); };
+  lista.appendChild(btnOff);
+
+  // Botones para las 15 pistas
+  for (let i = 1; i <= 15; i++) {
+    const btn = document.createElement("button");
+    btn.className = "boton";
+    btn.textContent = `Música ${i} (Relax)`;
+    btn.style.background = "transparent";
+    btn.style.border = "1px solid var(--border)";
+    btn.onclick = () => {
+      detenerTodaMusica(); // PRIMERO apaga TODO para que no se traslapen
+      musicaFondo.src = `./audio${i}.mp3`;
+      musicaFondo.play().catch(() => console.log("Esperando clic"));
+      musicaActiva = true;
+      modal.style.display = "none";
+      mostrarToast("Música", `Reproduciendo pista ${i}`, "exito");
+    };
+    lista.appendChild(btn);
+  }
+  modal.style.display = "flex";
+}
+
+// El botón flotante ahora también reinicia todo para no traslapar
 window.toggleMusica = function() {
-  if (audioAula.paused) {
-    audioAula.play().catch(() => console.log("Esperando clic"));
-    mostrarToast("Música", "Reproduciendo música de fondo", "exito");
+  if (musicaActiva || !audioAula.paused) {
+    detenerTodaMusica();
+    mostrarToast("Música", "Música apagada", "exito");
   } else {
+    detenerTodaMusica(); // Apaga todo antes de empezar
     indiceRelax = (indiceRelax + 1) % listaRelax.length;
     audioAula.src = listaRelax[indiceRelax];
     audioAula.play().catch(() => console.log("Esperando clic"));
-    mostrarToast("Música", `Cambiando a la pista ${indiceRelax + 1}`, "exito");
+    mostrarToast("Música", "Reproduciendo música de fondo", "exito");
   }
   reproducirSonido("click");
 }
