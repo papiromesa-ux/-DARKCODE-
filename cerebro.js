@@ -1,6 +1,5 @@
 // CEREBRO <DARKCODE> \\
-// 1 FIREBASE linea de codigo 2\\
-
+import { auth, db, provider, signInWithPopup, signOut, onAuthStateChanged, doc, getDoc, setDoc, deleteDoc } from "./firebase.js"
 //  2 JSONS COMPLEJOS Y SISTEMA DE LOGROS A MI LÓGICA linea de codigo 21 \\
 const state = {
   user: null, lenguaje: "JavaScript", modo: localStorage.getItem("dc_modo") || "dark",
