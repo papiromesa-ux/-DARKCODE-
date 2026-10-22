@@ -84,6 +84,7 @@
 <nav id="menu" class="menu-principal">
   <button data-seccion="inicio" class="activo" onclick="cambiarSeccion('inicio')">Escuela</button>
   <button data-seccion="perfil" onclick="cambiarSeccion('perfil')">Perfil</button>
+  <button data-seccion="kiosco" onclick="cambiarSeccion('kiosco')">Kiosco</button>
   <button data-seccion="ENGRANAJE" onclick="cambiarSeccion('ENGRANAJE')">Engranaje</button>
 </nav>
 <main>
@@ -226,9 +227,7 @@
     <button class="boton" onclick="abrirMenuMusica()" style="width:100%; text-align:left; background: var(--card); border: 1px solid var(--accent);">
   MUSICA-Toca aquí para elegir
 </button>
-    <button onclick="document.getElementById('modal-instituciones').style.display='none'" style="margin-top: 15px; width: 100%; padding: 12px; background: #dc2626; color: white; border: none; border-radius: 8px; font-weight: bold;">Cancelar</button>
-  </div>
-</div>
+    
   <h4>Sonidos De Toque</h4>
   <label class="switch"><input type="checkbox" id="sonido-botones" checked><span>Sonido de botones</span></label>
   <h4>Manifestar</h4>
@@ -286,6 +285,20 @@
       </div>
       <button class="boton" onclick="ejecutarSalon()">Ejecutar</button>
     </div>
+  </div>
+</section>
+  <!-- ================= KIOSCO ================= -->
+<section id="kiosco" class="seccion">
+  <div class="hero-section">
+    <h2 class="animar-entrada">KIOSCO DARKCODE</h2>
+    <p class="animar-entrada delay-1">El lugar donde tus monedas cobran valor.</p>
+  </div>
+  <div style="display: flex; justify-content: center; gap: 20px; font-size: 1.2rem; font-weight: bold; margin-bottom: 20px;">
+    <div style="color: #fbbf24;">DC: <span id="kiosco-dc">0</span></div>
+    <div style="color: #a855f7;">DB: <span id="kiosco-db">0</span></div>
+  </div>
+  <div id="kiosco-contenedor" style="text-align: center; color: var(--text-2); margin-top: 30px;">
+    <p>El kiosco está abierto. Pronto habrá productos disponibles.</p>
   </div>
 </section>
 <!-- TEORÍA -->
@@ -388,6 +401,7 @@
 <!-- ============================================== -->
 <script src="clases.js"></script>
 <script src="quiz.js"></script>
+<script type="module" src="kiosco.js"></script>
 <script type="module" src="cerebro.js"></script>
 </body>
 </html>
