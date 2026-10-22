@@ -783,21 +783,21 @@ observerExamen.observe(document.getElementById("pantalla-leccion"), { attributes
 document.addEventListener('contextmenu', (event) => {
   const enTeoria = document.getElementById("pantalla-teoria").classList.contains("activa");
   if (enTeoria) return; 
-  if (enExamen) { event.preventDefault(); window.location.href = "bloqueo.html"; }
+  if (enExamen) { event.preventDefault(); window.location.href = "pantalla_anti-trampa.html"; }
 });
 document.addEventListener('dblclick', (event) => {
   const enTeoria = document.getElementById("pantalla-teoria").classList.contains("activa");
   if (enTeoria) return; 
-  if (enExamen) { event.preventDefault(); window.location.href = "bloqueo.html"; }
+  if (enExamen) { event.preventDefault(); window.location.href = "pantalla_anti-trampa.html"; }
 });
 document.addEventListener("visibilitychange", () => {
   const enTeoria = document.getElementById("pantalla-teoria").classList.contains("activa");
   if (enTeoria) return;
-  if (document.hidden && enExamen) { window.location.href = "bloqueo.html"; }
+  if (document.hidden && enExamen) { window.location.href = "pantalla_anti-trampa.html"; }
 });
 history.pushState(null, null, location.href);
 window.onpopstate = function () {
-  if (enExamen) { window.location.href = "bloqueo.html"; }
+  if (enExamen) { window.location.href = "pantalla_anti-trampa.html"; }
 };
 let distanciaInicial = 0;
 document.addEventListener("touchstart", function(e) {
