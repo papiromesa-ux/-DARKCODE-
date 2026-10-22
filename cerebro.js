@@ -610,10 +610,7 @@ function cargarPregunta() {
   if (indicePregunta >= leccionActual.length) { terminarLeccion(); return; }
   const p = leccionActual[indicePregunta];
   document.getElementById("leccion-progreso").style.width = `${((indicePregunta + 1) / leccionActual.length) * 100}%`;
-  const cara = document.getElementById("minicode-cara"); 
-  cara.className = "minicode-face";
-  document.getElementById("mc-eye-left").textContent = "<"; 
-  document.getElementById("mc-eye-right").textContent = ">";
+  actualizarMiniCode("neutral");
   document.getElementById("leccion-pregunta").innerHTML = p.pregunta || p.instrucciones;
   const contenedor = document.getElementById("leccion-opciones"); contenedor.innerHTML = ""; opcionSeleccionada = null;
   if (p.opciones) {
@@ -647,7 +644,6 @@ window.comprobarRespuesta = function() {
   document.getElementById("btn-leccion-comprobar").style.display = "none";
   const feedbackDiv = document.getElementById("leccion-feedback");
   const tituloFb = document.getElementById("feedback-titulo"); 
-  const cara = document.getElementById("minicode-cara");
   if (p.opciones) {
     esCorrecta = (opcionSeleccionada === p.correcta);
     if (esCorrecta) { botones[opcionSeleccionada].classList.add("correcta"); } 
@@ -668,18 +664,14 @@ window.comprobarRespuesta = function() {
   }
 
   if (esCorrecta) {
-    reproducirSonido("ok"); feedbackDiv.className = "feedback-container correcto";
-    tituloFb.textContent = "¡Correcto! MiniCode dice:"; aciertosLeccion++; ganarXP(10);
-    cara.className = "minicode-face feliz"; 
-    document.getElementById("mc-eye-left").textContent = "^"; 
-    document.getElementById("mc-eye-right").textContent = "^";
-  } else {
-    reproducirSonido("error"); feedbackDiv.className = "feedback-container incorrecto";
-    tituloFb.textContent = "Todavía no. MiniCode dice:";
-    cara.className = "minicode-face triste"; 
-    document.getElementById("mc-eye-left").textContent = "<"; 
-    document.getElementById("mc-eye-right").textContent = ">";
-  }
+  reproducirSonido("ok"); feedbackDiv.className = "feedback-container correcto";
+  tituloFb.textContent = "¡Correcto! MiniCode dice:"; aciertosLeccion++; ganarXP(10);
+  actualizarMiniCode("feliz"); 
+} else {
+  reproducirSonido("error"); feedbackDiv.className = "feedback-container incorrecto";
+  tituloFb.textContent = "Todavía no. MiniCode dice:";
+  actualizarMiniCode("triste"); 
+}
   document.getElementById("feedback-texto").textContent = p.explicacion || p.atajo || "Revisa la teoría.";
   feedbackDiv.style.display = "block";
   const btnSig = document.getElementById("btn-leccion-siguiente");
