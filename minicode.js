@@ -1,3 +1,7 @@
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
+
 class DarkcodeChibi3D extends HTMLElement {
   constructor() {
     super();
@@ -6,7 +10,7 @@ class DarkcodeChibi3D extends HTMLElement {
     this._clock = null;
   }
 
-  async connectedCallback() {
+  connectedCallback() {
     this.shadowRoot.innerHTML = `
       <style>
         :host {
@@ -17,58 +21,31 @@ class DarkcodeChibi3D extends HTMLElement {
           position: relative;
           border-radius: 12px;
           overflow: hidden;
-          background: #0d0614;
-          border: 2px dashed red;
+          background: radial-gradient(circle at center, #1a0b2e 0%, #0d0614 100%);
+          /* QUITAMOS EL BORDE ROJO */
         }
         .loader {
           position: absolute; inset: 0;
           display: flex; align-items: center; justify-content: center;
-          color: white; font-family: sans-serif; font-size: 13px; font-weight: bold;
+          color: #a855f7; font-family: monospace; font-size: 11px; font-weight: bold;
           text-align: center; padding: 10px; z-index: 10;
         }
       </style>
-      <div class="loader" id="mc-loader">INICIANDO DESCARGA...</div>
+      <div class="loader" id="mc-loader">CARGANDO...</div>
     `;
 
-    try {
-      const l = this.shadowRoot.getElementById("mc-loader");
-      
-      // Temporizador: Si en 5 segundos no carga, lanza error
-      const timeout = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error("Tiempo de espera agotado. Internet lento.")), 5000)
-      );
-
-      // Usamos unpkg que es más rápido para móviles a veces
-      const fetchLibraries = async () => {
-        const THREE = await import('https://unpkg.com/three@0.160.0/build/three.module.js');
-        const { GLTFLoader } = await import('https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js');
-        const { VRMLoaderPlugin, VRMUtils } = await import('https://unpkg.com/@pixiv/three-vrm@3.0.0/lib/three-vrm.module.js');
-        return { THREE, GLTFLoader, VRMLoaderPlugin, VRMUtils };
-      };
-
-      // Competimos entre la descarga y el temporizador
-      const libs = await Promise.race([fetchLibraries(), timeout]);
-      
-      l.textContent = "¡DESCARGADO! BUSCANDO VRM...";
-      this.iniciarThreeJS(libs.THREE, libs.GLTFLoader, libs.VRMLoaderPlugin, libs.VRMUtils);
-
-    } catch (e) {
-      const l = this.shadowRoot.getElementById("mc-loader");
-      if (l) {
-        l.style.backgroundColor = "red";
-        l.style.color = "white";
-        l.textContent = "ERROR DE RED: " + e.message;
-      }
-    }
+    this.iniciarThreeJS();
   }
 
-  iniciarThreeJS(THREE, GLTFLoader, VRMLoaderPlugin, VRMUtils) {
+  iniciarThreeJS() {
     const w = this.clientWidth || 170;
     const h = this.clientHeight || 220;
 
     this._scene = new THREE.Scene();
     this._camera = new THREE.PerspectiveCamera(35, w / h, 0.1, 100);
-    this._camera.position.set(0, 1.3, 2.5);
+    
+    // Ajustamos la cámara para que se vea el cuerpo completo
+    this._camera.position.set(0, 1.0, 2.2); 
 
     this._renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     this._renderer.setSize(w, h);
@@ -76,15 +53,19 @@ class DarkcodeChibi3D extends HTMLElement {
     this._renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.shadowRoot.appendChild(this._renderer.domElement);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+    // MEJORAMOS LA ILUMINACIÓN (Adiós gráficos de patata)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2.5); 
     this._scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xa855f7, 2.5);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 3);
     dirLight.position.set(2, 4, 3);
     this._scene.add(dirLight);
 
+    const rimLight = new THREE.DirectionalLight(0x00ffff, 2);
+    rimLight.position.set(-2, 2, -3);
+    this._scene.add(rimLight);
+
     const loaderDiv = this.shadowRoot.getElementById("mc-loader");
-    if (loaderDiv) loaderDiv.textContent = "BUSCANDO MINICODE.VRM...";
 
     const loader = new GLTFLoader();
     loader.register((parser) => new VRMLoaderPlugin(parser));
@@ -94,41 +75,45 @@ class DarkcodeChibi3D extends HTMLElement {
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
       vrm.scene.rotation.y = Math.PI; 
       
+      // ARREGLAMOS LA T-POSE (Bajamos los brazos)
+      if (vrm.humanoid) {
+        const leftArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
+        const rightArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
+        if (leftArm) leftArm.rotation.z = 1.2; // Baja el brazo izquierdo
+        if (rightArm) rightArm.rotation.z = -1.2; // Baja el brazo derecho
+      }
+      
       this._scene.add(vrm.scene);
       this._vrm = vrm;
       this._clock = new THREE.Clock();
 
       const box = new THREE.Box3().setFromObject(vrm.scene);
       const size = box.getSize(new THREE.Vector3());
-      this._camera.position.set(0, size.y * 0.65, size.y * 1.6);
+      // Centramos la cámara en el pecho del personaje
+      this._camera.position.set(0, size.y * 0.55, size.y * 1.4);
       
       if (loaderDiv) loaderDiv.style.display = "none";
       if (window.actualizarMiniCode) window.actualizarMiniCode(this.getAttribute("estado") || "neutral");
 
-    }, (xhr) => {
-      if (loaderDiv && xhr.total > 0) {
-        const pct = Math.round((xhr.loaded / xhr.total) * 100);
-        loaderDiv.textContent = "CARGANDO: " + pct + "%";
-      }
-    }, (error) => {
+    }, undefined, (error) => {
       console.error('Error VRM:', error);
       if (loaderDiv) {
         loaderDiv.style.backgroundColor = "orange";
         loaderDiv.style.color = "black";
-        loaderDiv.textContent = "ERROR AL CARGAR VRM. Revisa el archivo.";
+        loaderDiv.textContent = "ERROR AL CARGAR VRM.";
       }
     });
 
-    this._animate(THREE);
+    this._animate();
   }
 
-  _animate(THREE) {
-    requestAnimationFrame(() => this._animate(THREE));
+  _animate() {
+    requestAnimationFrame(() => this._animate());
     if (this._vrm && this._clock) {
       const delta = this._clock.getDelta();
       this._vrm.update(delta);
-      const tiempo = performance.now() * 0.002;
-      this._vrm.scene.position.y = Math.sin(tiempo) * 0.02;
+      // QUITAMOS EL "BAILECITO" RARO
+      // Ya no hacemos el Math.sin para que no parezca que está poseído
     }
     if (this._renderer && this._scene && this._camera) {
       this._renderer.render(this._scene, this._camera);
