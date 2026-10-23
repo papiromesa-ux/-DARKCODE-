@@ -34,16 +34,16 @@ class DarkcodeChibi3D extends HTMLElement {
           color: #a855f7; font-family: monospace; font-size: 11px; font-weight: bold;
           text-align: center; padding: 10px; z-index: 10;
         }
-        /* Letrero de diagnostico */
         .debug {
           position: absolute; bottom: 0; left: 0; width: 100%;
-          background: rgba(0,0,0,0.7); color: #00ff00;
+          background: rgba(0,0,0,0.85); color: #00ff00;
           font-family: monospace; font-size: 9px; text-align: center;
-          z-index: 20; padding: 2px;
+          z-index: 20; padding: 4px; line-height: 1.2;
+          pointer-events: none;
         }
       </style>
       <div class="loader" id="mc-loader">CARGANDO...</div>
-      <div class="debug" id="mc-debug">Esperando VRM...</div>
+      <div class="debug" id="mc-debug">Iniciando diagnóstico...</div>
     `;
 
     this.iniciarThreeJS();
@@ -101,6 +101,7 @@ class DarkcodeChibi3D extends HTMLElement {
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
       vrm.scene.rotation.y = Math.PI; 
 
+      // Bajar brazos base
       if (vrm.humanoid) {
         const leftUpperArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
         const rightUpperArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
@@ -127,7 +128,7 @@ class DarkcodeChibi3D extends HTMLElement {
       this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
       this._camera.lookAt(0, size.y * 0.5, 0);
 
-      if (debugDiv) debugDiv.textContent = "VRM listo. Buscando Mixamo...";
+      if (debugDiv) debugDiv.textContent = "VRM listo. Iniciando carga de FBX...";
 
       try {
         if (loaderDiv) loaderDiv.textContent = "CARGANDO ANIMACIONES...";
@@ -138,50 +139,50 @@ class DarkcodeChibi3D extends HTMLElement {
         
         const fbxLoader = new FBXLoader();
 
-        // Cargar Negativos
-        for (let i = 1; i <= 2; i++) {
-          try {
-            if (debugDiv) debugDiv.textContent = `Cargando negativo${i}.fbx...`;
-            const fbx = await fbxLoader.loadAsync(`./negativo${i}.fbx`);
-            const clip = retargetAnimation(fbx, vrm);
-            if (clip) {
-              const action = this._mixer.clipAction(clip);
-              action.loop = THREE.LoopOnce;
-              action.clampWhenFinished = true;
-              this._acciones[`negativo${i}`] = action;
-            }
-          } catch (e) { 
-            if (debugDiv) debugDiv.textContent = `Fallo negativo${i}.fbx`;
-            await new Promise(r => setTimeout(r, 1000)); // Pausa para leer
-          }
-        }
+        const listaArchivos = [
+          'negativo1', 'negativo2', 
+          'neutral1', 'neutral2', 'neutral3', 'neutral4', 'neutral5'
+        ];
+        
+        let reporteFinal = [];
 
-        // Cargar Neutrales
-        for (let i = 1; i <= 5; i++) {
+        for (const nombre of listaArchivos) {
           try {
-            if (debugDiv) debugDiv.textContent = `Cargando neutral${i}.fbx...`;
-            const fbx = await fbxLoader.loadAsync(`./neutral${i}.fbx`);
+            if (debugDiv) debugDiv.textContent = `Bajando ${nombre}.fbx...`;
+            const fbx = await fbxLoader.loadAsync(`./${nombre}.fbx`);
+            
+            if (debugDiv) debugDiv.textContent = `Traduciendo ${nombre}.fbx...`;
             const clip = retargetAnimation(fbx, vrm);
-            if (clip) {
+            
+            if (clip && clip.tracks.length > 0) {
               const action = this._mixer.clipAction(clip);
-              if(i === 5) {
+              
+              if (nombre === 'neutral5') {
                 action.loop = THREE.LoopRepeat;
-                action.play(); 
-                if (debugDiv) debugDiv.textContent = `neutral5.fbx REPRODUCIENDO`;
+                action.play(); // Pose base
               } else {
                 action.loop = THREE.LoopOnce;
                 action.clampWhenFinished = true;
               }
-              this._acciones[`neutral${i}`] = action;
+              
+              this._acciones[nombre] = action;
+              reporteFinal.push(`${nombre}: OK (${clip.tracks.length} track)`);
+            } else {
+              reporteFinal.push(`${nombre}: VACIO`);
             }
           } catch (e) { 
-            if (debugDiv) debugDiv.textContent = `Fallo neutral${i}.fbx`;
-            await new Promise(r => setTimeout(r, 1000));
+            reporteFinal.push(`${nombre}: FALLO`);
           }
+          // Pausa de 800ms para que te de tiempo de leer el letrero
+          await new Promise(r => setTimeout(r, 800)); 
+        }
+
+        if (debugDiv) {
+          debugDiv.innerHTML = reporteFinal.join(" | ");
         }
 
       } catch (e) {
-        if (debugDiv) debugDiv.textContent = "Fallo libreria Mixamo.";
+        if (debugDiv) debugDiv.textContent = "Fallo importar libreria Mixamo.";
       }
 
       if (loaderDiv) loaderDiv.style.display = "none";
@@ -209,6 +210,7 @@ class DarkcodeChibi3D extends HTMLElement {
     const ahora = performance.now();
     if (ahora - this._lastInteraction > 3000 && !this._isIdle) {
       this._isIdle = true;
+      
       const aburridos = Object.keys(this._acciones).filter(k => k.startsWith('neutral') && k !== 'neutral5');
       
       if (aburridos.length > 0) {
@@ -222,7 +224,6 @@ class DarkcodeChibi3D extends HTMLElement {
           this._isIdle = false;
         }, 3000); 
       } else {
-        // Si no hay neutrales 1-4, solo resetea el timer
         this._isIdle = false;
       }
     }
@@ -244,43 +245,21 @@ window.actualizarMiniCode = function(estado) {
   personaje._lastInteraction = performance.now();
   personaje._isIdle = false;
 
-  const vrm = personaje._vrm;
-  const em = vrm.expressionManager;
-  const humanoid = vrm.humanoid;
-  const head = humanoid ? humanoid.getNormalizedBoneNode('head') : null;
-
-  const volverAlReposo = () => {
-    if (em) {
-      ['happy', 'sad', 'sorrow', 'joy', 'angry', 'relaxed', 'surprised', 'blink'].forEach(expr => {
-        if (em.getExpression(expr)) em.setValue(expr, 0);
-      });
-    }
-    if (head) head.rotation.set(0, 0, 0);
-    
-    if (personaje._mixer) {
-      personaje._mixer.stopAllAction();
-      if (personaje._acciones['neutral5']) {
-        personaje._acciones['neutral5'].reset().play();
-      }
-    }
-  };
-
   if (personaje._mixer) personaje._mixer.stopAllAction();
   if (personaje._resetTimeout) clearTimeout(personaje._resetTimeout);
 
   if (estado === 'feliz') {
-    const reaccionesFeliz = [
-      () => {
-        if (em && em.getExpression('happy')) em.setValue('happy', 0.8);
-        if (head) head.rotation.x = 0.1;
-      },
-      () => {
-        if (em && em.getExpression('happy')) em.setValue('happy', 1);
-        if (head) { head.rotation.z = 0.15; head.rotation.x = -0.05; }
-      }
-    ];
-    const accionRandom = reaccionesFeliz[Math.floor(Math.random() * reaccionesFeliz.length)];
-    accionRandom();
+    const vrm = personaje._vrm;
+    const em = vrm.expressionManager;
+    const head = vrm.humanoid ? vrm.humanoid.getNormalizedBoneNode('head') : null;
+    if (em && em.getExpression('happy')) em.setValue('happy', 0.8);
+    if (head) head.rotation.x = 0.1;
+    
+    setTimeout(() => {
+      if (em && em.getExpression('happy')) em.setValue('happy', 0);
+      if (head) head.rotation.x = 0;
+      if (personaje._acciones['neutral5']) personaje._acciones['neutral5'].reset().play();
+    }, 2000);
 
   } else if (estado === 'triste') {
     const opciones = [];
@@ -290,21 +269,15 @@ window.actualizarMiniCode = function(estado) {
     if (opciones.length > 0) {
       const elegido = opciones[Math.floor(Math.random() * opciones.length)];
       personaje._acciones[elegido].reset().play();
-    } else {
-      let vueltas = 0;
-      const negar = setInterval(() => {
-        if (head) head.rotation.y = vueltas % 2 === 0 ? 0.15 : -0.15;
-        vueltas++;
-        if (vueltas > 3) { clearInterval(negar); if(head) head.rotation.y = 0; }
-      }, 200);
     }
   }
 
   if (estado !== 'neutral') {
     personaje._resetTimeout = setTimeout(() => {
-      volverAlReposo();
+      if (personaje._mixer) personaje._mixer.stopAllAction();
+      if (personaje._acciones['neutral5']) personaje._acciones['neutral5'].reset().play();
     }, 3000);
   } else {
-    volverAlReposo();
+    if (personaje._acciones['neutral5']) personaje._acciones['neutral5'].reset().play();
   }
 };
