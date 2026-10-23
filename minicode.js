@@ -42,20 +42,44 @@ class DarkcodeChibi3D extends HTMLElement {
     const h = this.clientHeight || 220;
 
     this._scene = new THREE.Scene();
+    
+    // Piso invisible para la sombra
+    const planeGeometry = new THREE.PlaneGeometry(10, 10);
+    const planeMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
+    this._floor = new THREE.Mesh(planeGeometry, planeMaterial);
+    this._floor.rotation.x = -Math.PI / 2;
+    this._floor.position.y = 0;
+    this._floor.receiveShadow = true;
+    this._scene.add(this._floor);
+
     this._camera = new THREE.PerspectiveCamera(35, w / h, 0.1, 100);
     
     this._renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     this._renderer.setSize(w, h);
     this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this._renderer.outputColorSpace = THREE.SRGBColorSpace;
+    
+    // Mejoras gráficas
+    this._renderer.shadowMap.enabled = true;
+    this._renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this._renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this._renderer.toneMappingExposure = 1.2;
+    
     this.shadowRoot.appendChild(this._renderer.domElement);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 2.5); 
-    this._scene.add(ambientLight);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x443355, 1.5); 
+    this._scene.add(hemiLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 3);
-    dirLight.position.set(2, 4, 3);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 2.5);
+    dirLight.position.set(2, 5, 3);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 512; 
+    dirLight.shadow.mapSize.height = 512;
     this._scene.add(dirLight);
+
+    const rimLight = new THREE.DirectionalLight(0x00ffff, 1.5);
+    rimLight.position.set(-2, 2, -3);
+    this._scene.add(rimLight);
 
     const loaderDiv = this.shadowRoot.getElementById("mc-loader");
 
@@ -73,6 +97,13 @@ class DarkcodeChibi3D extends HTMLElement {
         if (leftArm) leftArm.rotation.z = 1.2;
         if (rightArm) rightArm.rotation.z = -1.2;
       }
+
+      vrm.scene.traverse((obj) => {
+        if (obj.isMesh) {
+          obj.castShadow = true;
+          obj.receiveShadow = true;
+        }
+      });
       
       this._scene.add(vrm.scene);
       this._vrm = vrm;
@@ -80,6 +111,7 @@ class DarkcodeChibi3D extends HTMLElement {
 
       const box = new THREE.Box3().setFromObject(vrm.scene);
       const size = box.getSize(new THREE.Vector3());
+      this._floor.position.y = box.min.y;
       
       this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
       this._camera.lookAt(0, size.y * 0.5, 0);
@@ -101,15 +133,12 @@ class DarkcodeChibi3D extends HTMLElement {
 
   _animate() {
     requestAnimationFrame(() => this._animate());
-    
     if (this._vrm && this._clock) {
       const delta = this._clock.getDelta();
       this._vrm.update(delta);
-      
       const time = performance.now();
       this._vrm.scene.position.y = Math.sin(time * 0.002) * 0.01;
     }
-
     if (this._renderer && this._scene && this._camera) {
       this._renderer.render(this._scene, this._camera);
     }
@@ -131,7 +160,6 @@ window.actualizarMiniCode = function(estado) {
   const neck = humanoid ? humanoid.getNormalizedBoneNode('neck') : null;
   const chest = humanoid ? humanoid.getNormalizedBoneNode('chest') : null;
 
-  // Limpiamos todo a su estado neutral
   const resetearPersonaje = () => {
     if (em) {
       ['happy', 'sad', 'sorrow', 'joy', 'angry', 'relaxed', 'surprised', 'blink', 'blinkLeft', 'blinkRight'].forEach(expr => {
@@ -148,17 +176,17 @@ window.actualizarMiniCode = function(estado) {
 
   if (estado === 'feliz') {
     const reaccionesFeliz = [
-      // POSITIVO 1: Sonrisa y asentir con la cabeza (La que te gustó)
+      // 1. Sonrisa y asentir
       () => {
         if (em && em.getExpression('happy')) em.setValue('happy', 0.8);
         if (head) head.rotation.x = 0.1;
       },
-      // POSITIVO 2: Sonrisa y ladear la cabeza (La otra que te gustó)
+      // 2. Sonrisa y ladear cabeza
       () => {
         if (em && em.getExpression('happy')) em.setValue('happy', 1);
         if (head) { head.rotation.z = 0.15; head.rotation.x = -0.05; }
       },
-      // POSITIVO 3: Sonrisa doble asentimiento rápido (Variación segura)
+      // 3. Sonrisa doble asentimiento
       () => {
         if (em && em.getExpression('happy')) em.setValue('happy', 0.9);
         if (head) {
@@ -168,13 +196,12 @@ window.actualizarMiniCode = function(estado) {
         }
       }
     ];
-    
     const accionRandom = reaccionesFeliz[Math.floor(Math.random() * reaccionesFeliz.length)];
     accionRandom();
 
   } else if (estado === 'triste') {
     const reaccionesTriste = [
-      // NEGATIVO 1: Negar con la cabeza (La que te gustó)
+      // 1. Decir "No" (La que te gustó)
       () => {
         let vueltas = 0;
         const negar = setInterval(() => {
@@ -183,18 +210,17 @@ window.actualizarMiniCode = function(estado) {
           if (vueltas > 3) { clearInterval(negar); if(head) head.rotation.y = 0; }
         }, 200);
       },
-      // NEGATIVO 2: Bajar la cabeza de verdad (Corregido, ahora usa rotación negativa para no ver a Jesús)
+      // 2. Mirar al piso profundamente (Corregido el eje)
       () => {
-        if (head) head.rotation.x = -0.15; // El signo negativo hace que mire al piso
-        if (neck) neck.rotation.x = -0.1;
-        if (chest) chest.rotation.x = 0.1; // Hombros caídos
+        if (head) head.rotation.x = 0.4; // Ahora sí baja la cabeza de verdad
+        if (neck) neck.rotation.x = 0.2;
+        if (chest) chest.rotation.x = 0.1; 
       },
-      // NEGATIVO 3: Suspirar (Solo movimiento de pecho y cabeza, cero cara)
+      // 3. Mirar al piso y ladear la cabeza (Como aceptando la derrota)
       () => {
-        if (chest) chest.rotation.x = 0.15; 
-        if (head) head.rotation.x = -0.1;
-        // Efecto de "respirar profundo"
-        setTimeout(() => { if(chest) chest.rotation.x = 0; }, 1000);
+        if (head) { head.rotation.x = 0.3; head.rotation.z = 0.1; }
+        if (neck) neck.rotation.x = 0.15;
+        if (chest) chest.rotation.x = 0.1;
       }
     ];
     
@@ -202,7 +228,6 @@ window.actualizarMiniCode = function(estado) {
     accionRandom();
   }
 
-  // Volver a la normalidad después de 2 segundos
   if (estado !== 'neutral') {
     personaje._resetTimeout = setTimeout(() => {
       resetearPersonaje();
