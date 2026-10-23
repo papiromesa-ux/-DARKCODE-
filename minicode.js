@@ -8,6 +8,7 @@ class DarkcodeChibi3D extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this._vrm = null;
     this._clock = null;
+    this._resetTimeout = null;
   }
 
   connectedCallback() {
@@ -105,7 +106,6 @@ class DarkcodeChibi3D extends HTMLElement {
       const delta = this._clock.getDelta();
       this._vrm.update(delta);
       
-      // Solo respiración sutil, cero giros de pastel
       const time = performance.now();
       this._vrm.scene.position.y = Math.sin(time * 0.002) * 0.01;
     }
@@ -122,56 +122,94 @@ if (!customElements.get("darkcode-chibi")) {
 
 window.actualizarMiniCode = function(estado) {
   const personaje = document.getElementById("darkcode-chibi-quiz");
-  if (personaje) {
-    personaje.setAttribute("estado", estado);
-    
-    if (personaje._vrm && personaje._vrm.expressionManager) {
-      const em = personaje._vrm.expressionManager;
-      const humanoid = personaje._vrm.humanoid;
-      
-      // Limpiamos todas las caras
-      ['happy', 'sad', 'sorrow', 'joy', 'angry', 'blink'].forEach(expr => {
-         if (em.getExpression(expr)) em.setValue(expr, 0);
+  if (!personaje || !personaje._vrm) return;
+
+  const vrm = personaje._vrm;
+  const em = vrm.expressionManager;
+  const humanoid = vrm.humanoid;
+  const head = humanoid ? humanoid.getNormalizedBoneNode('head') : null;
+  const neck = humanoid ? humanoid.getNormalizedBoneNode('neck') : null;
+  const chest = humanoid ? humanoid.getNormalizedBoneNode('chest') : null;
+
+  // 1. Función para limpiar todo antes de una nueva reacción
+  const resetearPersonaje = () => {
+    if (em) {
+      ['happy', 'sad', 'sorrow', 'joy', 'angry', 'relaxed', 'surprised', 'blink', 'blinkLeft', 'blinkRight', 'lookUp', 'lookDown'].forEach(expr => {
+        if (em.getExpression(expr)) em.setValue(expr, 0);
       });
-      
-      // Reseteamos la cabeza a su posición normal
-      if (humanoid) {
-        const head = humanoid.getNormalizedBoneNode('head');
-        if (head) head.rotation.x = 0;
-      }
-
-      if (estado === 'feliz') {
-        // Sonríe
-        if (em.getExpression('happy')) em.setValue('happy', 1); 
-        else if (em.getExpression('joy')) em.setValue('joy', 1);
-        
-        // Asiente con la cabeza (sí, lo lograste)
-        if (humanoid) {
-            const head = humanoid.getNormalizedBoneNode('head');
-            if (head) {
-                head.rotation.x = 0.2;
-                setTimeout(() => { if(head) head.rotation.x = 0; }, 800);
-            }
-        }
-
-      } else if (estado === 'triste') {
-        // Si el modelo tiene cara de enojado, la usamos
-        if (em.getExpression('angry')) {
-            em.setValue('angry', 1);
-        } else {
-            // Si no tiene enojado, entrecerramos los ojos (para que no se ría)
-            if (em.getExpression('blink')) em.setValue('blink', 0.5);
-        }
-
-        // Baja la cabeza un momento (como diciendo "ay, no")
-        if (humanoid) {
-            const head = humanoid.getNormalizedBoneNode('head');
-            if (head) {
-                head.rotation.x = 0.2; 
-                setTimeout(() => { if(head) head.rotation.x = 0; }, 1000);
-            }
-        }
-      }
     }
+    if (head) head.rotation.set(0, 0, 0);
+    if (neck) neck.rotation.set(0, 0, 0);
+    if (chest) chest.rotation.set(0, 0, 0);
+  };
+
+  resetearPersonaje();
+  if (personaje._resetTimeout) clearTimeout(personaje._resetTimeout);
+
+  // 2. Definimos el arsenal de reacciones
+  if (estado === 'feliz') {
+    const reaccionesFeliz = [
+      // Reacción 1: Sonrisa normal y asentir
+      () => {
+        if (em && em.getExpression('happy')) em.setValue('happy', 1);
+        if (head) head.rotation.x = 0.15;
+      },
+      // Reacción 2: Sorprendido y mirar un poco arriba
+      () => {
+        if (em && em.getExpression('surprised')) em.setValue('surprised', 1);
+        else if (em && em.getExpression('joy')) em.setValue('joy', 1);
+        if (head) { head.rotation.x = -0.1; head.rotation.z = 0.1; }
+        if (chest) chest.rotation.x = -0.05;
+      },
+      // Reacción 3: Guiño y sonrisa de lado
+      () => {
+        if (em && em.getExpression('happy')) em.setValue('happy', 0.8);
+        if (em && em.getExpression('blinkRight')) em.setValue('blinkRight', 1);
+        else if (em && em.getExpression('blink')) em.setValue('blink', 1);
+        if (head) head.rotation.z = -0.15;
+      }
+    ];
+    
+    // Elige una al azar y la ejecuta
+    const accionRandom = reaccionesFeliz[Math.floor(Math.random() * reaccionesFeliz.length)];
+    accionRandom();
+
+  } else if (estado === 'triste') {
+    const reaccionesTriste = [
+      // Reacción 1: Decepción (cabeza abajo, ojos cerrados)
+      () => {
+        if (em && em.getExpression('blink')) em.setValue('blink', 0.5);
+        if (head) head.rotation.x = 0.3;
+        if (neck) neck.rotation.x = 0.15;
+      },
+      // Reacción 2: Negar con la cabeza (Mover a los lados)
+      () => {
+        if (em && em.getExpression('sad')) em.setValue('sad', 0.5);
+        // Animación simple de negación
+        let vueltas = 0;
+        const negar = setInterval(() => {
+          if (head) head.rotation.y = vueltas % 2 === 0 ? 0.2 : -0.2;
+          vueltas++;
+          if (vueltas > 3) { clearInterval(negar); if(head) head.rotation.y = 0; }
+        }, 200);
+      },
+      // Reacción 3: Encogerse (Mirar al piso y bajar el pecho)
+      () => {
+        if (em && em.getExpression('sad')) em.setValue('sad', 0.6);
+        if (em && em.getExpression('blink')) em.setValue('blink', 0.8);
+        if (head) head.rotation.x = 0.4;
+        if (chest) chest.rotation.x = 0.1;
+      }
+    ];
+    
+    const accionRandom = reaccionesTriste[Math.floor(Math.random() * reaccionesTriste.length)];
+    accionRandom();
+  }
+
+  // 3. Volver a la normalidad después de un tiempo
+  if (estado !== 'neutral') {
+    personaje._resetTimeout = setTimeout(() => {
+      resetearPersonaje();
+    }, 2000); // 2 segundos de reacción
   }
 };
