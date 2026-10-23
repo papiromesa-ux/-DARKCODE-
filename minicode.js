@@ -56,10 +56,6 @@ class DarkcodeChibi3D extends HTMLElement {
     dirLight.position.set(2, 4, 3);
     this._scene.add(dirLight);
 
-    const rimLight = new THREE.DirectionalLight(0x00ffff, 2);
-    rimLight.position.set(-2, 2, -3);
-    this._scene.add(rimLight);
-
     const loaderDiv = this.shadowRoot.getElementById("mc-loader");
 
     const loader = new GLTFLoader();
@@ -70,7 +66,6 @@ class DarkcodeChibi3D extends HTMLElement {
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
       vrm.scene.rotation.y = Math.PI; 
       
-      // Arreglamos la T-Pose
       if (vrm.humanoid) {
         const leftArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
         const rightArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
@@ -82,13 +77,10 @@ class DarkcodeChibi3D extends HTMLElement {
       this._vrm = vrm;
       this._clock = new THREE.Clock();
 
-      // AQUI ARREGLAMOS LA CÁMARA (Lo alejamos y lo centramos)
       const box = new THREE.Box3().setFromObject(vrm.scene);
       const size = box.getSize(new THREE.Vector3());
       
-      // Aumentamos el multiplicador de Z a 2.2 para alejarlo (se hace más chiquito)
       this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
-      // Le decimos que mire justo al centro de su cuerpo
       this._camera.lookAt(0, size.y * 0.5, 0);
       
       if (loaderDiv) loaderDiv.style.display = "none";
@@ -108,15 +100,16 @@ class DarkcodeChibi3D extends HTMLElement {
 
   _animate() {
     requestAnimationFrame(() => this._animate());
+    
     if (this._vrm && this._clock) {
       const delta = this._clock.getDelta();
       this._vrm.update(delta);
       
-      // NUEVA ANIMACIÓN IDLE (Balanceo sutil de lado a lado)
-      const time = performance.now() * 0.001;
-      // Rotamos todo el modelo ligeramente sobre su eje Y
-      this._vrm.scene.rotation.y = Math.PI + Math.sin(time * 1.5) * 0.05;
+      // Solo respiración sutil, cero giros de pastel
+      const time = performance.now();
+      this._vrm.scene.position.y = Math.sin(time * 0.002) * 0.01;
     }
+
     if (this._renderer && this._scene && this._camera) {
       this._renderer.render(this._scene, this._camera);
     }
@@ -131,22 +124,25 @@ window.actualizarMiniCode = function(estado) {
   const personaje = document.getElementById("darkcode-chibi-quiz");
   if (personaje) {
     personaje.setAttribute("estado", estado);
+    
     if (personaje._vrm && personaje._vrm.expressionManager) {
       const em = personaje._vrm.expressionManager;
       
-      // Reseteamos todas las caras
-      em.setValue('happy', 0); 
-      em.setValue('sad', 0);
-      em.setValue('sorrow', 0);
-      em.setValue('joy', 0);
+      // Limpiamos caras
+      ['happy', 'sad', 'sorrow', 'joy', 'angry'].forEach(expr => {
+         if (em.getExpression(expr)) em.setValue(expr, 0);
+      });
 
       if (estado === 'feliz') {
         if (em.getExpression('happy')) em.setValue('happy', 1); 
         else if (em.getExpression('joy')) em.setValue('joy', 1);
       } else if (estado === 'triste') {
-        // BAJAMOS LA INTENSIDAD AL 0.4 (40%) para que no parezca lo que tu dijiste jajaja
-        if (em.getExpression('sad')) em.setValue('sad', 0.4); 
-        else if (em.getExpression('sorrow')) em.setValue('sorrow', 0.4);
+        // CARA DE ENOJADO (Si el modelo no tiene enojo, bajamos el sad para que no dé miedo)
+        if (em.getExpression('angry')) {
+            em.setValue('angry', 1);
+        } else if (em.getExpression('sad')) {
+            em.setValue('sad', 0.4); 
+        }
       }
     }
   }
