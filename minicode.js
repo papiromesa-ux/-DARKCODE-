@@ -1,14 +1,18 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
+import { retargetAnimation } from 'vrm-mixamo-retarget';
 
 class DarkcodeChibi3D extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
     this._vrm = null;
-    this._clock = null;
+    this._mixer = null;
+    this._acciones = {}; 
     this._resetTimeout = null;
+    this._clock = new THREE.Clock();
   }
 
   connectedCallback() {
@@ -37,18 +41,16 @@ class DarkcodeChibi3D extends HTMLElement {
     this.iniciarThreeJS();
   }
 
-  iniciarThreeJS() {
+  async iniciarThreeJS() {
     const w = this.clientWidth || 170;
     const h = this.clientHeight || 220;
 
     this._scene = new THREE.Scene();
     
-    // Piso invisible para la sombra
     const planeGeometry = new THREE.PlaneGeometry(10, 10);
     const planeMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
     this._floor = new THREE.Mesh(planeGeometry, planeMaterial);
     this._floor.rotation.x = -Math.PI / 2;
-    this._floor.position.y = 0;
     this._floor.receiveShadow = true;
     this._scene.add(this._floor);
 
@@ -58,8 +60,6 @@ class DarkcodeChibi3D extends HTMLElement {
     this._renderer.setSize(w, h);
     this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this._renderer.outputColorSpace = THREE.SRGBColorSpace;
-    
-    // Mejoras gráficas
     this._renderer.shadowMap.enabled = true;
     this._renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this._renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -83,14 +83,17 @@ class DarkcodeChibi3D extends HTMLElement {
 
     const loaderDiv = this.shadowRoot.getElementById("mc-loader");
 
-    const loader = new GLTFLoader();
-    loader.register((parser) => new VRMLoaderPlugin(parser));
-
-    loader.load('./minicode.vrm', (gltf) => {
+    // 1. Cargar el VRM
+    const gltfLoader = new GLTFLoader();
+    gltfLoader.register((parser) => new VRMLoaderPlugin(parser));
+    
+    try {
+      const gltf = await gltfLoader.loadAsync('./minicode.vrm');
       const vrm = gltf.userData.vrm;
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
       vrm.scene.rotation.y = Math.PI; 
       
+      // Arreglar T-Pose
       if (vrm.humanoid) {
         const leftArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
         const rightArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
@@ -107,7 +110,6 @@ class DarkcodeChibi3D extends HTMLElement {
       
       this._scene.add(vrm.scene);
       this._vrm = vrm;
-      this._clock = new THREE.Clock();
 
       const box = new THREE.Box3().setFromObject(vrm.scene);
       const size = box.getSize(new THREE.Vector3());
@@ -115,30 +117,65 @@ class DarkcodeChibi3D extends HTMLElement {
       
       this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
       this._camera.lookAt(0, size.y * 0.5, 0);
-      
-      if (loaderDiv) loaderDiv.style.display = "none";
-      if (window.actualizarMiniCode) window.actualizarMiniCode(this.getAttribute("estado") || "neutral");
 
-    }, undefined, (error) => {
+      // 2. Cargar las DOS animaciones negativas
+      if (loaderDiv) loaderDiv.textContent = "CARGANDO ANIMACIONES...";
+      this._mixer = new THREE.AnimationMixer(vrm.scene);
+      const fbxLoader = new FBXLoader();
+
+      // Cargar Negativo 1
+      try {
+        const fbxNeg1 = await fbxLoader.loadAsync('./negativo1.fbx');
+        const clipNeg1 = retargetAnimation(fbxNeg1, vrm);
+        if (clipNeg1) {
+          const action = this._mixer.clipAction(clipNeg1);
+          action.loop = THREE.LoopOnce;
+          action.clampWhenFinished = true;
+          this._acciones['negativo1'] = action;
+        }
+      } catch (e) { console.log("Error negativo1.fbx:", e); }
+
+      // Cargar Negativo 2
+      try {
+        const fbxNeg2 = await fbxLoader.loadAsync('./negativo2.fbx');
+        const clipNeg2 = retargetAnimation(fbxNeg2, vrm);
+        if (clipNeg2) {
+          const action = this._mixer.clipAction(clipNeg2);
+          action.loop = THREE.LoopOnce;
+          action.clampWhenFinished = true;
+          this._acciones['negativo2'] = action;
+        }
+      } catch (e) { console.log("Error negativo2.fbx:", e); }
+
+      if (loaderDiv) loaderDiv.style.display = "none";
+
+    } catch (error) {
       console.error('Error VRM:', error);
       if (loaderDiv) {
         loaderDiv.style.backgroundColor = "orange";
         loaderDiv.style.color = "black";
         loaderDiv.textContent = "ERROR AL CARGAR VRM.";
       }
-    });
+    }
 
     this._animate();
   }
 
   _animate() {
     requestAnimationFrame(() => this._animate());
-    if (this._vrm && this._clock) {
-      const delta = this._clock.getDelta();
-      this._vrm.update(delta);
-      const time = performance.now();
-      this._vrm.scene.position.y = Math.sin(time * 0.002) * 0.01;
+    
+    const delta = this._clock.getDelta();
+    
+    // Actualizar animaciones de Mixamo
+    if (this._mixer) {
+      this._mixer.update(delta);
     }
+
+    // Actualizar el VRM (por si tiene físicas o parpadeos)
+    if (this._vrm) {
+      this._vrm.update(delta);
+    }
+    
     if (this._renderer && this._scene && this._camera) {
       this._renderer.render(this._scene, this._camera);
     }
@@ -157,61 +194,52 @@ window.actualizarMiniCode = function(estado) {
   const em = vrm.expressionManager;
   const humanoid = vrm.humanoid;
   const head = humanoid ? humanoid.getNormalizedBoneNode('head') : null;
-  const neck = humanoid ? humanoid.getNormalizedBoneNode('neck') : null;
-  const chest = humanoid ? humanoid.getNormalizedBoneNode('chest') : null;
 
+  // Función para limpiar todo
   const resetearPersonaje = () => {
     if (em) {
-      ['happy', 'sad', 'sorrow', 'joy', 'angry', 'relaxed', 'surprised', 'blink', 'blinkLeft', 'blinkRight'].forEach(expr => {
+      ['happy', 'sad', 'sorrow', 'joy', 'angry', 'relaxed', 'surprised', 'blink'].forEach(expr => {
         if (em.getExpression(expr)) em.setValue(expr, 0);
       });
     }
     if (head) head.rotation.set(0, 0, 0);
-    if (neck) neck.rotation.set(0, 0, 0);
-    if (chest) chest.rotation.set(0, 0, 0);
+    if (personaje._mixer) personaje._mixer.stopAllAction();
   };
 
   resetearPersonaje();
   if (personaje._resetTimeout) clearTimeout(personaje._resetTimeout);
 
   if (estado === 'feliz') {
+    // Como no hay archivo de Mixamo positivo, usamos el código procedural que te gustó
     const reaccionesFeliz = [
-      // 1. Sonrisa y asentir
       () => {
         if (em && em.getExpression('happy')) em.setValue('happy', 0.8);
         if (head) head.rotation.x = 0.1;
       },
-      // 2. Sonrisa y ladear cabeza
       () => {
         if (em && em.getExpression('happy')) em.setValue('happy', 1);
         if (head) { head.rotation.z = 0.15; head.rotation.x = -0.05; }
-      },
-      // 3. Sonrisa doble asentimiento
-      () => {
-        if (em && em.getExpression('happy')) em.setValue('happy', 0.9);
-        if (head) {
-          head.rotation.x = 0.1;
-          setTimeout(() => { if(head) head.rotation.x = 0; }, 150);
-          setTimeout(() => { if(head) head.rotation.x = 0.1; }, 300);
-        }
       }
     ];
     const accionRandom = reaccionesFeliz[Math.floor(Math.random() * reaccionesFeliz.length)];
     accionRandom();
 
   } else if (estado === 'triste') {
-    // Solo dejamos la reacción que sí funciona (Decir "No" con la cabeza)
-    let vueltas = 0;
-    const negar = setInterval(() => {
-      if (head) head.rotation.y = vueltas % 2 === 0 ? 0.15 : -0.15;
-      vueltas++;
-      if (vueltas > 3) { clearInterval(negar); if(head) head.rotation.y = 0; }
-    }, 200);
+    // Elegir al azar entre negativo1 y negativo2
+    const opciones = [];
+    if (personaje._acciones['negativo1']) opciones.push('negativo1');
+    if (personaje._acciones['negativo2']) opciones.push('negativo2');
+
+    if (opciones.length > 0) {
+      const elegido = opciones[Math.floor(Math.random() * opciones.length)];
+      personaje._acciones[elegido].reset().play();
+    }
   }
 
+  // Volver a la normalidad después de 3 segundos
   if (estado !== 'neutral') {
     personaje._resetTimeout = setTimeout(() => {
       resetearPersonaje();
-    }, 2000);
+    }, 3000);
   }
 };
