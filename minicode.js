@@ -200,32 +200,13 @@ window.actualizarMiniCode = function(estado) {
     accionRandom();
 
   } else if (estado === 'triste') {
-    const reaccionesTriste = [
-      // 1. Decir "No" (La que te gustó)
-      () => {
-        let vueltas = 0;
-        const negar = setInterval(() => {
-          if (head) head.rotation.y = vueltas % 2 === 0 ? 0.15 : -0.15;
-          vueltas++;
-          if (vueltas > 3) { clearInterval(negar); if(head) head.rotation.y = 0; }
-        }, 200);
-      },
-      // 2. Mirar al piso profundamente (Corregido el eje)
-      () => {
-        if (head) head.rotation.x = 0.4; // Ahora sí baja la cabeza de verdad
-        if (neck) neck.rotation.x = 0.2;
-        if (chest) chest.rotation.x = 0.1; 
-      },
-      // 3. Mirar al piso y ladear la cabeza (Como aceptando la derrota)
-      () => {
-        if (head) { head.rotation.x = 0.3; head.rotation.z = 0.1; }
-        if (neck) neck.rotation.x = 0.15;
-        if (chest) chest.rotation.x = 0.1;
-      }
-    ];
-    
-    const accionRandom = reaccionesTriste[Math.floor(Math.random() * reaccionesTriste.length)];
-    accionRandom();
+    // Solo dejamos la reacción que sí funciona (Decir "No" con la cabeza)
+    let vueltas = 0;
+    const negar = setInterval(() => {
+      if (head) head.rotation.y = vueltas % 2 === 0 ? 0.15 : -0.15;
+      vueltas++;
+      if (vueltas > 3) { clearInterval(negar); if(head) head.rotation.y = 0; }
+    }, 200);
   }
 
   if (estado !== 'neutral') {
