@@ -13,6 +13,8 @@ class DarkcodeChibi3D extends HTMLElement {
     this._acciones = {}; 
     this._resetTimeout = null;
     this._clock = new THREE.Clock();
+    this._lastInteraction = performance.now(); 
+    this._isIdle = false;
   }
 
   connectedCallback() {
@@ -83,7 +85,6 @@ class DarkcodeChibi3D extends HTMLElement {
 
     const loaderDiv = this.shadowRoot.getElementById("mc-loader");
 
-    // 1. Cargar el VRM
     const gltfLoader = new GLTFLoader();
     gltfLoader.register((parser) => new VRMLoaderPlugin(parser));
     
@@ -93,7 +94,6 @@ class DarkcodeChibi3D extends HTMLElement {
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
       vrm.scene.rotation.y = Math.PI; 
       
-      // Arreglar T-Pose
       if (vrm.humanoid) {
         const leftArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
         const rightArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
@@ -118,34 +118,40 @@ class DarkcodeChibi3D extends HTMLElement {
       this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
       this._camera.lookAt(0, size.y * 0.5, 0);
 
-      // 2. Cargar las DOS animaciones negativas
       if (loaderDiv) loaderDiv.textContent = "CARGANDO ANIMACIONES...";
       this._mixer = new THREE.AnimationMixer(vrm.scene);
       const fbxLoader = new FBXLoader();
 
-      // Cargar Negativo 1
-      try {
-        const fbxNeg1 = await fbxLoader.loadAsync('./negativo1.fbx');
-        const clipNeg1 = retargetAnimation(fbxNeg1, vrm);
-        if (clipNeg1) {
-          const action = this._mixer.clipAction(clipNeg1);
-          action.loop = THREE.LoopOnce;
-          action.clampWhenFinished = true;
-          this._acciones['negativo1'] = action;
-        }
-      } catch (e) { console.log("Error negativo1.fbx:", e); }
+      // 1. Cargar Negativos (Tristeza)
+      for (let i = 1; i <= 2; i++) {
+        try {
+          const fbx = await fbxLoader.loadAsync(`./negativo${i}.fbx`);
+          const clip = retargetAnimation(fbx, vrm);
+          if (clip) {
+            const action = this._mixer.clipAction(clip);
+            action.loop = THREE.LoopOnce;
+            action.clampWhenFinished = true;
+            this._acciones[`negativo${i}`] = action;
+          }
+        } catch (e) { console.log(`Error al cargar negativo${i}.fbx`); }
+      }
 
-      // Cargar Negativo 2
-      try {
-        const fbxNeg2 = await fbxLoader.loadAsync('./negativo2.fbx');
-        const clipNeg2 = retargetAnimation(fbxNeg2, vrm);
-        if (clipNeg2) {
-          const action = this._mixer.clipAction(clipNeg2);
-          action.loop = THREE.LoopOnce;
-          action.clampWhenFinished = true;
-          this._acciones['negativo2'] = action;
+      // 2. Cargar Neutrales (Aburrimiento/Idle) usando un ciclo del 1 al 5
+      for (let i = 1; i <= 5; i++) {
+        try {
+          const fbx = await fbxLoader.loadAsync(`./neutral${i}.fbx`);
+          const clip = retargetAnimation(fbx, vrm);
+          if (clip) {
+            const action = this._mixer.clipAction(clip);
+            action.loop = THREE.LoopOnce;
+            action.clampWhenFinished = true;
+            this._acciones[`neutral${i}`] = action;
+          }
+        } catch (e) { 
+          // Si no existe neutral3.fbx (por ejemplo), simplemente lo salta sin romper nada
+          console.log(`No se encontró neutral${i}.fbx, saltando...`); 
         }
-      } catch (e) { console.log("Error negativo2.fbx:", e); }
+      }
 
       if (loaderDiv) loaderDiv.style.display = "none";
 
@@ -166,14 +172,29 @@ class DarkcodeChibi3D extends HTMLElement {
     
     const delta = this._clock.getDelta();
     
-    // Actualizar animaciones de Mixamo
     if (this._mixer) {
       this._mixer.update(delta);
     }
 
-    // Actualizar el VRM (por si tiene físicas o parpadeos)
     if (this._vrm) {
       this._vrm.update(delta);
+    }
+
+    // LÓGICA DE INACTIVIDAD
+    const ahora = performance.now();
+    // Si pasan 10 segundos (10000ms) y no está aburrido
+    if (ahora - this._lastInteraction > 10000 && !this._isIdle) {
+      this._isIdle = true;
+      
+      // Buscamos cuáles neutrales se cargaron exitosamente
+      const neutralesDisponibles = Object.keys(this._acciones).filter(k => k.startsWith('neutral'));
+      
+      if (neutralesDisponibles.length > 0) {
+        // Elegimos uno al azar
+        const randomKey = neutralesDisponibles[Math.floor(Math.random() * neutralesDisponibles.length)];
+        this._mixer.stopAllAction();
+        this._acciones[randomKey].reset().play();
+      }
     }
     
     if (this._renderer && this._scene && this._camera) {
@@ -190,12 +211,15 @@ window.actualizarMiniCode = function(estado) {
   const personaje = document.getElementById("darkcode-chibi-quiz");
   if (!personaje || !personaje._vrm) return;
 
+  // El usuario interactuó, reiniciamos el aburrimiento
+  personaje._lastInteraction = performance.now();
+  personaje._isIdle = false;
+
   const vrm = personaje._vrm;
   const em = vrm.expressionManager;
   const humanoid = vrm.humanoid;
   const head = humanoid ? humanoid.getNormalizedBoneNode('head') : null;
 
-  // Función para limpiar todo
   const resetearPersonaje = () => {
     if (em) {
       ['happy', 'sad', 'sorrow', 'joy', 'angry', 'relaxed', 'surprised', 'blink'].forEach(expr => {
@@ -210,7 +234,6 @@ window.actualizarMiniCode = function(estado) {
   if (personaje._resetTimeout) clearTimeout(personaje._resetTimeout);
 
   if (estado === 'feliz') {
-    // Como no hay archivo de Mixamo positivo, usamos el código procedural que te gustó
     const reaccionesFeliz = [
       () => {
         if (em && em.getExpression('happy')) em.setValue('happy', 0.8);
@@ -225,7 +248,6 @@ window.actualizarMiniCode = function(estado) {
     accionRandom();
 
   } else if (estado === 'triste') {
-    // Elegir al azar entre negativo1 y negativo2
     const opciones = [];
     if (personaje._acciones['negativo1']) opciones.push('negativo1');
     if (personaje._acciones['negativo2']) opciones.push('negativo2');
@@ -236,7 +258,6 @@ window.actualizarMiniCode = function(estado) {
     }
   }
 
-  // Volver a la normalidad después de 3 segundos
   if (estado !== 'neutral') {
     personaje._resetTimeout = setTimeout(() => {
       resetearPersonaje();
