@@ -110,7 +110,7 @@ class DarkcodeChibi3D extends HTMLElement {
       const fbxLoader = new FBXLoader();
       
       try {
-        const fbx = await fbxLoader.loadAsync('./neutral5.fbx');
+        const fbx = await fbxLoader.loadAsync('./neutral4.fbx');
         const clip = loadMixamoAnimation(fbx, vrm);
         
         if (clip) {
