@@ -1,13 +1,5 @@
-// =====================================================================
-// CEREBRO <DARKCODE> - LÓGICA Y FUNCIONAMIENTO
-// =====================================================================
-
-// 1. IMPORTACIONES
 import { auth, db, provider, signInWithPopup, signOut, onAuthStateChanged, doc, getDoc, setDoc, deleteDoc } from "./firebase.js"
 
-// =====================================================================
-// 2. VARIABLES GLOBALES DEL JUEGO
-// =====================================================================
 const state = {
   user: null, lenguaje: "JavaScript", modo: localStorage.getItem("dc_modo") || "dark",
   sonidoBotones: localStorage.getItem("dc_sb") !== "0", xp: 0, nivel: 1,
@@ -19,7 +11,6 @@ const state = {
   ultimaRecompensa: ""
 };
 
-// Variables del Quiz (Movidas aquí arriba para evitar errores de carga)
 let leccionActual = [], indicePregunta = 0, opcionSeleccionada = null, aciertosLeccion = 0, moduloActual = "";
 let editorReto = null;
 let faseActualString = "";
@@ -27,9 +18,6 @@ let tipoQuizActual = "";
 const SECUENCIA_QUIZ = ["quiz1", "quiz2", "quiz3"];
 let timerTeoria = null;
 
-// =====================================================================
-// 3. LOGROS Y NOTIFICACIONES
-// =====================================================================
 const TODOS_LOS_LOGROS = [
   { id: "hola_clase", titulo: "Hola Clase", desc: "Entrar a una clase" },
   { id: "esqueletico", titulo: "Esquelético", desc: "Fase 1 HTML: Completada" },
@@ -113,16 +101,12 @@ function renderizarLogros() {
   });
 }
 
-// =====================================================================
-// 4. NUBE Y DATOS DEL USUARIO
-// =====================================================================
 async function cargarDatosNube(uid) {
   try {
     const docSnap = await getDoc(doc(db, "usuarios", uid));
     if (docSnap.exists()) {
       const data = docSnap.data();
       state.modo = data.modo || "dark";
-      
       if (data.billetera) state.billetera = data.billetera;
       if (data.lenguajesVistos) state.lenguajesVistos = data.lenguajesVistos;
       if (data.ejecucionesEditor) state.ejecucionesEditor = data.ejecucionesEditor;
@@ -193,9 +177,6 @@ async function guardarDatosNube() {
   } catch (e) { console.log("Error al guardar", e); }
 }
 
-// =====================================================================
-// 5. LOGIN Y NAVEGACIÓN PRINCIPAL
-// =====================================================================
 document.getElementById("btn-google")?.addEventListener("click", async () => {
   try { await signInWithPopup(auth, provider); reproducirSonido("ok"); } catch (error) { lanzarError(403, "Acceso denegado."); }
 });
@@ -241,9 +222,6 @@ window.enviarRecomendacion = function() {
   reproducirSonido("ok");
 }
 
-// =====================================================================
-// 6. ENTRAR AL SALÓN
-// =====================================================================
 document.querySelectorAll(".lang-card").forEach((card) => {
   card.addEventListener("click", () => { reproducirSonido("ok"); entrarSalon(card.dataset.lang); });
 });
@@ -295,9 +273,6 @@ document.querySelectorAll(".salon-tabs button").forEach((b) => {
   });
 });
 
-// =====================================================================
-// 7. LISTAS DE AULA Y PRÁCTICA
-// =====================================================================
 function cargarListaAula() {
   const container = document.getElementById("aula-contenedor-lista"); if (!container) return; container.innerHTML = "";
   if (!window.teoria) { container.innerHTML = `<p style="color:red;">Error: No se encontró clases.js</p>`; return; }
@@ -325,11 +300,9 @@ function cargarListaAula() {
       const btn = document.createElement("button"); btn.className = "boton";
       btn.style.marginBottom = "10px"; btn.style.width = "100%"; btn.style.textAlign = "left";
       const nombre = nombresBonitos[modulo] || modulo.toUpperCase();
-      
       const yaVista = clasesVistas.includes(modulo);
       const prefijo = yaVista ? "[OK] " : "";
       btn.innerHTML = `<strong>${prefijo}${nombre}</strong>`; 
-
       btn.onclick = () => abrirTeoriaSola(modulo); 
       container.appendChild(btn);
     }
@@ -342,10 +315,7 @@ function cargarListaPractica() {
   container.innerHTML = "";
   
   if (!window.baseDePreguntas) {
-    container.innerHTML = `<div style="color: #dc2626; padding: 20px; background: var(--card); border-radius: 10px; border: 1px solid #dc2626; text-align: center; margin-top:20px;">
-      <p><strong>Error crítico:</strong> No se pudo cargar el archivo <b>quiz.js</b>.</p>
-      <p style="font-size: 0.8rem;">Es posible que se haya cortado al copiarlo o que falte una llave <b>};</b> al final.</p>
-    </div>`;
+    container.innerHTML = `<div style="color: #dc2626; padding: 20px; background: var(--card); border-radius: 10px; border: 1px solid #dc2626; text-align: center; margin-top:20px;"><p><strong>Error crítico:</strong> No se pudo cargar el archivo <b>quiz.js</b>.</p><p style="font-size: 0.8rem;">Es posible que se haya cortado al copiarlo o que falte una llave <b>};</b> al final.</p></div>`;
     return;
   } 
   
@@ -381,12 +351,10 @@ function cargarListaPractica() {
       div.innerHTML = `<div class="circulo-mision">${icono}</div><div class="info-mision"><strong>Práctica: ${modulo.toUpperCase()}</strong><small>${textoEstado}</small></div>`;
       div.onclick = () => { 
         if (!tieneFase && faseActualNum > 0) {
-          mostrarToast("Completado", "Has terminado todas las fases disponibles de este módulo.", "exito");
-          return;
+          mostrarToast("Completado", "Has terminado todas las fases disponibles de este módulo.", "exito"); return;
         }
         if (!tieneFase) {
-          mostrarToast("Bloqueado", "Aún no hay fases para este módulo.", "error");
-          return;
+          mostrarToast("Bloqueado", "Aún no hay fases para este módulo.", "error"); return;
         }
         moduloActual = moduloReal; 
         abrirMenuFases(moduloReal)
@@ -396,9 +364,6 @@ function cargarListaPractica() {
   });
 }
 
-// =====================================================================
-// 8. TEORÍA Y FASES
-// =====================================================================
 function abrirTeoriaSola(moduloKey) {
   if (!window.teoria || !window.teoria[moduloKey]) return;
   moduloActual = moduloKey; 
@@ -467,7 +432,6 @@ window.abrirMenuFases = function(modulo) {
     let icono = "";
     let bloqueado = false;
     
-    // AQUÍ ESTÁN TUS TEXTOS ORIGINALES
     if (numFase <= faseActualNum) {
       icono = " Completeiro "; 
     } else if (numFase === faseActualNum + 1) {
@@ -491,9 +455,6 @@ window.abrirMenuFases = function(modulo) {
   nodo.parentNode.insertBefore(panel, nodo.nextSibling);
 }
 
-// =====================================================================
-// 9. MODOS, MÚSICA Y RECOMPENSAS
-// =====================================================================
 document.querySelectorAll(".modo-btn").forEach((b) => {
   b.addEventListener("click", () => {
     reproducirSonido("click"); state.modo = b.dataset.modo; localStorage.setItem("dc_modo", state.modo);
@@ -524,10 +485,7 @@ const audioQuiz = new Audio(); audioQuiz.loop = true; audioQuiz.volume = 0.3;
 let musicaFondo = new Audio(); musicaFondo.loop = false; musicaFondo.volume = 0.3; let musicaActiva = false;
 
 function detenerTodaMusica() {
-  musicaFondo.pause();
-  audioAula.pause();
-  audioQuiz.pause();
-  musicaActiva = false;
+  musicaFondo.pause(); audioAula.pause(); audioQuiz.pause(); musicaActiva = false;
 }
 
 window.abrirMenuMusica = function() {
@@ -541,16 +499,13 @@ window.abrirMenuMusica = function() {
 
   for (let i = 1; i <= 15; i++) {
     const btn = document.createElement("button");
-    btn.className = "boton";
-    btn.textContent = `Música ${i} (Relax)`;
-    btn.style.background = "transparent";
-    btn.style.border = "1px solid var(--border)";
+    btn.className = "boton"; btn.textContent = `Música ${i} (Relax)`;
+    btn.style.background = "transparent"; btn.style.border = "1px solid var(--border)";
     btn.onclick = () => {
       detenerTodaMusica();
       musicaFondo.src = `./audio${i}.mp3`;
       musicaFondo.play().catch(() => console.log("Esperando clic"));
-      musicaActiva = true;
-      modal.style.display = "none";
+      musicaActiva = true; modal.style.display = "none";
       mostrarToast("Música", `Reproduciendo pista ${i}`, "exito");
     };
     lista.appendChild(btn);
@@ -560,8 +515,7 @@ window.abrirMenuMusica = function() {
 
 window.toggleMusica = function() {
   if (musicaActiva || !audioAula.paused) {
-    detenerTodaMusica();
-    mostrarToast("Música", "Música apagada", "exito");
+    detenerTodaMusica(); mostrarToast("Música", "Música apagada", "exito");
   } else {
     detenerTodaMusica();
     indiceRelax = (indiceRelax + 1) % listaRelax.length;
@@ -583,20 +537,15 @@ function ganarXP(cantidad) {
 
 function agregarMonedas(dc, db, motivo) {
   if (!state.billetera) state.billetera = { dc: 0, db: 0 };
-  state.billetera.dc += dc;
-  state.billetera.db += db;
-  
+  state.billetera.dc += dc; state.billetera.db += db;
   let texto = "";
   if (dc > 0) texto += `+${dc} DC `;
   if (db > 0) texto += `+${db} DB`;
-  
   mostrarToast("Recompensa", `${motivo} | ${texto}`, "exito");
-  
   const walletDC = document.getElementById("wallet-dc");
   const walletDB = document.getElementById("wallet-db");
   if (walletDC) walletDC.textContent = state.billetera.dc;
   if (walletDB) walletDB.textContent = state.billetera.db;
-  
   guardarDatosNube();
 }
 
@@ -607,9 +556,6 @@ function actualizarPerfil() {
   renderizarLogros();
 }
 
-// =====================================================================
-// 10. EDITOR ACE
-// =====================================================================
 let editorSalon;
 window.addEventListener("load", () => {
   if (typeof ace === "undefined") return;
@@ -624,37 +570,26 @@ window.ejecutarSalon = function() {
   iframe.srcdoc = `<!DOCTYPE html><html><head><style>body { font-family: sans-serif; padding: 10px; color: #333; background: #fff; margin: 0; }</style></head><body>${codigo}</body></html>`;
   
   if (state.ejecucionesEditor < 10) {
-    state.ejecucionesEditor++;
-    agregarMonedas(1, 0, "Código ejecutado");
+    state.ejecucionesEditor++; agregarMonedas(1, 0, "Código ejecutado");
   } else {
     mostrarToast("Límite alcanzado", "Mejora tu suscripción para seguir ganando monedas en el editor.", "error");
   }
   ganarXP(5);
 }
 
-// =====================================================================
-// 11. LÓGICA DEL QUIZ (PREGUNTAS Y RESPUESTAS)
-// =====================================================================
 function cargarQuiz(modulo, fase, tipoQuiz) {
   window.tiempoInicioQuiz = Date.now();
   const dataModulo = window.baseDePreguntas[modulo]?.[fase]?.[tipoQuiz];
   if (!dataModulo || dataModulo.length === 0) { 
     if (tipoQuiz !== "quiz3") {
       tipoQuizActual = SECUENCIA_QUIZ[SECUENCIA_QUIZ.indexOf(tipoQuiz) + 1];
-      cargarQuiz(modulo, fase, tipoQuizActual);
-      return;
-    } else {
-      finalizarFaseCompleta();
-      return; 
-    }
+      cargarQuiz(modulo, fase, tipoQuizActual); return;
+    } else { finalizarFaseCompleta(); return; }
   }
   let preguntasRaw = dataModulo;
-  if (dataModulo.preguntas && Array.isArray(dataModulo.preguntas)) {
-    preguntasRaw = dataModulo.preguntas;
-  }
+  if (dataModulo.preguntas && Array.isArray(dataModulo.preguntas)) { preguntasRaw = dataModulo.preguntas; }
   leccionActual = [...preguntasRaw].sort(() => Math.random() - 0.5).slice(0, 3); 
-  indicePregunta = 0; 
-  aciertosLeccion = 0;
+  indicePregunta = 0; aciertosLeccion = 0;
   const trackRandom = cancionesSuspenso[Math.floor(Math.random() * cancionesSuspenso.length)];
   audioQuiz.src = trackRandom; audioQuiz.play().catch(e => console.log("Esperando clic"));
   audioAula.pause(); if (musicaActiva && musicaFondo) musicaFondo.pause(); 
@@ -669,7 +604,20 @@ function cargarPregunta() {
   const p = leccionActual[indicePregunta];
   document.getElementById("leccion-progreso").style.width = `${((indicePregunta + 1) / leccionActual.length) * 100}%`;
   
-  if (window.actualizarMiniCode) window.actualizarMiniCode("neutral");
+  const esAlexander = (indicePregunta % 2 === 0);
+  const divAlex = document.getElementById("quiz-alexander");
+  const divAndrea = document.getElementById("quiz-andrea");
+  
+  if(divAlex && divAndrea) {
+      divAlex.style.display = esAlexander ? "block" : "none";
+      divAndrea.style.display = esAlexander ? "none" : "block";
+  }
+
+  if (esAlexander) {
+      if (window.actualizarAlexander) window.actualizarAlexander("neutral");
+  } else {
+      if (window.actualizarAndrea) window.actualizarAndrea("neutral");
+  }
   
   document.getElementById("leccion-pregunta").innerHTML = p.pregunta || p.instrucciones;
   const contenedor = document.getElementById("leccion-opciones"); contenedor.innerHTML = ""; opcionSeleccionada = null;
@@ -689,8 +637,7 @@ function cargarPregunta() {
   } else if (p.codigoRoto || tipoQuizActual === "quiz3") {
     document.getElementById("contenedor-editor-reto").style.display = "block";
     if(!editorReto) { editorReto = ace.edit("editor-reto"); editorReto.setTheme("ace/theme/monokai"); }
-    editorReto.session.setMode("ace/mode/html"); 
-    editorReto.setValue(p.codigoRoto || ""); 
+    editorReto.session.setMode("ace/mode/html"); editorReto.setValue(p.codigoRoto || ""); 
     document.getElementById("btn-leccion-comprobar").disabled = false;
   }
   document.getElementById("btn-leccion-comprobar").style.display = "block";
@@ -717,47 +664,49 @@ window.comprobarRespuesta = function() {
       const respLimpia = respuestaUsuario.replace(/\s+/g, '').replace(/['"]/g, '').toLowerCase();
       const solLimpia = p.solucion.replace(/\s+/g, '').replace(/['"]/g, '').toLowerCase();
       esCorrecta = respLimpia.includes(solLimpia);
-    } else {
-      esCorrecta = respuestaUsuario.length > 10; 
-    }
+    } else { esCorrecta = respuestaUsuario.length > 10; }
   } else if (tipoQuizActual === "quiz3") {
     const respuestaUsuario = editorReto.getValue().trim();
     const tieneEtiquetas = respuestaUsuario.includes("<") && respuestaUsuario.includes(">");
     esCorrecta = respuestaUsuario.length > 20 && tieneEtiquetas;
   }
 
+  const esAlexander = (indicePregunta % 2 === 0);
+  const nombrePers = esAlexander ? "Alexander" : "Andrea";
+
   if (esCorrecta) {
     reproducirSonido("ok"); feedbackDiv.className = "feedback-container correcto";
-    tituloFb.textContent = "¡Correcto! MiniCode dice:"; aciertosLeccion++; ganarXP(10);
-    if (window.actualizarMiniCode) window.actualizarMiniCode("feliz");
+    tituloFb.textContent = "¡Correcto! " + nombrePers + " dice:"; aciertosLeccion++; ganarXP(10);
+    if (esAlexander) {
+        if (window.actualizarAlexander) window.actualizarAlexander("feliz");
+    } else {
+        if (window.actualizarAndrea) window.actualizarAndrea("feliz");
+    }
   } else {
     reproducirSonido("error"); feedbackDiv.className = "feedback-container incorrecto";
-    tituloFb.textContent = "Todavía no. MiniCode dice:";
-    if (window.actualizarMiniCode) window.actualizarMiniCode("triste");
+    tituloFb.textContent = "Todavía no. " + nombrePers + " dice:";
+    if (esAlexander) {
+        if (window.actualizarAlexander) window.actualizarAlexander("triste");
+    } else {
+        if (window.actualizarAndrea) window.actualizarAndrea("triste");
+    }
   }
   
   document.getElementById("feedback-texto").textContent = p.explicacion || p.atajo || "Revisa la teoría.";
   feedbackDiv.style.display = "block";
   const btnSig = document.getElementById("btn-leccion-siguiente");
-  btnSig.style.display = "block"; 
-  btnSig.textContent = "Continuar";
+  btnSig.style.display = "block"; btnSig.textContent = "Continuar";
   
   btnSig.onclick = function() {
     indicePregunta++;
-    if (indicePregunta < leccionActual.length) {
-      cargarPregunta();
-    } else {
-      terminarLeccion();
-    }
+    if (indicePregunta < leccionActual.length) { cargarPregunta(); } else { terminarLeccion(); }
   };
 }
 
 window.siguientePregunta = function() { indicePregunta++; cargarPregunta(); }
 
 window.iniciarSecuenciaFase = function(modulo, fase) {
-  moduloActual = modulo;
-  faseActualString = fase;
-  tipoQuizActual = "quiz1";
+  moduloActual = modulo; faseActualString = fase; tipoQuizActual = "quiz1";
   cargarQuiz(modulo, fase, tipoQuizActual);
 }
 
@@ -768,15 +717,9 @@ function siguienteQuizDeFase() {
     document.getElementById("pantalla-leccion").classList.remove("activa");
     setTimeout(() => {
       const existeSiguiente = window.baseDePreguntas[moduloActual]?.[faseActualString]?.[tipoQuizActual];
-      if (existeSiguiente) {
-        cargarQuiz(moduloActual, faseActualString, tipoQuizActual);
-      } else {
-        siguienteQuizDeFase(); 
-      }
+      if (existeSiguiente) { cargarQuiz(moduloActual, faseActualString, tipoQuizActual); } else { siguienteQuizDeFase(); }
     }, 1000);
-  } else {
-    finalizarFaseCompleta();
-  }
+  } else { finalizarFaseCompleta(); }
 }
 
 function terminarLeccion() {
@@ -784,8 +727,7 @@ function terminarLeccion() {
   if (musicaActiva && musicaFondo) { musicaFondo.play().catch(()=>{}); } else { audioAula.play().catch(()=>{}); }
   const porcentajeAcierto = (aciertosLeccion / leccionActual.length) * 100;
   if (porcentajeAcierto >= 60) {
-    ganarXP(20); 
-    mostrarToast("¡Superado!", `Has acertado ${aciertosLeccion} de ${leccionActual.length} en ${tipoQuizActual.toUpperCase()}.`, "exito");
+    ganarXP(20); mostrarToast("¡Superado!", `Has acertado ${aciertosLeccion} de ${leccionActual.length} en ${tipoQuizActual.toUpperCase()}.`, "exito");
     siguienteQuizDeFase();
   } else {
     mostrarToast("Casi lo logras", `Acertaste ${aciertosLeccion} de ${leccionActual.length}. Repasa e intenta de nuevo.`, "error");
@@ -805,8 +747,7 @@ function finalizarFaseCompleta() {
   state.progreso[langKey].fasesCompletadas[moduloActual] = numFase;
 
   agregarMonedas(10, 0, `Fase ${numFase} de ${moduloActual.toUpperCase()}`);
-  guardarDatosNube();
-  cargarListaPractica(); 
+  guardarDatosNube(); cargarListaPractica(); 
   
   const faseSiguienteString = `fase${numFase + 1}`;
   const hayFaseSiguiente = window.baseDePreguntas[moduloActual] && window.baseDePreguntas[moduloActual][faseSiguienteString];
@@ -815,14 +756,10 @@ function finalizarFaseCompleta() {
     mostrarToast("¡Módulo Terminado!", `Has completado todo el contenido disponible de ${moduloActual.toUpperCase()}.`, "logro");
     agregarMonedas(30, 1, `¡Módulo ${moduloActual.toUpperCase()} completado!`);
   }
-  lanzarConfeti();
-  mostrarToast("¡Fase Completada!", `Has terminado ${moduloActual.toUpperCase()} ${faseActualString.toUpperCase()}.`, "logro");
+  lanzarConfeti(); mostrarToast("¡Fase Completada!", `Has terminado ${moduloActual.toUpperCase()} ${faseActualString.toUpperCase()}.`, "logro");
   reproducirSonido("ok");
 }
 
-// =====================================================================
-// 12. MODALES Y SISTEMA ANTI-TRAMPA
-// =====================================================================
 window.abrirModalSalir = function() { document.getElementById("modal-confirmacion").style.display = "flex"; }
 window.cerrarModalConfirmacion = function() { document.getElementById("modal-confirmacion").style.display = "none"; }
 
@@ -834,52 +771,39 @@ window.confirmarSalida = function() {
   document.getElementById("pantalla-teoria").classList.remove("activa");
   document.getElementById("pantalla-leccion").classList.remove("activa");
   document.getElementById("salon").style.display = "block";
-  cargarListaAula(); 
-  cargarListaPractica(); // Detalle agregado para actualizar la práctica al salir
+  cargarListaAula(); cargarListaPractica(); 
 }
 
 let enExamen = false;
 const observerExamen = new MutationObserver(() => {
   const pantallaLeccion = document.getElementById("pantalla-leccion");
-  if (pantallaLeccion.classList.contains("activa")) {
-    enExamen = true;
-  } else {
-    enExamen = false;
-  }
+  enExamen = pantallaLeccion.classList.contains("activa");
 });
 observerExamen.observe(document.getElementById("pantalla-leccion"), { attributes: true, attributeFilter: ["class"] });
 
 document.addEventListener('contextmenu', (event) => {
-  const enTeoria = document.getElementById("pantalla-teoria").classList.contains("activa");
-  if (enTeoria) return; 
+  if (document.getElementById("pantalla-teoria").classList.contains("activa")) return; 
   if (enExamen) { event.preventDefault(); window.location.href = "pantalla_anti-trampa.html"; }
 });
 
 document.addEventListener('dblclick', (event) => {
-  const enTeoria = document.getElementById("pantalla-teoria").classList.contains("activa");
-  if (enTeoria) return; 
+  if (document.getElementById("pantalla-teoria").classList.contains("activa")) return; 
   if (enExamen) { event.preventDefault(); window.location.href = "pantalla_anti-trampa.html"; }
 });
 
 document.addEventListener("visibilitychange", () => {
-  const enTeoria = document.getElementById("pantalla-teoria").classList.contains("activa");
-  if (enTeoria) return;
+  if (document.getElementById("pantalla-teoria").classList.contains("activa")) return;
   if (document.hidden && enExamen) { window.location.href = "pantalla_anti-trampa.html"; }
 });
 
 history.pushState(null, null, location.href);
-window.onpopstate = function () {
-  if (enExamen) { window.location.href = "pantalla_anti-trampa.html"; }
-};
+window.onpopstate = function () { if (enExamen) { window.location.href = "pantalla_anti-trampa.html"; } };
 
 let distanciaInicial = 0;
 document.addEventListener("touchstart", function(e) {
   if (e.touches.length === 2 && document.getElementById("pantalla-teoria").classList.contains("activa")) {
     const teoria = document.getElementById("teoria-texto");
-    distanciaInicial = Math.hypot(
-      e.touches[0].pageX - e.touches[1].pageX,
-      e.touches[0].pageY - e.touches[1].pageY
-    );
+    distanciaInicial = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
     teoria.classList.add("zoom-activo");
   }
 }, { passive: false });
@@ -888,10 +812,7 @@ document.addEventListener("touchmove", function(e) {
   if (e.touches.length === 2 && document.getElementById("pantalla-teoria").classList.contains("activa")) {
     e.preventDefault();
     const teoria = document.getElementById("teoria-texto");
-    const distanciaActual = Math.hypot(
-      e.touches[0].pageX - e.touches[1].pageX,
-      e.touches[0].pageY - e.touches[1].pageY
-    );
+    const distanciaActual = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
     if (distanciaInicial > 0) {
       let escala = distanciaActual / distanciaInicial;
       escala = Math.min(Math.max(escala, 1), 2.5); 
@@ -903,16 +824,10 @@ document.addEventListener("touchmove", function(e) {
 document.addEventListener("touchend", function(e) {
   if (e.touches.length < 2) {
     const teoria = document.getElementById("teoria-texto");
-    if (teoria) {
-      distanciaInicial = 0;
-      setTimeout(() => teoria.classList.remove("zoom-activo"), 500);
-    }
+    if (teoria) { distanciaInicial = 0; setTimeout(() => teoria.classList.remove("zoom-activo"), 500); }
   }
 });
 
-// =====================================================================
-// 13. REGISTRO OBLIGATORIO Y RECOMPENSA
-// =====================================================================
 window.guardarRegistroObligatorio = async function() {
   const alias = document.getElementById("reg-alias").value.trim();
   const inst1 = document.getElementById("reg-institucion").value;
@@ -921,15 +836,10 @@ window.guardarRegistroObligatorio = async function() {
   const institucionFinal = [inst1, inst2, inst3].filter(Boolean).join(" - ");
 
   if (!alias || !institucionFinal) {
-    mostrarToast("Aviso", "Por favor, llena tu alias y elige al menos una opción en los menús.", "error");
-    return;
+    mostrarToast("Aviso", "Por favor, llena tu alias y elige al menos una opción en los menús.", "error"); return;
   }
   if (state.user) {
-    await setDoc(doc(db, "usuarios", state.user.uid), {
-      alias: alias,
-      institucion: institucionFinal,
-      perfilCompleto: true
-    }, { merge: true });
+    await setDoc(doc(db, "usuarios", state.user.uid), { alias: alias, institucion: institucionFinal, perfilCompleto: true }, { merge: true });
     document.getElementById("modal-registro").style.display = "none";
     document.getElementById("select-institucion").value = institucionFinal;
     document.getElementById("input-nombre").value = alias;
@@ -944,37 +854,19 @@ window.borrarMisDatos = async function() {
   if (confirmar) {
     try {
       await deleteDoc(doc(db, "usuarios", state.user.uid));
-      localStorage.removeItem("dc_logros");
-      localStorage.removeItem("dc_quizzes_hoy");
+      localStorage.removeItem("dc_logros"); localStorage.removeItem("dc_quizzes_hoy");
       mostrarToast("Cuenta reiniciada", "Volviendo al registro...", "exito");
       setTimeout(() => { location.reload(); }, 1500);
-    } catch (e) {
-      console.error("Error al borrar", e);
-      mostrarToast("Error", "No se pudo borrar la información.", "error");
-    }
+    } catch (e) { mostrarToast("Error", "No se pudo borrar la información.", "error"); }
   }
 }
 
 window.reclamarRecompensaDiaria = function() {
   const hoy = new Date().toDateString();
-  if (state.ultimaRecompensa === hoy) {
-    mostrarToast("Aviso", "Ya reclamaste tu recompensa hoy. Vuelve mañana.", "error");
-    return;
-  }
-  
+  if (state.ultimaRecompensa === hoy) { mostrarToast("Aviso", "Ya reclamaste tu recompensa hoy. Vuelve mañana.", "error"); return; }
   const rand = Math.random() * 100;
   let dc = 0, db = 0, rareza = "Común";
-
-  if (rand < 49) { dc = 10; }
-  else if (rand < 59) { dc = 20; }
-  else if (rand < 69) { dc = 30; }
-  else if (rand < 79) { dc = 40; }
-  else if (rand < 89) { dc = 50; }
-  else if (rand < 99) { db = 1; rareza = "Raro"; }
-  else { db = 10; rareza = "¡LEGENDARIO!"; }
-
-  state.ultimaRecompensa = hoy;
-  lanzarConfeti();
-  agregarMonedas(dc, db, `Recompensa Diaria (${rareza})`);
+  if (rand < 49) { dc = 10; } else if (rand < 59) { dc = 20; } else if (rand < 69) { dc = 30; } else if (rand < 79) { dc = 40; } else if (rand < 89) { dc = 50; } else if (rand < 99) { db = 1; rareza = "Raro"; } else { db = 10; rareza = "¡LEGENDARIO!"; }
+  state.ultimaRecompensa = hoy; lanzarConfeti(); agregarMonedas(dc, db, `Recompensa Diaria (${rareza})`);
   document.getElementById("modal-recompensa").style.display = "none";
 }
