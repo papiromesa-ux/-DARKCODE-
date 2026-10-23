@@ -1,20 +1,14 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
-import { retargetAnimation } from 'vrm-mixamo-retarget';
 
 class DarkcodeChibi3D extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
     this._vrm = null;
-    this._mixer = null;
-    this._acciones = {}; 
+    this._clock = null;
     this._resetTimeout = null;
-    this._clock = new THREE.Clock();
-    this._lastInteraction = performance.now(); 
-    this._isIdle = false;
   }
 
   connectedCallback() {
@@ -43,12 +37,13 @@ class DarkcodeChibi3D extends HTMLElement {
     this.iniciarThreeJS();
   }
 
-  async iniciarThreeJS() {
+  iniciarThreeJS() {
     const w = this.clientWidth || 170;
     const h = this.clientHeight || 220;
 
     this._scene = new THREE.Scene();
     
+    // Piso invisible para la sombra
     const planeGeometry = new THREE.PlaneGeometry(10, 10);
     const planeMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
     this._floor = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -85,20 +80,20 @@ class DarkcodeChibi3D extends HTMLElement {
 
     const loaderDiv = this.shadowRoot.getElementById("mc-loader");
 
-    const gltfLoader = new GLTFLoader();
-    gltfLoader.register((parser) => new VRMLoaderPlugin(parser));
-    
-    try {
-      const gltf = await gltfLoader.loadAsync('./minicode.vrm');
+    const loader = new GLTFLoader();
+    loader.register((parser) => new VRMLoaderPlugin(parser));
+
+    loader.load('./minicode.vrm', (gltf) => {
       const vrm = gltf.userData.vrm;
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
       vrm.scene.rotation.y = Math.PI; 
-
+      
+      // Arreglamos la T-Pose
       if (vrm.humanoid) {
-        const leftUpperArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
-        const rightUpperArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
-        if (leftUpperArm) leftUpperArm.rotation.z = 1.2; 
-        if (rightUpperArm) rightUpperArm.rotation.z = -1.2;
+        const leftArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
+        const rightArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
+        if (leftArm) leftArm.rotation.z = 1.2;
+        if (rightArm) rightArm.rotation.z = -1.2;
       }
 
       vrm.scene.traverse((obj) => {
@@ -110,95 +105,44 @@ class DarkcodeChibi3D extends HTMLElement {
       
       this._scene.add(vrm.scene);
       this._vrm = vrm;
+      this._clock = new THREE.Clock();
 
       const box = new THREE.Box3().setFromObject(vrm.scene);
       const size = box.getSize(new THREE.Vector3());
       
-      this._floor.position.y = 0; 
-      vrm.scene.position.y = -box.min.y; 
+      this._floor.position.y = 0;
+      vrm.scene.position.y = -box.min.y;
       
       this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
       this._camera.lookAt(0, size.y * 0.5, 0);
-
-      if (loaderDiv) loaderDiv.textContent = "CARGANDO ANIMACIONES...";
-      this._mixer = new THREE.AnimationMixer(vrm.scene);
-      const fbxLoader = new FBXLoader();
-
-      // Cargar Negativos
-      for (let i = 1; i <= 2; i++) {
-        try {
-          const fbx = await fbxLoader.loadAsync(`./negativo${i}.fbx`);
-          const clip = retargetAnimation(fbx, vrm);
-          if (clip && clip.tracks.length > 0) {
-            const action = this._mixer.clipAction(clip);
-            action.loop = THREE.LoopOnce;
-            action.clampWhenFinished = true;
-            this._acciones[`negativo${i}`] = action;
-          }
-        } catch (e) { console.log(`Error negativo${i}`); }
-      }
-
-      // Cargar Neutrales (1 al 5)
-      for (let i = 1; i <= 5; i++) {
-        try {
-          const fbx = await fbxLoader.loadAsync(`./neutral${i}.fbx`);
-          const clip = retargetAnimation(fbx, vrm);
-          if (clip && clip.tracks.length > 0) {
-            const action = this._mixer.clipAction(clip);
-            if(i === 5) {
-              action.loop = THREE.LoopRepeat;
-              action.play(); // Pose base
-            } else {
-              action.loop = THREE.LoopOnce;
-              action.clampWhenFinished = true;
-            }
-            this._acciones[`neutral${i}`] = action;
-          }
-        } catch (e) { console.log(`Error neutral${i}`); }
-      }
-
+      
       if (loaderDiv) loaderDiv.style.display = "none";
+      if (window.actualizarMiniCode) window.actualizarMiniCode(this.getAttribute("estado") || "neutral");
 
-    } catch (error) {
+    }, undefined, (error) => {
       console.error('Error VRM:', error);
       if (loaderDiv) {
         loaderDiv.style.backgroundColor = "orange";
         loaderDiv.style.color = "black";
         loaderDiv.textContent = "ERROR AL CARGAR VRM.";
       }
-    }
+    });
 
     this._animate();
   }
 
   _animate() {
     requestAnimationFrame(() => this._animate());
-    const delta = this._clock.getDelta();
-    
-    if (this._mixer) this._mixer.update(delta);
-    if (this._vrm) this._vrm.update(delta);
-
-    // 3 segundos para aburrirse
-    const ahora = performance.now();
-    if (ahora - this._lastInteraction > 3000 && !this._isIdle) {
-      this._isIdle = true;
-      const aburridos = Object.keys(this._acciones).filter(k => k.startsWith('neutral') && k !== 'neutral5');
+    if (this._vrm && this._clock) {
+      const delta = this._clock.getDelta();
+      this._vrm.update(delta);
       
-      if (aburridos.length > 0) {
-        const randomKey = aburridos[Math.floor(Math.random() * aburridos.length)];
-        if(this._acciones['neutral5']) this._acciones['neutral5'].fadeOut(0.5);
-        this._acciones[randomKey].reset().fadeIn(0.5).play();
-        
-        setTimeout(() => {
-          if(this._acciones[randomKey]) this._acciones[randomKey].fadeOut(0.5);
-          if(this._acciones['neutral5']) this._acciones['neutral5'].reset().fadeIn(0.5).play();
-          this._isIdle = false;
-        }, 3000); 
-      } else {
-        this._isIdle = false;
+      const time = performance.now();
+      const chest = this._vrm.humanoid ? this._vrm.humanoid.getNormalizedBoneNode('chest') : null;
+      if (chest) {
+        chest.rotation.x = Math.sin(time * 0.002) * 0.02;
       }
     }
-    
     if (this._renderer && this._scene && this._camera) {
       this._renderer.render(this._scene, this._camera);
     }
@@ -213,31 +157,23 @@ window.actualizarMiniCode = function(estado) {
   const personaje = document.getElementById("darkcode-chibi-quiz") || document.getElementById("darkcode-chibi-bienvenida");
   if (!personaje || !personaje._vrm) return;
 
-  personaje._lastInteraction = performance.now();
-  personaje._isIdle = false;
-
   const vrm = personaje._vrm;
   const em = vrm.expressionManager;
   const humanoid = vrm.humanoid;
   const head = humanoid ? humanoid.getNormalizedBoneNode('head') : null;
+  const chest = humanoid ? humanoid.getNormalizedBoneNode('chest') : null;
 
-  const volverAlReposo = () => {
+  const resetearPersonaje = () => {
     if (em) {
       ['happy', 'sad', 'sorrow', 'joy', 'angry', 'relaxed', 'surprised', 'blink'].forEach(expr => {
         if (em.getExpression(expr)) em.setValue(expr, 0);
       });
     }
     if (head) head.rotation.set(0, 0, 0);
-    
-    if (personaje._mixer) {
-      personaje._mixer.stopAllAction();
-      if (personaje._acciones['neutral5']) {
-        personaje._acciones['neutral5'].reset().play();
-      }
-    }
+    if (chest) chest.rotation.set(0, 0, 0);
   };
 
-  if (personaje._mixer) personaje._mixer.stopAllAction();
+  resetearPersonaje();
   if (personaje._resetTimeout) clearTimeout(personaje._resetTimeout);
 
   if (estado === 'feliz') {
@@ -255,28 +191,17 @@ window.actualizarMiniCode = function(estado) {
     accionRandom();
 
   } else if (estado === 'triste') {
-    const opciones = [];
-    if (personaje._acciones['negativo1']) opciones.push('negativo1');
-    if (personaje._acciones['negativo2']) opciones.push('negativo2');
-
-    if (opciones.length > 0) {
-      const elegido = opciones[Math.floor(Math.random() * opciones.length)];
-      personaje._acciones[elegido].reset().play();
-    } else {
-      let vueltas = 0;
-      const negar = setInterval(() => {
-        if (head) head.rotation.y = vueltas % 2 === 0 ? 0.15 : -0.15;
-        vueltas++;
-        if (vueltas > 3) { clearInterval(negar); if(head) head.rotation.y = 0; }
-      }, 200);
-    }
+    let vueltas = 0;
+    const negar = setInterval(() => {
+      if (head) head.rotation.y = vueltas % 2 === 0 ? 0.15 : -0.15;
+      vueltas++;
+      if (vueltas > 3) { clearInterval(negar); if(head) head.rotation.y = 0; }
+    }, 200);
   }
 
   if (estado !== 'neutral') {
     personaje._resetTimeout = setTimeout(() => {
-      volverAlReposo();
-    }, 3000);
-  } else {
-    volverAlReposo();
+      resetearPersonaje();
+    }, 2500);
   }
 };
