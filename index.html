@@ -341,8 +341,13 @@
       </div>
       
       <div class="leccion-contenido">
-        <div class="minicode-chat">
-          <darkcode-alexander id="personaje-quiz" estado="neutral"></darkcode-alexander>
+        <div class="minicode-chat" style="position: relative;">
+          <div id="quiz-alexander" style="display: block;">
+            <darkcode-alexander id="personaje-alexander" estado="neutral"></darkcode-alexander>
+          </div>
+          <div id="quiz-andrea" style="display: none;">
+            <darkcode-andrea id="personaje-andrea" estado="neutral"></darkcode-andrea>
+          </div>
           <div class="minicode-speech" id="minicode-bubble">
             <h2 id="leccion-pregunta" style="color: var(--text); font-size: 1.1rem; margin: 0;">Cargando...</h2>
           </div>
