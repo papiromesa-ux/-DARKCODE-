@@ -98,7 +98,7 @@ class DarkcodeChibi3D extends HTMLElement {
       this._vrm = vrm;
       this._mixer = new THREE.AnimationMixer(vrm.scene);
 
-      // --- IMPORTANTE: Calcular el tamaño ANTES de la animación ---
+      // Calculamos el tamaño del personaje ANTES de la animación para asegurar el encuadre
       const box = new THREE.Box3().setFromObject(vrm.scene);
       const size = box.getSize(new THREE.Vector3());
       
@@ -116,10 +116,11 @@ class DarkcodeChibi3D extends HTMLElement {
         const clip = loadMixamoAnimation(fbx, vrm);
         
         if (clip) {
-          // --- LA MAGIA ESTÁ AQUÍ ---
-          // Filtramos los movimientos y BORRAMOS el movimiento de la cadera.
-          // Así el personaje se mueve en el mismo lugar y no sale volando.
-          clip.tracks = clip.tracks.filter(track => !track.name.includes('hips.position'));
+          // AQUI ESTA LA MAGIA: Filtramos los tracks y borramos los que intentan moverlo o escalarlo
+          clip.tracks = clip.tracks.filter(track => {
+             // Solo dejamos las rotaciones (quaternion) de los huesos
+             return track.name.includes('quaternion');
+          });
 
           const action = this._mixer.clipAction(clip);
           action.play(); 
