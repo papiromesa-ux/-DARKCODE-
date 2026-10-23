@@ -1,4 +1,4 @@
-const CACHE = "darkcode-Release6.8";
+const CACHE = "darkcode-Release6.9";
 const LOCALES = [
   "./", "./index.html", "./ropa.css", "./cerebro.js", "./clases.js",
   "./quiz.js", "./manifest.json", "./pantalla_anti-trampa.html", "./minicode.js",
