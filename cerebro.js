@@ -1,6 +1,13 @@
-// CEREBRO <DARKCODE> \\
+// =====================================================================
+// CEREBRO <DARKCODE> - LÓGICA Y FUNCIONAMIENTO
+// =====================================================================
+
+// 1. IMPORTACIONES
 import { auth, db, provider, signInWithPopup, signOut, onAuthStateChanged, doc, getDoc, setDoc, deleteDoc } from "./firebase.js"
-//  2 JSONS COMPLEJOS Y SISTEMA DE LOGROS A MI LÓGICA linea de codigo 21 \\
+
+// =====================================================================
+// 2. VARIABLES GLOBALES DEL JUEGO
+// =====================================================================
 const state = {
   user: null, lenguaje: "JavaScript", modo: localStorage.getItem("dc_modo") || "dark",
   sonidoBotones: localStorage.getItem("dc_sb") !== "0", xp: 0, nivel: 1,
@@ -12,6 +19,17 @@ const state = {
   ultimaRecompensa: ""
 };
 
+// Variables del Quiz (Movidas aquí arriba para evitar errores de carga)
+let leccionActual = [], indicePregunta = 0, opcionSeleccionada = null, aciertosLeccion = 0, moduloActual = "";
+let editorReto = null;
+let faseActualString = "";
+let tipoQuizActual = ""; 
+const SECUENCIA_QUIZ = ["quiz1", "quiz2", "quiz3"];
+let timerTeoria = null;
+
+// =====================================================================
+// 3. LOGROS Y NOTIFICACIONES
+// =====================================================================
 const TODOS_LOS_LOGROS = [
   { id: "hola_clase", titulo: "Hola Clase", desc: "Entrar a una clase" },
   { id: "esqueletico", titulo: "Esquelético", desc: "Fase 1 HTML: Completada" },
@@ -32,7 +50,6 @@ const TODOS_LOS_LOGROS = [
   { id: "escupe_agua", titulo: "Escupe Agua", desc: "Terminar casi todo PHP" }
 ];
 
-// 3 LOGICA DE NOTIFICACIONES linea de codigo 49 \\
 function mostrarToast(titulo, mensaje, tipo = "error") {
   const container = document.getElementById("notificaciones-container");
   const toast = document.createElement("div");
@@ -42,7 +59,9 @@ function mostrarToast(titulo, mensaje, tipo = "error") {
   container.appendChild(toast);
   setTimeout(() => { toast.style.opacity = "0"; setTimeout(() => toast.remove(), 300); }, 4000);
 }
+
 function lanzarError(codigo, mensaje) { mostrarToast(`Error ${codigo}`, mensaje, "error"); reproducirSonido("error"); }
+
 function reproducirSonido(tipo) {
   if (!state.sonidoBotones) return;
   try {
@@ -56,7 +75,6 @@ function reproducirSonido(tipo) {
   } catch (e) {}
 }
 
-// 4 CONFETI Y ARCHIVO LET linea de código 75 \\
 function lanzarConfeti() {
   const container = document.getElementById("confetti-container");
   for (let i = 0; i < 50; i++) {
@@ -66,6 +84,7 @@ function lanzarConfeti() {
     setTimeout(() => confeti.remove(), 3000);
   }
 }
+
 function desbloquearLogro(idLogro) {
   if (state.logros.includes(idLogro)) return;
   state.logros.push(idLogro);
@@ -79,6 +98,7 @@ function desbloquearLogro(idLogro) {
   }
   renderizarLogros();
 }
+
 function renderizarLogros() {
   const container = document.getElementById("lista-logros");
   if (!container) return; container.innerHTML = "";
@@ -93,7 +113,9 @@ function renderizarLogros() {
   });
 }
 
-// 5 NUBE linea de código 109 \\
+// =====================================================================
+// 4. NUBE Y DATOS DEL USUARIO
+// =====================================================================
 async function cargarDatosNube(uid) {
   try {
     const docSnap = await getDoc(doc(db, "usuarios", uid));
@@ -140,6 +162,7 @@ async function cargarDatosNube(uid) {
     }
   } catch (e) { console.log("Firebase sin conexión", e); }
 }
+
 async function guardarDatosNube() {
   if (!state.user) return;
   try {
@@ -170,10 +193,13 @@ async function guardarDatosNube() {
   } catch (e) { console.log("Error al guardar", e); }
 }
 
-// 6 LOGIN SAYKO  linea de codigo 174 \\
+// =====================================================================
+// 5. LOGIN Y NAVEGACIÓN PRINCIPAL
+// =====================================================================
 document.getElementById("btn-google")?.addEventListener("click", async () => {
   try { await signInWithPopup(auth, provider); reproducirSonido("ok"); } catch (error) { lanzarError(403, "Acceso denegado."); }
 });
+
 onAuthStateChanged(auth, (user) => {
   if (user) {
     state.user = user;
@@ -188,7 +214,6 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// 7 NAVEGADOR linea de código 193 \\
 window.cambiarSeccion = function(seccion) {
   reproducirSonido("click");
   document.querySelectorAll(".menu-principal button").forEach((x) => x.classList.remove("activo"));
@@ -200,7 +225,9 @@ window.cambiarSeccion = function(seccion) {
   if(btn) btn.classList.add("activo");
   document.getElementById(seccion).classList.add("activa");
 }
+
 window.guardarPerfil = function() { reproducirSonido("ok"); guardarDatosNube(); mostrarToast("Perfil", "Datos guardados correctamente", "exito"); }
+
 window.enviarRecomendacion = function() {
   const txt = document.getElementById("txt-recomendacion").value;
   if(txt.trim() === "") { mostrarToast("Aviso", "Escribe algo antes de enviar.", "error"); return; }
@@ -214,10 +241,13 @@ window.enviarRecomendacion = function() {
   reproducirSonido("ok");
 }
 
-// 9 SELECTOR Y PREGUNTADOR JS línea de código 229 \\
+// =====================================================================
+// 6. ENTRAR AL SALÓN
+// =====================================================================
 document.querySelectorAll(".lang-card").forEach((card) => {
   card.addEventListener("click", () => { reproducirSonido("ok"); entrarSalon(card.dataset.lang); });
 });
+
 function entrarSalon(lang) {
   state.lenguaje = lang;
   document.getElementById("salon-lenguaje").textContent = `<<< ${lang.toUpperCase()} >>>`;
@@ -244,6 +274,7 @@ function entrarSalon(lang) {
   cargarListaAula(); 
   cargarListaPractica();
 }
+
 window.salirSalon = function() {
   reproducirSonido("click");
   document.querySelectorAll(".seccion").forEach((s) => s.classList.remove("activa"));
@@ -254,6 +285,7 @@ window.salirSalon = function() {
   document.querySelectorAll(".menu-principal button").forEach((x) => x.classList.remove("activo"));
   document.querySelector('.menu-principal button[data-seccion="inicio"]').classList.add("activo");
 }
+
 document.querySelectorAll(".salon-tabs button").forEach((b) => {
   b.addEventListener("click", () => {
     reproducirSonido("click");
@@ -263,15 +295,19 @@ document.querySelectorAll(".salon-tabs button").forEach((b) => {
   });
 });
 
-// 10 CEREBRO DE CARGA DE LISTA DE AULA línea de código 281 \\
+// =====================================================================
+// 7. LISTAS DE AULA Y PRÁCTICA
+// =====================================================================
 function cargarListaAula() {
   const container = document.getElementById("aula-contenedor-lista"); if (!container) return; container.innerHTML = "";
   if (!window.teoria) { container.innerHTML = `<p style="color:red;">Error: No se encontró clases.js</p>`; return; }
+  
   const modulosComunes = ["html", "css", "cyber", "api", "sw", "manifest", "debug", "repo", "files", "ia", "hacking", "json", "consola"];
   let moduloLenguaje = state.lenguaje.toLowerCase();
   if (moduloLenguaje === "javascript") moduloLenguaje = "js";
   if (moduloLenguaje === "c++") moduloLenguaje = "cpp";
   const modulosPermitidos = [...modulosComunes, moduloLenguaje];
+  
   const nombresBonitos = {
     html: "Los Cimientos (HTML)", css: "El Diseño (CSS)", cyber: "El Escudo (Cyber)", 
     api: "Comunicaciones (API)", sw: "Modo Offline (SW)", manifest: "Identidad (Manifest)", 
@@ -299,6 +335,7 @@ function cargarListaAula() {
     }
   });
 }
+
 function cargarListaPractica() {
   const container = document.getElementById("mapa-misiones-container"); 
   if (!container) return; 
@@ -311,6 +348,7 @@ function cargarListaPractica() {
     </div>`;
     return;
   } 
+  
   const modulosComunes = ["html", "css", "cyber", "api", "sw", "manifest", "depuracion", "repo", "files", "ia", "hacking", "json", "consola"];
   let moduloLenguaje = state.lenguaje.toLowerCase();
   if (moduloLenguaje === "javascript") moduloLenguaje = "js";
@@ -318,6 +356,7 @@ function cargarListaPractica() {
   const modulosPermitidos = [...modulosComunes, moduloLenguaje];
   const langKey = state.lenguaje.toLowerCase() === "javascript" ? "js" : state.lenguaje.toLowerCase();
   const progresoActual = state.progreso[langKey]?.fasesCompletadas || {};
+  
   Object.keys(window.baseDePreguntas).forEach((modulo) => {
     const moduloReal = modulo === "debug" ? "depuracion" : modulo;
     if (modulosPermitidos.includes(modulo)) {
@@ -357,8 +396,9 @@ function cargarListaPractica() {
   });
 }
 
-// 11 TEORIA línea de código 383 \\  
-let timerTeoria = null;
+// =====================================================================
+// 8. TEORÍA Y FASES
+// =====================================================================
 function abrirTeoriaSola(moduloKey) {
   if (!window.teoria || !window.teoria[moduloKey]) return;
   moduloActual = moduloKey; 
@@ -391,6 +431,7 @@ function abrirTeoriaSola(moduloKey) {
     }
   }, 60000);
 }
+
 window.irAPractica = function() {
   reproducirSonido("click"); 
   if (timerTeoria) clearInterval(timerTeoria);
@@ -403,6 +444,7 @@ window.irAPractica = function() {
   document.getElementById("tab-practica").classList.add("activo");
   iniciarSecuenciaFase(moduloReal,"fase1");
 }
+
 window.abrirMenuFases = function(modulo) {
   const panelViejo = document.getElementById("panel-fases-" + modulo);
   if (panelViejo) { panelViejo.remove(); return; }
@@ -417,12 +459,15 @@ window.abrirMenuFases = function(modulo) {
   panel.className = "panel-fases-desplegable";
   const fases = ["Fase 1", "Fase 2", "Fase 3"];
   let htmlBotones = `<div style="display:flex; gap:10px; padding: 10px; justify-content: center;">`;
+  
   fases.forEach((faseTexto, index) => {
     const numFase = index + 1;
     const faseString = `fase${numFase}`;
     const tieneFase = window.baseDePreguntas[modulo] && window.baseDePreguntas[modulo][faseString];
     let icono = "";
     let bloqueado = false;
+    
+    // AQUÍ ESTÁN TUS TEXTOS ORIGINALES
     if (numFase <= faseActualNum) {
       icono = " Completeiro "; 
     } else if (numFase === faseActualNum + 1) {
@@ -431,6 +476,7 @@ window.abrirMenuFases = function(modulo) {
       icono = " Bloquedo por tung tung sahur "; 
       bloqueado = true;
     }
+    
     if (!tieneFase) {
       htmlBotones += `<button class="boton" disabled style="padding: 10px; opacity: 0.3; font-size: 0.8rem; background: #333;">${faseTexto} (Pronto)</button>`;
     } else if (bloqueado) {
@@ -439,12 +485,15 @@ window.abrirMenuFases = function(modulo) {
       htmlBotones += `<button class="boton" onclick="iniciarSecuenciaFase('${modulo}', '${faseString}')" style="padding: 10px; font-size: 0.8rem;">${icono}${faseTexto}</button>`;
     }
   });
+  
   htmlBotones += `</div>`;
   panel.innerHTML = htmlBotones;
   nodo.parentNode.insertBefore(panel, nodo.nextSibling);
 }
 
-// 12 DEEZER STAFF línea de código 437 \\
+// =====================================================================
+// 9. MODOS, MÚSICA Y RECOMPENSAS
+// =====================================================================
 document.querySelectorAll(".modo-btn").forEach((b) => {
   b.addEventListener("click", () => {
     reproducirSonido("click"); state.modo = b.dataset.modo; localStorage.setItem("dc_modo", state.modo);
@@ -452,6 +501,7 @@ document.querySelectorAll(".modo-btn").forEach((b) => {
     b.classList.add("activo"); guardarDatosNube();
   });
 });
+
 function aplicarModo(modo) {
   document.body.classList.remove("light", "dazer");
   if (modo === "light") document.body.classList.add("light");
@@ -472,12 +522,14 @@ audioAula.addEventListener('ended', () => {
 const cancionesSuspenso = ["./audioquiz1.mp3", "./audioquiz2.mp3"];
 const audioQuiz = new Audio(); audioQuiz.loop = true; audioQuiz.volume = 0.3;
 let musicaFondo = new Audio(); musicaFondo.loop = false; musicaFondo.volume = 0.3; let musicaActiva = false;
+
 function detenerTodaMusica() {
   musicaFondo.pause();
   audioAula.pause();
   audioQuiz.pause();
   musicaActiva = false;
 }
+
 window.abrirMenuMusica = function() {
   const modal = document.getElementById("modal-musica");
   const lista = document.getElementById("lista-musica");
@@ -505,6 +557,7 @@ window.abrirMenuMusica = function() {
   }
   modal.style.display = "flex";
 }
+
 window.toggleMusica = function() {
   if (musicaActiva || !audioAula.paused) {
     detenerTodaMusica();
@@ -527,6 +580,7 @@ function ganarXP(cantidad) {
   }
   actualizarPerfil(); guardarDatosNube();
 }
+
 function agregarMonedas(dc, db, motivo) {
   if (!state.billetera) state.billetera = { dc: 0, db: 0 };
   state.billetera.dc += dc;
@@ -545,15 +599,17 @@ function agregarMonedas(dc, db, motivo) {
   
   guardarDatosNube();
 }
+
 function actualizarPerfil() {
   document.getElementById("perfil-nivel").textContent = state.nivel;
   document.getElementById("perfil-xp").textContent = state.xp;
   document.getElementById("xp-bar-fill").style.width = `${state.xp}%`;
   renderizarLogros();
 }
-window.cerrarSesion = function() { signOut(auth).then(() => location.reload()); }
 
-// 13 EDITOR ACE línea de código 510 \\
+// =====================================================================
+// 10. EDITOR ACE
+// =====================================================================
 let editorSalon;
 window.addEventListener("load", () => {
   if (typeof ace === "undefined") return;
@@ -561,6 +617,7 @@ window.addEventListener("load", () => {
   editorSalon.setValue(`<div style="text-align:center;">\n  <h1 style="color:purple;">¡Hola &lt;DARKCODE&gt;!</h1>\n  <button onclick="alert('Funciona!')">Probar</button>\n</div>`);
   renderizarLogros();
 });
+
 window.ejecutarSalon = function() {
   const iframe = document.getElementById("preview-salon"); if (!editorSalon || !iframe) return;
   const codigo = editorSalon.getValue();
@@ -575,9 +632,9 @@ window.ejecutarSalon = function() {
   ganarXP(5);
 }
 
-// 14 SALTADOR INICIADOR ÍNDICE PREGUNTA LAPSO OX línea de código 526\\
-let leccionActual = [], indicePregunta = 0, opcionSeleccionada = null, aciertosLeccion = 0, moduloActual = "";
-let editorReto = null;
+// =====================================================================
+// 11. LÓGICA DEL QUIZ (PREGUNTAS Y RESPUESTAS)
+// =====================================================================
 function cargarQuiz(modulo, fase, tipoQuiz) {
   window.tiempoInicioQuiz = Date.now();
   const dataModulo = window.baseDePreguntas[modulo]?.[fase]?.[tipoQuiz];
@@ -606,13 +663,17 @@ function cargarQuiz(modulo, fase, tipoQuiz) {
   mostrarToast("Evaluación", `Iniciando ${tipoQuiz.toUpperCase()}...`, "info");
   cargarPregunta();
 }
+
 function cargarPregunta() {
   if (indicePregunta >= leccionActual.length) { terminarLeccion(); return; }
   const p = leccionActual[indicePregunta];
   document.getElementById("leccion-progreso").style.width = `${((indicePregunta + 1) / leccionActual.length) * 100}%`;
+  
   if (window.actualizarMiniCode) window.actualizarMiniCode("neutral");
+  
   document.getElementById("leccion-pregunta").innerHTML = p.pregunta || p.instrucciones;
   const contenedor = document.getElementById("leccion-opciones"); contenedor.innerHTML = ""; opcionSeleccionada = null;
+  
   if (p.opciones) {
     document.getElementById("btn-leccion-comprobar").disabled = true;
     document.getElementById("contenedor-editor-reto").style.display = "none";
@@ -636,6 +697,7 @@ function cargarPregunta() {
   document.getElementById("btn-leccion-siguiente").style.display = "none";
   document.getElementById("leccion-feedback").style.display = "none";
 }
+
 window.comprobarRespuesta = function() {
   const p = leccionActual[indicePregunta]; 
   let esCorrecta = false;
@@ -644,6 +706,7 @@ window.comprobarRespuesta = function() {
   document.getElementById("btn-leccion-comprobar").style.display = "none";
   const feedbackDiv = document.getElementById("leccion-feedback");
   const tituloFb = document.getElementById("feedback-titulo"); 
+  
   if (p.opciones) {
     esCorrecta = (opcionSeleccionada === p.correcta);
     if (esCorrecta) { botones[opcionSeleccionada].classList.add("correcta"); } 
@@ -664,14 +727,15 @@ window.comprobarRespuesta = function() {
   }
 
   if (esCorrecta) {
-  reproducirSonido("ok"); feedbackDiv.className = "feedback-container correcto";
-  tituloFb.textContent = "¡Correcto! MiniCode dice:"; aciertosLeccion++; ganarXP(10);
-  if (window.actualizarMiniCode) window.actualizarMiniCode("feliz");
-} else {
-  reproducirSonido("error"); feedbackDiv.className = "feedback-container incorrecto";
-  tituloFb.textContent = "Todavía no. MiniCode dice:";
-  if (window.actualizarMiniCode) window.actualizarMiniCode("triste");
-}
+    reproducirSonido("ok"); feedbackDiv.className = "feedback-container correcto";
+    tituloFb.textContent = "¡Correcto! MiniCode dice:"; aciertosLeccion++; ganarXP(10);
+    if (window.actualizarMiniCode) window.actualizarMiniCode("feliz");
+  } else {
+    reproducirSonido("error"); feedbackDiv.className = "feedback-container incorrecto";
+    tituloFb.textContent = "Todavía no. MiniCode dice:";
+    if (window.actualizarMiniCode) window.actualizarMiniCode("triste");
+  }
+  
   document.getElementById("feedback-texto").textContent = p.explicacion || p.atajo || "Revisa la teoría.";
   feedbackDiv.style.display = "block";
   const btnSig = document.getElementById("btn-leccion-siguiente");
@@ -687,18 +751,16 @@ window.comprobarRespuesta = function() {
     }
   };
 }
+
 window.siguientePregunta = function() { indicePregunta++; cargarPregunta(); }
 
-// LOGICA QUIZ \\
-let faseActualString = "";
-let tipoQuizActual = ""; 
-const SECUENCIA_QUIZ = ["quiz1", "quiz2", "quiz3"];
 window.iniciarSecuenciaFase = function(modulo, fase) {
   moduloActual = modulo;
   faseActualString = fase;
   tipoQuizActual = "quiz1";
   cargarQuiz(modulo, fase, tipoQuizActual);
 }
+
 function siguienteQuizDeFase() {
   const indexActual = SECUENCIA_QUIZ.indexOf(tipoQuizActual);
   if (indexActual < SECUENCIA_QUIZ.length - 1) {
@@ -716,6 +778,7 @@ function siguienteQuizDeFase() {
     finalizarFaseCompleta();
   }
 }
+
 function terminarLeccion() {
   audioQuiz.pause(); audioQuiz.currentTime = 0;
   if (musicaActiva && musicaFondo) { musicaFondo.play().catch(()=>{}); } else { audioAula.play().catch(()=>{}); }
@@ -731,6 +794,7 @@ function terminarLeccion() {
     cargarListaPractica(); 
   }
 }
+
 function finalizarFaseCompleta() {
   document.getElementById("pantalla-leccion").classList.remove("activa");
   document.getElementById("salon").style.display = "block";
@@ -756,9 +820,12 @@ function finalizarFaseCompleta() {
   reproducirSonido("ok");
 }
 
-// MODAL DE MIERDA Y SISTEMA ANTIPERROS linea de codigo 716 \\
+// =====================================================================
+// 12. MODALES Y SISTEMA ANTI-TRAMPA
+// =====================================================================
 window.abrirModalSalir = function() { document.getElementById("modal-confirmacion").style.display = "flex"; }
 window.cerrarModalConfirmacion = function() { document.getElementById("modal-confirmacion").style.display = "none"; }
+
 window.confirmarSalida = function() {
   cerrarModalConfirmacion();
   if(typeof audioQuiz !== 'undefined') { audioQuiz.pause(); audioQuiz.currentTime = 0; }
@@ -768,6 +835,7 @@ window.confirmarSalida = function() {
   document.getElementById("pantalla-leccion").classList.remove("activa");
   document.getElementById("salon").style.display = "block";
   cargarListaAula(); 
+  cargarListaPractica(); // Detalle agregado para actualizar la práctica al salir
 }
 
 let enExamen = false;
@@ -780,25 +848,30 @@ const observerExamen = new MutationObserver(() => {
   }
 });
 observerExamen.observe(document.getElementById("pantalla-leccion"), { attributes: true, attributeFilter: ["class"] });
+
 document.addEventListener('contextmenu', (event) => {
   const enTeoria = document.getElementById("pantalla-teoria").classList.contains("activa");
   if (enTeoria) return; 
   if (enExamen) { event.preventDefault(); window.location.href = "pantalla_anti-trampa.html"; }
 });
+
 document.addEventListener('dblclick', (event) => {
   const enTeoria = document.getElementById("pantalla-teoria").classList.contains("activa");
   if (enTeoria) return; 
   if (enExamen) { event.preventDefault(); window.location.href = "pantalla_anti-trampa.html"; }
 });
+
 document.addEventListener("visibilitychange", () => {
   const enTeoria = document.getElementById("pantalla-teoria").classList.contains("activa");
   if (enTeoria) return;
   if (document.hidden && enExamen) { window.location.href = "pantalla_anti-trampa.html"; }
 });
+
 history.pushState(null, null, location.href);
 window.onpopstate = function () {
   if (enExamen) { window.location.href = "pantalla_anti-trampa.html"; }
 };
+
 let distanciaInicial = 0;
 document.addEventListener("touchstart", function(e) {
   if (e.touches.length === 2 && document.getElementById("pantalla-teoria").classList.contains("activa")) {
@@ -810,6 +883,7 @@ document.addEventListener("touchstart", function(e) {
     teoria.classList.add("zoom-activo");
   }
 }, { passive: false });
+
 document.addEventListener("touchmove", function(e) {
   if (e.touches.length === 2 && document.getElementById("pantalla-teoria").classList.contains("activa")) {
     e.preventDefault();
@@ -825,6 +899,7 @@ document.addEventListener("touchmove", function(e) {
     }
   }
 }, { passive: false });
+
 document.addEventListener("touchend", function(e) {
   if (e.touches.length < 2) {
     const teoria = document.getElementById("teoria-texto");
@@ -835,6 +910,9 @@ document.addEventListener("touchend", function(e) {
   }
 });
 
+// =====================================================================
+// 13. REGISTRO OBLIGATORIO Y RECOMPENSA
+// =====================================================================
 window.guardarRegistroObligatorio = async function() {
   const alias = document.getElementById("reg-alias").value.trim();
   const inst1 = document.getElementById("reg-institucion").value;
@@ -859,6 +937,7 @@ window.guardarRegistroObligatorio = async function() {
     lanzarConfeti();
   }
 }
+
 window.borrarMisDatos = async function() {
   if (!state.user) return;
   const confirmar = confirm("¿Estás seguro de que quieres borrar TODA tu información? Tendrás que registrarte de nuevo y perderás tu progreso.");
