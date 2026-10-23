@@ -31,19 +31,18 @@ class DarkcodeChibi3D extends HTMLElement {
     `;
 
     try {
-      const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js');
-      const { GLTFLoader } = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js');
-      const { VRMLoaderPlugin, VRMUtils } = await import('https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@3.0.0/lib/three-vrm.module.js');
-      
-      this.iniciarThreeJS(THREE, GLTFLoader, VRMLoaderPlugin, VRMUtils);
-    } catch (e) {
-      const l = this.shadowRoot.getElementById("mc-loader");
-      if (l) {
-        l.style.color = "red";
-        l.textContent = "ERROR DE RED: No se pudo cargar Three.js";
-      }
-    }
+  const THREE = await import('https://unpkg.com/three@0.160.0/build/three.module.js');
+  const { GLTFLoader } = await import('https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js');
+  const { VRMLoaderPlugin, VRMUtils } = await import('https://unpkg.com/@pixiv/three-vrm@3.0.0/lib/three-vrm.module.js');
+  
+  this.iniciarThreeJS(THREE, GLTFLoader, VRMLoaderPlugin, VRMUtils);
+} catch (e) {
+  const l = this.shadowRoot.getElementById("mc-loader");
+  if (l) {
+    l.style.color = "red";
+    l.textContent = "ERROR DE RED: No se pudo cargar Three.js";
   }
+}
 
   iniciarThreeJS(THREE, GLTFLoader, VRMLoaderPlugin, VRMUtils) {
     const w = this.clientWidth || 170;
