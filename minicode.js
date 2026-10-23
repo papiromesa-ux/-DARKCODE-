@@ -88,18 +88,10 @@ class DarkcodeChibi3D extends HTMLElement {
     gltfLoader.register((parser) => new VRMLoaderPlugin(parser));
     
     try {
-      // 1. Cargar el VRM
       const gltf = await gltfLoader.loadAsync('./minicode.vrm');
       const vrm = gltf.userData.vrm;
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
       vrm.scene.rotation.y = Math.PI; 
-      
-      if (vrm.humanoid) {
-        const leftArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
-        const rightArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
-        if (leftArm) leftArm.rotation.z = 1.2;
-        if (rightArm) rightArm.rotation.z = -1.2;
-      }
 
       vrm.scene.traverse((obj) => {
         if (obj.isMesh) {
@@ -113,23 +105,24 @@ class DarkcodeChibi3D extends HTMLElement {
 
       const box = new THREE.Box3().setFromObject(vrm.scene);
       const size = box.getSize(new THREE.Vector3());
-      this._floor.position.y = box.min.y;
+      
+      // ARREGLO DE FLOTACIÓN: Lo anclamos exactamente al piso
+      this._floor.position.y = 0; 
+      vrm.scene.position.y = -box.min.y; // Sube o baja el modelo para que los pies toquen el 0
       
       this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
       this._camera.lookAt(0, size.y * 0.5, 0);
 
-      // 2. Intentar cargar Mixamo de forma segura (Si falla, no rompe el muñeco)
       try {
         if (loaderDiv) loaderDiv.textContent = "CARGANDO ANIMACIONES...";
         this._mixer = new THREE.AnimationMixer(vrm.scene);
         
-        // Importación dinámica
         const { FBXLoader } = await import('https://esm.sh/three@0.160.0/examples/jsm/loaders/FBXLoader.js');
         const { retargetAnimation } = await import('https://esm.sh/vrm-mixamo-retarget@1.0.3');
         
         const fbxLoader = new FBXLoader();
 
-        // Cargar Negativos
+        // 1. Cargar Negativos
         for (let i = 1; i <= 2; i++) {
           try {
             const fbx = await fbxLoader.loadAsync(`./negativo${i}.fbx`);
@@ -140,24 +133,32 @@ class DarkcodeChibi3D extends HTMLElement {
               action.clampWhenFinished = true;
               this._acciones[`negativo${i}`] = action;
             }
-          } catch (e) { console.log(`No se cargó negativo${i}.fbx`); }
+          } catch (e) { console.log(`Error negativo${i}.fbx`); }
         }
 
-        // Cargar Neutrales (Aburrimiento)
+        // 2. Cargar Neutrales
         for (let i = 1; i <= 5; i++) {
           try {
             const fbx = await fbxLoader.loadAsync(`./neutral${i}.fbx`);
             const clip = retargetAnimation(fbx, vrm);
             if (clip) {
               const action = this._mixer.clipAction(clip);
-              action.loop = THREE.LoopOnce;
-              action.clampWhenFinished = true;
+              if(i === 1) {
+                // El neutral1 será la pose base de reposo (en bucle)
+                action.loop = THREE.LoopRepeat;
+                action.play(); // Se queda activo para siempre
+              } else {
+                // Los demás son de aburrimiento (se ejecutan una vez)
+                action.loop = THREE.LoopOnce;
+                action.clampWhenFinished = true;
+              }
               this._acciones[`neutral${i}`] = action;
             }
-          } catch (e) { console.log(`No se cargó neutral${i}.fbx`); }
+          } catch (e) { console.log(`Error neutral${i}.fbx`); }
         }
+
       } catch (e) {
-        console.warn("Mixamo no cargó, usando animaciones básicas.");
+        console.warn("Mixamo no cargó, usando pose estática.");
       }
 
       if (loaderDiv) loaderDiv.style.display = "none";
@@ -181,16 +182,26 @@ class DarkcodeChibi3D extends HTMLElement {
     if (this._mixer) this._mixer.update(delta);
     if (this._vrm) this._vrm.update(delta);
 
-    // Lógica del temporizador (10 segundos)
+    // Lógica del temporizador (10 segundos para aburrirse)
     const ahora = performance.now();
     if (ahora - this._lastInteraction > 10000 && !this._isIdle) {
       this._isIdle = true;
       
-      const neutralesDisponibles = Object.keys(this._acciones).filter(k => k.startsWith('neutral'));
-      if (neutralesDisponibles.length > 0) {
-        const randomKey = neutralesDisponibles[Math.floor(Math.random() * neutralesDisponibles.length)];
-        if(this._mixer) this._mixer.stopAllAction();
-        this._acciones[randomKey].reset().play();
+      // Buscamos neutrales del 2 al 5 para aburrirse
+      const aburridos = Object.keys(this._acciones).filter(k => k.startsWith('neutral') && k !== 'neutral1');
+      
+      if (aburridos.length > 0) {
+        const randomKey = aburridos[Math.floor(Math.random() * aburridos.length)];
+        // Hacemos un fade suave del neutral1 al aburrido
+        if(this._acciones['neutral1']) this._acciones['neutral1'].fadeOut(0.5);
+        this._acciones[randomKey].reset().fadeIn(0.5).play();
+        
+        // Al terminar, volvemos al neutral1
+        setTimeout(() => {
+          if(this._acciones[randomKey]) this._acciones[randomKey].fadeOut(0.5);
+          if(this._acciones['neutral1']) this._acciones['neutral1'].reset().fadeIn(0.5).play();
+          this._isIdle = false;
+        }, 3000); // Duración de la animación de aburrimiento
       }
     }
     
@@ -216,17 +227,26 @@ window.actualizarMiniCode = function(estado) {
   const humanoid = vrm.humanoid;
   const head = humanoid ? humanoid.getNormalizedBoneNode('head') : null;
 
-  const resetearPersonaje = () => {
+  // Función para volver a la pose de reposo
+  const volverAlReposo = () => {
     if (em) {
       ['happy', 'sad', 'sorrow', 'joy', 'angry', 'relaxed', 'surprised', 'blink'].forEach(expr => {
         if (em.getExpression(expr)) em.setValue(expr, 0);
       });
     }
     if (head) head.rotation.set(0, 0, 0);
-    if (personaje._mixer) personaje._mixer.stopAllAction();
+    
+    if (personaje._mixer) {
+      personaje._mixer.stopAllAction();
+      // Volver al idle natural
+      if (personaje._acciones['neutral1']) {
+        personaje._acciones['neutral1'].reset().play();
+      }
+    }
   };
 
-  resetearPersonaje();
+  // Detener acciones actuales antes de una nueva reacción
+  if (personaje._mixer) personaje._mixer.stopAllAction();
   if (personaje._resetTimeout) clearTimeout(personaje._resetTimeout);
 
   if (estado === 'feliz') {
@@ -238,14 +258,6 @@ window.actualizarMiniCode = function(estado) {
       () => {
         if (em && em.getExpression('happy')) em.setValue('happy', 1);
         if (head) { head.rotation.z = 0.15; head.rotation.x = -0.05; }
-      },
-      () => {
-        if (em && em.getExpression('happy')) em.setValue('happy', 0.9);
-        if (head) {
-          head.rotation.x = 0.1;
-          setTimeout(() => { if(head) head.rotation.x = 0; }, 150);
-          setTimeout(() => { if(head) head.rotation.x = 0.1; }, 300);
-        }
       }
     ];
     const accionRandom = reaccionesFeliz[Math.floor(Math.random() * reaccionesFeliz.length)];
@@ -260,7 +272,6 @@ window.actualizarMiniCode = function(estado) {
       const elegido = opciones[Math.floor(Math.random() * opciones.length)];
       personaje._acciones[elegido].reset().play();
     } else {
-      // Respaldo por si Mixamo no carga
       let vueltas = 0;
       const negar = setInterval(() => {
         if (head) head.rotation.y = vueltas % 2 === 0 ? 0.15 : -0.15;
@@ -272,7 +283,9 @@ window.actualizarMiniCode = function(estado) {
 
   if (estado !== 'neutral') {
     personaje._resetTimeout = setTimeout(() => {
-      resetearPersonaje();
+      volverAlReposo();
     }, 3000);
+  } else {
+    volverAlReposo();
   }
 };
