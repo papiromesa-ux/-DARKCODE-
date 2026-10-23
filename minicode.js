@@ -34,8 +34,16 @@ class DarkcodeChibi3D extends HTMLElement {
           color: #a855f7; font-family: monospace; font-size: 11px; font-weight: bold;
           text-align: center; padding: 10px; z-index: 10;
         }
+        /* Letrero de diagnostico */
+        .debug {
+          position: absolute; bottom: 0; left: 0; width: 100%;
+          background: rgba(0,0,0,0.7); color: #00ff00;
+          font-family: monospace; font-size: 9px; text-align: center;
+          z-index: 20; padding: 2px;
+        }
       </style>
       <div class="loader" id="mc-loader">CARGANDO...</div>
+      <div class="debug" id="mc-debug">Esperando VRM...</div>
     `;
 
     this.iniciarThreeJS();
@@ -44,6 +52,7 @@ class DarkcodeChibi3D extends HTMLElement {
   async iniciarThreeJS() {
     const w = this.clientWidth || 170;
     const h = this.clientHeight || 220;
+    const debugDiv = this.shadowRoot.getElementById("mc-debug");
 
     this._scene = new THREE.Scene();
     
@@ -92,7 +101,6 @@ class DarkcodeChibi3D extends HTMLElement {
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
       vrm.scene.rotation.y = Math.PI; 
 
-      // Respaldo por si el neutral5 falla al cargar
       if (vrm.humanoid) {
         const leftUpperArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
         const rightUpperArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
@@ -119,6 +127,8 @@ class DarkcodeChibi3D extends HTMLElement {
       this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
       this._camera.lookAt(0, size.y * 0.5, 0);
 
+      if (debugDiv) debugDiv.textContent = "VRM listo. Buscando Mixamo...";
+
       try {
         if (loaderDiv) loaderDiv.textContent = "CARGANDO ANIMACIONES...";
         this._mixer = new THREE.AnimationMixer(vrm.scene);
@@ -128,9 +138,10 @@ class DarkcodeChibi3D extends HTMLElement {
         
         const fbxLoader = new FBXLoader();
 
-        // 1. Cargar Negativos
+        // Cargar Negativos
         for (let i = 1; i <= 2; i++) {
           try {
+            if (debugDiv) debugDiv.textContent = `Cargando negativo${i}.fbx...`;
             const fbx = await fbxLoader.loadAsync(`./negativo${i}.fbx`);
             const clip = retargetAnimation(fbx, vrm);
             if (clip) {
@@ -139,38 +150,44 @@ class DarkcodeChibi3D extends HTMLElement {
               action.clampWhenFinished = true;
               this._acciones[`negativo${i}`] = action;
             }
-          } catch (e) { console.log(`Error negativo${i}.fbx`); }
+          } catch (e) { 
+            if (debugDiv) debugDiv.textContent = `Fallo negativo${i}.fbx`;
+            await new Promise(r => setTimeout(r, 1000)); // Pausa para leer
+          }
         }
 
-        // 2. Cargar Neutrales (1 al 5)
+        // Cargar Neutrales
         for (let i = 1; i <= 5; i++) {
           try {
+            if (debugDiv) debugDiv.textContent = `Cargando neutral${i}.fbx...`;
             const fbx = await fbxLoader.loadAsync(`./neutral${i}.fbx`);
             const clip = retargetAnimation(fbx, vrm);
             if (clip) {
               const action = this._mixer.clipAction(clip);
               if(i === 5) {
-                // NEUTRAL 5: Pose de reposo base (en bucle)
                 action.loop = THREE.LoopRepeat;
                 action.play(); 
+                if (debugDiv) debugDiv.textContent = `neutral5.fbx REPRODUCIENDO`;
               } else {
-                // NEUTRAL 1-4: Aburrimiento (solo una vez)
                 action.loop = THREE.LoopOnce;
                 action.clampWhenFinished = true;
               }
               this._acciones[`neutral${i}`] = action;
             }
-          } catch (e) { console.log(`Error neutral${i}.fbx`); }
+          } catch (e) { 
+            if (debugDiv) debugDiv.textContent = `Fallo neutral${i}.fbx`;
+            await new Promise(r => setTimeout(r, 1000));
+          }
         }
 
       } catch (e) {
-        console.warn("Mixamo no cargó.");
+        if (debugDiv) debugDiv.textContent = "Fallo libreria Mixamo.";
       }
 
       if (loaderDiv) loaderDiv.style.display = "none";
 
     } catch (error) {
-      console.error('Error VRM:', error);
+      if (debugDiv) debugDiv.textContent = "Fallo VRM.";
       if (loaderDiv) {
         loaderDiv.style.backgroundColor = "orange";
         loaderDiv.style.color = "black";
@@ -188,12 +205,10 @@ class DarkcodeChibi3D extends HTMLElement {
     if (this._mixer) this._mixer.update(delta);
     if (this._vrm) this._vrm.update(delta);
 
-    // Aburrimiento después de 10 segundos
+    // 3 SEGUNDOS DE ESPERA
     const ahora = performance.now();
-    if (ahora - this._lastInteraction > 10000 && !this._isIdle) {
+    if (ahora - this._lastInteraction > 3000 && !this._isIdle) {
       this._isIdle = true;
-      
-      // Buscamos los neutrales 1, 2, 3 o 4
       const aburridos = Object.keys(this._acciones).filter(k => k.startsWith('neutral') && k !== 'neutral5');
       
       if (aburridos.length > 0) {
@@ -201,12 +216,14 @@ class DarkcodeChibi3D extends HTMLElement {
         if(this._acciones['neutral5']) this._acciones['neutral5'].fadeOut(0.5);
         this._acciones[randomKey].reset().fadeIn(0.5).play();
         
-        // Volver a la pose de reposo (neutral5) después de 3 segundos
         setTimeout(() => {
           if(this._acciones[randomKey]) this._acciones[randomKey].fadeOut(0.5);
           if(this._acciones['neutral5']) this._acciones['neutral5'].reset().fadeIn(0.5).play();
           this._isIdle = false;
         }, 3000); 
+      } else {
+        // Si no hay neutrales 1-4, solo resetea el timer
+        this._isIdle = false;
       }
     }
     
