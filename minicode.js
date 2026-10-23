@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
-// Importamos el traductor desde tu archivo local
 import { loadMixamoAnimation } from './mixamo.js';
 
 class DarkcodeChibi3D extends HTMLElement {
@@ -47,7 +46,6 @@ class DarkcodeChibi3D extends HTMLElement {
 
     this._scene = new THREE.Scene();
     
-    // Piso invisible para la sombra
     const planeGeometry = new THREE.PlaneGeometry(10, 10);
     const planeMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
     this._floor = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -70,12 +68,10 @@ class DarkcodeChibi3D extends HTMLElement {
 
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x443355, 1.5); 
     this._scene.add(hemiLight);
-
     const dirLight = new THREE.DirectionalLight(0xffffff, 2.5);
     dirLight.position.set(2, 5, 3);
     dirLight.castShadow = true;
     this._scene.add(dirLight);
-
     const rimLight = new THREE.DirectionalLight(0x00ffff, 1.5);
     rimLight.position.set(-2, 2, -3);
     this._scene.add(rimLight);
@@ -86,7 +82,6 @@ class DarkcodeChibi3D extends HTMLElement {
     gltfLoader.register((parser) => new VRMLoaderPlugin(parser));
     
     try {
-      // 1. Cargar el VRM
       const gltf = await gltfLoader.loadAsync('./minicode.vrm');
       const vrm = gltf.userData.vrm;
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
@@ -103,46 +98,37 @@ class DarkcodeChibi3D extends HTMLElement {
       this._vrm = vrm;
       this._mixer = new THREE.AnimationMixer(vrm.scene);
 
-      const box = new THREE.Box3().setFromObject(vrm.scene);
-      const size = box.getSize(new THREE.Vector3());
-      
-      this._floor.position.y = 0; 
-      vrm.scene.position.y = -box.min.y; 
-      
-      this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
-      this._camera.lookAt(0, size.y * 0.5, 0);
-
-      // 2. Cargar la animación de Mixamo
       if (loaderDiv) loaderDiv.textContent = "CARGANDO ANIMACION...";
       const fbxLoader = new FBXLoader();
       
       try {
-        // Cargamos el archivo neutral5.fbx de tu repositorio
         const fbx = await fbxLoader.loadAsync('./neutral5.fbx');
-        
-        // El traductor lo convierte al esqueleto del VRM
         const clip = loadMixamoAnimation(fbx, vrm);
         
         if (clip) {
           const action = this._mixer.clipAction(clip);
-          action.play(); // Reproducir en bucle
-          if (loaderDiv) loaderDiv.style.display = "none";
-        } else {
-          throw new Error("El traductor devolvió null");
+          action.play(); 
         }
       } catch (e) {
         console.warn("No se pudo cargar la animación:", e);
-        // Si falla, al menos bajamos los brazos por código para que no esté en T-Pose
-        if (vrm.humanoid) {
-          const leftArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
-          const rightArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
-          if (leftArm) leftArm.rotation.z = 1.2;
-          if (rightArm) rightArm.rotation.z = -1.2;
-        }
-        if (loaderDiv) loaderDiv.style.display = "none";
       }
 
-      if (window.actualizarMiniCode) window.actualizarMiniCode(this.getAttribute("estado") || "neutral");
+      if (loaderDiv) loaderDiv.style.display = "none";
+
+      // LE DAMOS UN RESPIRO A LA ANIMACIÓN PARA QUE SE APLIQUE EL PRIMER FRAME
+      setTimeout(() => {
+        // AHORA calculamos la cámara y el piso basándonos en el tamaño real con la animación ya puesta
+        const box = new THREE.Box3().setFromObject(vrm.scene);
+        const size = box.getSize(new THREE.Vector3());
+        
+        this._floor.position.y = box.min.y; // Piso justo donde están sus pies
+        vrm.scene.position.y = -box.min.y; // El personaje se ancla al piso
+        
+        this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
+        this._camera.lookAt(0, size.y * 0.5, 0);
+        
+        if (window.actualizarMiniCode) window.actualizarMiniCode(this.getAttribute("estado") || "neutral");
+      }, 100);
 
     } catch (error) {
       console.error('Error VRM:', error);
@@ -158,13 +144,11 @@ class DarkcodeChibi3D extends HTMLElement {
 
   _animate() {
     requestAnimationFrame(() => this._animate());
-    
     if (this._clock) {
       const delta = this._clock.getDelta();
       if (this._mixer) this._mixer.update(delta);
       if (this._vrm) this._vrm.update(delta);
     }
-    
     if (this._renderer && this._scene && this._camera) {
       this._renderer.render(this._scene, this._camera);
     }
@@ -175,9 +159,6 @@ if (!customElements.get("darkcode-chibi")) {
   customElements.define("darkcode-chibi", DarkcodeChibi3D);
 }
 
-// =====================================================================
-// LÓGICA DE EXPRESIONES FACIALES
-// =====================================================================
 window.actualizarMiniCode = function(estado) {
   const personaje = document.getElementById("darkcode-chibi-quiz") || document.getElementById("darkcode-chibi-bienvenida");
   if (!personaje || !personaje._vrm) return;
