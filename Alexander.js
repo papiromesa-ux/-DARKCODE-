@@ -44,8 +44,6 @@ class Alexander3D extends HTMLElement {
     this._scene.add(this._floor);
 
     this._camera = new THREE.PerspectiveCamera(35, w / h, 0.1, 100);
-    this._camera.position.set(0, 1.0, 2.5); 
-    this._camera.lookAt(0, 1.0, 0);         
     
     this._renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     this._renderer.setSize(w, h);
@@ -70,7 +68,13 @@ class Alexander3D extends HTMLElement {
       const vrm = gltf.userData.vrm;
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
       vrm.scene.rotation.y = Math.PI; 
-      vrm.scene.position.set(0, 0, 0); 
+
+      if (vrm.humanoid) {
+        const leftArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
+        const rightArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
+        if (leftArm) leftArm.rotation.z = 1.2; 
+        if (rightArm) rightArm.rotation.z = -1.2;
+      }
 
       vrm.scene.traverse((obj) => {
         if (obj.isMesh) { obj.castShadow = true; obj.receiveShadow = true; }
@@ -91,22 +95,22 @@ class Alexander3D extends HTMLElement {
           this._mixer.clipAction(clip).play(); 
         }
       } catch (e) {
-        if (vrm.humanoid) {
-          const leftArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
-          const rightArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
-          if (leftArm) leftArm.rotation.z = 1.2;
-          if (rightArm) rightArm.rotation.z = -1.2;
-        }
+        console.warn("Mixamo falló, usando pose base.");
       }
+
+      vrm.scene.updateMatrixWorld(true);
 
       const box = new THREE.Box3().setFromObject(vrm.scene);
       const size = box.getSize(new THREE.Vector3());
-      this._floor.position.y = box.min.y; 
-      this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
-      this._camera.lookAt(0, size.y * 0.5, 0);
+      const center = box.getCenter(new THREE.Vector3());
+      
+      this._floor.position.y = 0; 
+      vrm.scene.position.y = -box.min.y; 
+      
+      this._camera.position.set(center.x, size.y * 0.5, size.y * 2.2); 
+      this._camera.lookAt(center.x, size.y * 0.5, center.z);
 
       if (loaderDiv) loaderDiv.style.display = "none";
-      if (window.actualizarAlexander) window.actualizarAlexander(this.getAttribute("estado") || "neutral");
 
     } catch (error) {
       if (loaderDiv) { loaderDiv.textContent = "ERROR AL CARGAR ALEXANDER"; }
@@ -127,7 +131,7 @@ class Alexander3D extends HTMLElement {
 customElements.define("darkcode-alexander", Alexander3D);
 
 window.actualizarAlexander = function(estado) {
-  const p = document.getElementById("personaje-alexander");
+  const p = document.getElementById("personaje-alexander") || document.getElementById("personaje-quiz");
   if (!p || !p._vrm) return;
   const em = p._vrm.expressionManager;
   const head = p._vrm.humanoid ? p._vrm.humanoid.getNormalizedBoneNode('head') : null;
