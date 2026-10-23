@@ -1,8 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
-import { retargetAnimation } from 'vrm-mixamo-retarget';
 
 class DarkcodeChibi3D extends HTMLElement {
   constructor() {
@@ -90,6 +88,7 @@ class DarkcodeChibi3D extends HTMLElement {
     gltfLoader.register((parser) => new VRMLoaderPlugin(parser));
     
     try {
+      // 1. Cargar el VRM
       const gltf = await gltfLoader.loadAsync('./minicode.vrm');
       const vrm = gltf.userData.vrm;
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
@@ -119,36 +118,46 @@ class DarkcodeChibi3D extends HTMLElement {
       this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
       this._camera.lookAt(0, size.y * 0.5, 0);
 
-      if (loaderDiv) loaderDiv.textContent = "CARGANDO ANIMACIONES...";
-      this._mixer = new THREE.AnimationMixer(vrm.scene);
-      const fbxLoader = new FBXLoader();
+      // 2. Intentar cargar Mixamo de forma segura (Si falla, no rompe el muñeco)
+      try {
+        if (loaderDiv) loaderDiv.textContent = "CARGANDO ANIMACIONES...";
+        this._mixer = new THREE.AnimationMixer(vrm.scene);
+        
+        // Importación dinámica
+        const { FBXLoader } = await import('https://esm.sh/three@0.160.0/examples/jsm/loaders/FBXLoader.js');
+        const { retargetAnimation } = await import('https://esm.sh/vrm-mixamo-retarget@1.0.3');
+        
+        const fbxLoader = new FBXLoader();
 
-      // 1. Cargar Negativos
-      for (let i = 1; i <= 2; i++) {
-        try {
-          const fbx = await fbxLoader.loadAsync(`./negativo${i}.fbx`);
-          const clip = retargetAnimation(fbx, vrm);
-          if (clip) {
-            const action = this._mixer.clipAction(clip);
-            action.loop = THREE.LoopOnce;
-            action.clampWhenFinished = true;
-            this._acciones[`negativo${i}`] = action;
-          }
-        } catch (e) { console.log(`Error al cargar negativo${i}.fbx`); }
-      }
+        // Cargar Negativos
+        for (let i = 1; i <= 2; i++) {
+          try {
+            const fbx = await fbxLoader.loadAsync(`./negativo${i}.fbx`);
+            const clip = retargetAnimation(fbx, vrm);
+            if (clip) {
+              const action = this._mixer.clipAction(clip);
+              action.loop = THREE.LoopOnce;
+              action.clampWhenFinished = true;
+              this._acciones[`negativo${i}`] = action;
+            }
+          } catch (e) { console.log(`No se cargó negativo${i}.fbx`); }
+        }
 
-      // 2. Cargar Neutrales
-      for (let i = 1; i <= 5; i++) {
-        try {
-          const fbx = await fbxLoader.loadAsync(`./neutral${i}.fbx`);
-          const clip = retargetAnimation(fbx, vrm);
-          if (clip) {
-            const action = this._mixer.clipAction(clip);
-            action.loop = THREE.LoopOnce;
-            action.clampWhenFinished = true;
-            this._acciones[`neutral${i}`] = action;
-          }
-        } catch (e) { console.log(`No se encontró neutral${i}.fbx`); }
+        // Cargar Neutrales (Aburrimiento)
+        for (let i = 1; i <= 5; i++) {
+          try {
+            const fbx = await fbxLoader.loadAsync(`./neutral${i}.fbx`);
+            const clip = retargetAnimation(fbx, vrm);
+            if (clip) {
+              const action = this._mixer.clipAction(clip);
+              action.loop = THREE.LoopOnce;
+              action.clampWhenFinished = true;
+              this._acciones[`neutral${i}`] = action;
+            }
+          } catch (e) { console.log(`No se cargó neutral${i}.fbx`); }
+        }
+      } catch (e) {
+        console.warn("Mixamo no cargó, usando animaciones básicas.");
       }
 
       if (loaderDiv) loaderDiv.style.display = "none";
@@ -251,6 +260,7 @@ window.actualizarMiniCode = function(estado) {
       const elegido = opciones[Math.floor(Math.random() * opciones.length)];
       personaje._acciones[elegido].reset().play();
     } else {
+      // Respaldo por si Mixamo no carga
       let vueltas = 0;
       const negar = setInterval(() => {
         if (head) head.rotation.y = vueltas % 2 === 0 ? 0.15 : -0.15;
