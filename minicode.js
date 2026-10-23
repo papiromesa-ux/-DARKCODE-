@@ -46,14 +46,19 @@ class DarkcodeChibi3D extends HTMLElement {
 
     this._scene = new THREE.Scene();
     
+    // Piso para la sombra
     const planeGeometry = new THREE.PlaneGeometry(10, 10);
     const planeMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
     this._floor = new THREE.Mesh(planeGeometry, planeMaterial);
     this._floor.rotation.x = -Math.PI / 2;
+    this._floor.position.y = 0; // Piso fijo en 0
     this._floor.receiveShadow = true;
     this._scene.add(this._floor);
 
+    // Cámara Totalmente Fija
     this._camera = new THREE.PerspectiveCamera(35, w / h, 0.1, 100);
+    this._camera.position.set(0, 1.0, 2.5); // Posición fija
+    this._camera.lookAt(0, 1.0, 0);         // Mirando al centro
     
     this._renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     this._renderer.setSize(w, h);
@@ -87,6 +92,9 @@ class DarkcodeChibi3D extends HTMLElement {
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
       vrm.scene.rotation.y = Math.PI; 
 
+      // El personaje se queda en el centro exacto
+      vrm.scene.position.set(0, 0, 0); 
+
       vrm.scene.traverse((obj) => {
         if (obj.isMesh) {
           obj.castShadow = true;
@@ -98,16 +106,6 @@ class DarkcodeChibi3D extends HTMLElement {
       this._vrm = vrm;
       this._mixer = new THREE.AnimationMixer(vrm.scene);
 
-      // Calculamos el tamaño del personaje ANTES de la animación para asegurar el encuadre
-      const box = new THREE.Box3().setFromObject(vrm.scene);
-      const size = box.getSize(new THREE.Vector3());
-      
-      this._floor.position.y = box.min.y; 
-      vrm.scene.position.y = -box.min.y; 
-      
-      this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
-      this._camera.lookAt(0, size.y * 0.5, 0);
-
       if (loaderDiv) loaderDiv.textContent = "CARGANDO ANIMACION...";
       const fbxLoader = new FBXLoader();
       
@@ -116,11 +114,9 @@ class DarkcodeChibi3D extends HTMLElement {
         const clip = loadMixamoAnimation(fbx, vrm);
         
         if (clip) {
-          // AQUI ESTA LA MAGIA: Filtramos los tracks y borramos los que intentan moverlo o escalarlo
-          clip.tracks = clip.tracks.filter(track => {
-             // Solo dejamos las rotaciones (quaternion) de los huesos
-             return track.name.includes('quaternion');
-          });
+          // FILTRO MAESTRO: Borramos CUALQUIER movimiento de posición.
+          // Solo dejamos las rotaciones (quaternion) de los huesos.
+          clip.tracks = clip.tracks.filter(track => track.name.includes('quaternion'));
 
           const action = this._mixer.clipAction(clip);
           action.play(); 
