@@ -610,7 +610,7 @@ function cargarPregunta() {
   if (indicePregunta >= leccionActual.length) { terminarLeccion(); return; }
   const p = leccionActual[indicePregunta];
   document.getElementById("leccion-progreso").style.width = `${((indicePregunta + 1) / leccionActual.length) * 100}%`;
-  actualizarMiniCode("neutral");
+  if (window.actualizarMiniCode) window.actualizarMiniCode("neutral");
   document.getElementById("leccion-pregunta").innerHTML = p.pregunta || p.instrucciones;
   const contenedor = document.getElementById("leccion-opciones"); contenedor.innerHTML = ""; opcionSeleccionada = null;
   if (p.opciones) {
@@ -666,11 +666,11 @@ window.comprobarRespuesta = function() {
   if (esCorrecta) {
   reproducirSonido("ok"); feedbackDiv.className = "feedback-container correcto";
   tituloFb.textContent = "¡Correcto! MiniCode dice:"; aciertosLeccion++; ganarXP(10);
-  actualizarMiniCode("feliz"); 
+  if (window.actualizarMiniCode) window.actualizarMiniCode("feliz");
 } else {
   reproducirSonido("error"); feedbackDiv.className = "feedback-container incorrecto";
   tituloFb.textContent = "Todavía no. MiniCode dice:";
-  actualizarMiniCode("triste"); 
+  if (window.actualizarMiniCode) window.actualizarMiniCode("triste");
 }
   document.getElementById("feedback-texto").textContent = p.explicacion || p.atajo || "Revisa la teoría.";
   feedbackDiv.style.display = "block";
