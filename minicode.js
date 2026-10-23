@@ -98,6 +98,16 @@ class DarkcodeChibi3D extends HTMLElement {
       this._vrm = vrm;
       this._mixer = new THREE.AnimationMixer(vrm.scene);
 
+      // --- IMPORTANTE: Calcular el tamaño ANTES de la animación ---
+      const box = new THREE.Box3().setFromObject(vrm.scene);
+      const size = box.getSize(new THREE.Vector3());
+      
+      this._floor.position.y = box.min.y; 
+      vrm.scene.position.y = -box.min.y; 
+      
+      this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
+      this._camera.lookAt(0, size.y * 0.5, 0);
+
       if (loaderDiv) loaderDiv.textContent = "CARGANDO ANIMACION...";
       const fbxLoader = new FBXLoader();
       
@@ -106,6 +116,11 @@ class DarkcodeChibi3D extends HTMLElement {
         const clip = loadMixamoAnimation(fbx, vrm);
         
         if (clip) {
+          // --- LA MAGIA ESTÁ AQUÍ ---
+          // Filtramos los movimientos y BORRAMOS el movimiento de la cadera.
+          // Así el personaje se mueve en el mismo lugar y no sale volando.
+          clip.tracks = clip.tracks.filter(track => !track.name.includes('hips.position'));
+
           const action = this._mixer.clipAction(clip);
           action.play(); 
         }
@@ -114,21 +129,7 @@ class DarkcodeChibi3D extends HTMLElement {
       }
 
       if (loaderDiv) loaderDiv.style.display = "none";
-
-      // LE DAMOS UN RESPIRO A LA ANIMACIÓN PARA QUE SE APLIQUE EL PRIMER FRAME
-      setTimeout(() => {
-        // AHORA calculamos la cámara y el piso basándonos en el tamaño real con la animación ya puesta
-        const box = new THREE.Box3().setFromObject(vrm.scene);
-        const size = box.getSize(new THREE.Vector3());
-        
-        this._floor.position.y = box.min.y; // Piso justo donde están sus pies
-        vrm.scene.position.y = -box.min.y; // El personaje se ancla al piso
-        
-        this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
-        this._camera.lookAt(0, size.y * 0.5, 0);
-        
-        if (window.actualizarMiniCode) window.actualizarMiniCode(this.getAttribute("estado") || "neutral");
-      }, 100);
+      if (window.actualizarMiniCode) window.actualizarMiniCode(this.getAttribute("estado") || "neutral");
 
     } catch (error) {
       console.error('Error VRM:', error);
