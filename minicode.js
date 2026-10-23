@@ -1,4 +1,3 @@
-
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
@@ -129,16 +128,18 @@ window.actualizarMiniCode = function(estado) {
   const em = vrm.expressionManager;
   const humanoid = vrm.humanoid;
   const head = humanoid ? humanoid.getNormalizedBoneNode('head') : null;
+  const neck = humanoid ? humanoid.getNormalizedBoneNode('neck') : null;
   const chest = humanoid ? humanoid.getNormalizedBoneNode('chest') : null;
 
-  // Limpiar todas las caras y posiciones
+  // Limpiamos todo a su estado neutral
   const resetearPersonaje = () => {
     if (em) {
-      ['happy', 'sad', 'sorrow', 'joy', 'angry', 'relaxed', 'surprised', 'blink', 'blinkLeft', 'blinkRight', 'lookUp', 'lookDown'].forEach(expr => {
+      ['happy', 'sad', 'sorrow', 'joy', 'angry', 'relaxed', 'surprised', 'blink', 'blinkLeft', 'blinkRight'].forEach(expr => {
         if (em.getExpression(expr)) em.setValue(expr, 0);
       });
     }
     if (head) head.rotation.set(0, 0, 0);
+    if (neck) neck.rotation.set(0, 0, 0);
     if (chest) chest.rotation.set(0, 0, 0);
   };
 
@@ -147,24 +148,24 @@ window.actualizarMiniCode = function(estado) {
 
   if (estado === 'feliz') {
     const reaccionesFeliz = [
-      // POSITIVO 1: Sonrisa y asentir con la cabeza suavemente
+      // POSITIVO 1: Sonrisa y asentir con la cabeza (La que te gustó)
       () => {
-        if (em && em.getExpression('happy')) em.setValue('happy', 1);
+        if (em && em.getExpression('happy')) em.setValue('happy', 0.8);
         if (head) head.rotation.x = 0.1;
       },
-      // POSITIVO 2: Sorprendido, ojos abiertos, mirando un poco arriba
+      // POSITIVO 2: Sonrisa y ladear la cabeza (La otra que te gustó)
       () => {
-        if (em && em.getExpression('surprised')) em.setValue('surprised', 1);
-        else if (em && em.getExpression('happy')) em.setValue('happy', 0.8);
-        if (head) { head.rotation.x = -0.1; head.rotation.z = 0.1; }
-        if (chest) chest.rotation.x = -0.05;
+        if (em && em.getExpression('happy')) em.setValue('happy', 1);
+        if (head) { head.rotation.z = 0.15; head.rotation.x = -0.05; }
       },
-      // POSITIVO 3: Relajado (sonrisa suave) y guiño
+      // POSITIVO 3: Sonrisa doble asentimiento rápido (Variación segura)
       () => {
-        if (em && em.getExpression('relaxed')) em.setValue('relaxed', 1);
-        else if (em && em.getExpression('happy')) em.setValue('happy', 0.6);
-        if (em && em.getExpression('blinkRight')) em.setValue('blinkRight', 1);
-        if (head) head.rotation.z = -0.15;
+        if (em && em.getExpression('happy')) em.setValue('happy', 0.9);
+        if (head) {
+          head.rotation.x = 0.1;
+          setTimeout(() => { if(head) head.rotation.x = 0; }, 150);
+          setTimeout(() => { if(head) head.rotation.x = 0.1; }, 300);
+        }
       }
     ];
     
@@ -173,28 +174,27 @@ window.actualizarMiniCode = function(estado) {
 
   } else if (estado === 'triste') {
     const reaccionesTriste = [
-      // NEGATIVO 1: Enojado (ceño fruncido) y mirar al frente
+      // NEGATIVO 1: Negar con la cabeza (La que te gustó)
       () => {
-        if (em && em.getExpression('angry')) em.setValue('angry', 1);
-        else if (em && em.getExpression('sad')) em.setValue('sad', 0.5);
-        if (head) head.rotation.x = 0.1;
-      },
-      // NEGATIVO 2: Tristeza (ojos cerrados) y hombros caídos
-      () => {
-        if (em && em.getExpression('sad')) em.setValue('sad', 0.8);
-        if (em && em.getExpression('blink')) em.setValue('blink', 0.5);
-        if (head) head.rotation.x = 0.15;
-        if (chest) chest.rotation.x = 0.1;
-      },
-      // NEGATIVO 3: Negar con la cabeza (de lado a lado)
-      () => {
-        if (em && em.getExpression('sad')) em.setValue('sad', 0.4);
         let vueltas = 0;
         const negar = setInterval(() => {
           if (head) head.rotation.y = vueltas % 2 === 0 ? 0.15 : -0.15;
           vueltas++;
           if (vueltas > 3) { clearInterval(negar); if(head) head.rotation.y = 0; }
         }, 200);
+      },
+      // NEGATIVO 2: Bajar la cabeza de verdad (Corregido, ahora usa rotación negativa para no ver a Jesús)
+      () => {
+        if (head) head.rotation.x = -0.15; // El signo negativo hace que mire al piso
+        if (neck) neck.rotation.x = -0.1;
+        if (chest) chest.rotation.x = 0.1; // Hombros caídos
+      },
+      // NEGATIVO 3: Suspirar (Solo movimiento de pecho y cabeza, cero cara)
+      () => {
+        if (chest) chest.rotation.x = 0.15; 
+        if (head) head.rotation.x = -0.1;
+        // Efecto de "respirar profundo"
+        setTimeout(() => { if(chest) chest.rotation.x = 0; }, 1000);
       }
     ];
     
