@@ -1,20 +1,13 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
-import { retargetAnimation } from 'vrm-mixamo-retarget';
 
 class DarkcodeChibi3D extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
     this._vrm = null;
-    this._mixer = null;
-    this._acciones = {}; 
-    this._resetTimeout = null;
-    this._clock = new THREE.Clock();
-    this._lastInteraction = performance.now(); 
-    this._isIdle = false;
+    this._clock = null;
   }
 
   connectedCallback() {
@@ -43,7 +36,7 @@ class DarkcodeChibi3D extends HTMLElement {
     this.iniciarThreeJS();
   }
 
-  async iniciarThreeJS() {
+  iniciarThreeJS() {
     const w = this.clientWidth || 170;
     const h = this.clientHeight || 220;
 
@@ -85,11 +78,10 @@ class DarkcodeChibi3D extends HTMLElement {
 
     const loaderDiv = this.shadowRoot.getElementById("mc-loader");
 
-    const gltfLoader = new GLTFLoader();
-    gltfLoader.register((parser) => new VRMLoaderPlugin(parser));
-    
-    try {
-      const gltf = await gltfLoader.loadAsync('./minicode.vrm');
+    const loader = new GLTFLoader();
+    loader.register((parser) => new VRMLoaderPlugin(parser));
+
+    loader.load('./minicode.vrm', (gltf) => {
       const vrm = gltf.userData.vrm;
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
       vrm.scene.rotation.y = Math.PI; 
@@ -110,6 +102,7 @@ class DarkcodeChibi3D extends HTMLElement {
       
       this._scene.add(vrm.scene);
       this._vrm = vrm;
+      this._clock = new THREE.Clock();
 
       const box = new THREE.Box3().setFromObject(vrm.scene);
       const size = box.getSize(new THREE.Vector3());
@@ -117,86 +110,30 @@ class DarkcodeChibi3D extends HTMLElement {
       
       this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
       this._camera.lookAt(0, size.y * 0.5, 0);
-
-      if (loaderDiv) loaderDiv.textContent = "CARGANDO ANIMACIONES...";
-      this._mixer = new THREE.AnimationMixer(vrm.scene);
-      const fbxLoader = new FBXLoader();
-
-      // 1. Cargar Negativos (Tristeza)
-      for (let i = 1; i <= 2; i++) {
-        try {
-          const fbx = await fbxLoader.loadAsync(`./negativo${i}.fbx`);
-          const clip = retargetAnimation(fbx, vrm);
-          if (clip) {
-            const action = this._mixer.clipAction(clip);
-            action.loop = THREE.LoopOnce;
-            action.clampWhenFinished = true;
-            this._acciones[`negativo${i}`] = action;
-          }
-        } catch (e) { console.log(`Error al cargar negativo${i}.fbx`); }
-      }
-
-      // 2. Cargar Neutrales (Aburrimiento/Idle) usando un ciclo del 1 al 5
-      for (let i = 1; i <= 5; i++) {
-        try {
-          const fbx = await fbxLoader.loadAsync(`./neutral${i}.fbx`);
-          const clip = retargetAnimation(fbx, vrm);
-          if (clip) {
-            const action = this._mixer.clipAction(clip);
-            action.loop = THREE.LoopOnce;
-            action.clampWhenFinished = true;
-            this._acciones[`neutral${i}`] = action;
-          }
-        } catch (e) { 
-          // Si no existe neutral3.fbx (por ejemplo), simplemente lo salta sin romper nada
-          console.log(`No se encontró neutral${i}.fbx, saltando...`); 
-        }
-      }
-
+      
       if (loaderDiv) loaderDiv.style.display = "none";
+      if (window.actualizarMiniCode) window.actualizarMiniCode(this.getAttribute("estado") || "neutral");
 
-    } catch (error) {
+    }, undefined, (error) => {
       console.error('Error VRM:', error);
       if (loaderDiv) {
         loaderDiv.style.backgroundColor = "orange";
         loaderDiv.style.color = "black";
         loaderDiv.textContent = "ERROR AL CARGAR VRM.";
       }
-    }
+    });
 
     this._animate();
   }
 
   _animate() {
     requestAnimationFrame(() => this._animate());
-    
-    const delta = this._clock.getDelta();
-    
-    if (this._mixer) {
-      this._mixer.update(delta);
-    }
-
-    if (this._vrm) {
+    if (this._vrm && this._clock) {
+      const delta = this._clock.getDelta();
       this._vrm.update(delta);
+      const time = performance.now();
+      this._vrm.scene.position.y = Math.sin(time * 0.002) * 0.01;
     }
-
-    // LÓGICA DE INACTIVIDAD
-    const ahora = performance.now();
-    // Si pasan 10 segundos (10000ms) y no está aburrido
-    if (ahora - this._lastInteraction > 10000 && !this._isIdle) {
-      this._isIdle = true;
-      
-      // Buscamos cuáles neutrales se cargaron exitosamente
-      const neutralesDisponibles = Object.keys(this._acciones).filter(k => k.startsWith('neutral'));
-      
-      if (neutralesDisponibles.length > 0) {
-        // Elegimos uno al azar
-        const randomKey = neutralesDisponibles[Math.floor(Math.random() * neutralesDisponibles.length)];
-        this._mixer.stopAllAction();
-        this._acciones[randomKey].reset().play();
-      }
-    }
-    
     if (this._renderer && this._scene && this._camera) {
       this._renderer.render(this._scene, this._camera);
     }
@@ -211,23 +148,22 @@ window.actualizarMiniCode = function(estado) {
   const personaje = document.getElementById("darkcode-chibi-quiz");
   if (!personaje || !personaje._vrm) return;
 
-  // El usuario interactuó, reiniciamos el aburrimiento
-  personaje._lastInteraction = performance.now();
-  personaje._isIdle = false;
-
   const vrm = personaje._vrm;
   const em = vrm.expressionManager;
   const humanoid = vrm.humanoid;
   const head = humanoid ? humanoid.getNormalizedBoneNode('head') : null;
+  const neck = humanoid ? humanoid.getNormalizedBoneNode('neck') : null;
+  const chest = humanoid ? humanoid.getNormalizedBoneNode('chest') : null;
 
   const resetearPersonaje = () => {
     if (em) {
-      ['happy', 'sad', 'sorrow', 'joy', 'angry', 'relaxed', 'surprised', 'blink'].forEach(expr => {
+      ['happy', 'sad', 'sorrow', 'joy', 'angry', 'relaxed', 'surprised', 'blink', 'blinkLeft', 'blinkRight'].forEach(expr => {
         if (em.getExpression(expr)) em.setValue(expr, 0);
       });
     }
     if (head) head.rotation.set(0, 0, 0);
-    if (personaje._mixer) personaje._mixer.stopAllAction();
+    if (neck) neck.rotation.set(0, 0, 0);
+    if (chest) chest.rotation.set(0, 0, 0);
   };
 
   resetearPersonaje();
@@ -248,19 +184,17 @@ window.actualizarMiniCode = function(estado) {
     accionRandom();
 
   } else if (estado === 'triste') {
-    const opciones = [];
-    if (personaje._acciones['negativo1']) opciones.push('negativo1');
-    if (personaje._acciones['negativo2']) opciones.push('negativo2');
-
-    if (opciones.length > 0) {
-      const elegido = opciones[Math.floor(Math.random() * opciones.length)];
-      personaje._acciones[elegido].reset().play();
-    }
+    let vueltas = 0;
+    const negar = setInterval(() => {
+      if (head) head.rotation.y = vueltas % 2 === 0 ? 0.15 : -0.15;
+      vueltas++;
+      if (vueltas > 3) { clearInterval(negar); if(head) head.rotation.y = 0; }
+    }, 200);
   }
 
   if (estado !== 'neutral') {
     personaje._resetTimeout = setTimeout(() => {
       resetearPersonaje();
-    }, 3000);
+    }, 2000);
   }
 };
