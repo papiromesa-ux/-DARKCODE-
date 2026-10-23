@@ -127,21 +127,49 @@ window.actualizarMiniCode = function(estado) {
     
     if (personaje._vrm && personaje._vrm.expressionManager) {
       const em = personaje._vrm.expressionManager;
+      const humanoid = personaje._vrm.humanoid;
       
-      // Limpiamos caras
-      ['happy', 'sad', 'sorrow', 'joy', 'angry'].forEach(expr => {
+      // Limpiamos todas las caras
+      ['happy', 'sad', 'sorrow', 'joy', 'angry', 'blink'].forEach(expr => {
          if (em.getExpression(expr)) em.setValue(expr, 0);
       });
+      
+      // Reseteamos la cabeza a su posición normal
+      if (humanoid) {
+        const head = humanoid.getNormalizedBoneNode('head');
+        if (head) head.rotation.x = 0;
+      }
 
       if (estado === 'feliz') {
+        // Sonríe
         if (em.getExpression('happy')) em.setValue('happy', 1); 
         else if (em.getExpression('joy')) em.setValue('joy', 1);
+        
+        // Asiente con la cabeza (sí, lo lograste)
+        if (humanoid) {
+            const head = humanoid.getNormalizedBoneNode('head');
+            if (head) {
+                head.rotation.x = 0.2;
+                setTimeout(() => { if(head) head.rotation.x = 0; }, 800);
+            }
+        }
+
       } else if (estado === 'triste') {
-        // CARA DE ENOJADO (Si el modelo no tiene enojo, bajamos el sad para que no dé miedo)
+        // Si el modelo tiene cara de enojado, la usamos
         if (em.getExpression('angry')) {
             em.setValue('angry', 1);
-        } else if (em.getExpression('sad')) {
-            em.setValue('sad', 0.4); 
+        } else {
+            // Si no tiene enojado, entrecerramos los ojos (para que no se ría)
+            if (em.getExpression('blink')) em.setValue('blink', 0.5);
+        }
+
+        // Baja la cabeza un momento (como diciendo "ay, no")
+        if (humanoid) {
+            const head = humanoid.getNormalizedBoneNode('head');
+            if (head) {
+                head.rotation.x = 0.2; 
+                setTimeout(() => { if(head) head.rotation.x = 0; }, 1000);
+            }
         }
       }
     }
