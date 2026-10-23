@@ -22,7 +22,6 @@ class DarkcodeChibi3D extends HTMLElement {
           border-radius: 12px;
           overflow: hidden;
           background: radial-gradient(circle at center, #1a0b2e 0%, #0d0614 100%);
-          /* QUITAMOS EL BORDE ROJO */
         }
         .loader {
           position: absolute; inset: 0;
@@ -44,16 +43,12 @@ class DarkcodeChibi3D extends HTMLElement {
     this._scene = new THREE.Scene();
     this._camera = new THREE.PerspectiveCamera(35, w / h, 0.1, 100);
     
-    // Ajustamos la cámara para que se vea el cuerpo completo
-    this._camera.position.set(0, 1.0, 2.2); 
-
     this._renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     this._renderer.setSize(w, h);
     this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this._renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.shadowRoot.appendChild(this._renderer.domElement);
 
-    // MEJORAMOS LA ILUMINACIÓN (Adiós gráficos de patata)
     const ambientLight = new THREE.AmbientLight(0xffffff, 2.5); 
     this._scene.add(ambientLight);
 
@@ -75,22 +70,26 @@ class DarkcodeChibi3D extends HTMLElement {
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
       vrm.scene.rotation.y = Math.PI; 
       
-      // ARREGLAMOS LA T-POSE (Bajamos los brazos)
+      // Arreglamos la T-Pose
       if (vrm.humanoid) {
         const leftArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
         const rightArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
-        if (leftArm) leftArm.rotation.z = 1.2; // Baja el brazo izquierdo
-        if (rightArm) rightArm.rotation.z = -1.2; // Baja el brazo derecho
+        if (leftArm) leftArm.rotation.z = 1.2;
+        if (rightArm) rightArm.rotation.z = -1.2;
       }
       
       this._scene.add(vrm.scene);
       this._vrm = vrm;
       this._clock = new THREE.Clock();
 
+      // AQUI ARREGLAMOS LA CÁMARA (Lo alejamos y lo centramos)
       const box = new THREE.Box3().setFromObject(vrm.scene);
       const size = box.getSize(new THREE.Vector3());
-      // Centramos la cámara en el pecho del personaje
-      this._camera.position.set(0, size.y * 0.55, size.y * 1.4);
+      
+      // Aumentamos el multiplicador de Z a 2.2 para alejarlo (se hace más chiquito)
+      this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
+      // Le decimos que mire justo al centro de su cuerpo
+      this._camera.lookAt(0, size.y * 0.5, 0);
       
       if (loaderDiv) loaderDiv.style.display = "none";
       if (window.actualizarMiniCode) window.actualizarMiniCode(this.getAttribute("estado") || "neutral");
@@ -112,8 +111,11 @@ class DarkcodeChibi3D extends HTMLElement {
     if (this._vrm && this._clock) {
       const delta = this._clock.getDelta();
       this._vrm.update(delta);
-      // QUITAMOS EL "BAILECITO" RARO
-      // Ya no hacemos el Math.sin para que no parezca que está poseído
+      
+      // NUEVA ANIMACIÓN IDLE (Balanceo sutil de lado a lado)
+      const time = performance.now() * 0.001;
+      // Rotamos todo el modelo ligeramente sobre su eje Y
+      this._vrm.scene.rotation.y = Math.PI + Math.sin(time * 1.5) * 0.05;
     }
     if (this._renderer && this._scene && this._camera) {
       this._renderer.render(this._scene, this._camera);
@@ -131,11 +133,20 @@ window.actualizarMiniCode = function(estado) {
     personaje.setAttribute("estado", estado);
     if (personaje._vrm && personaje._vrm.expressionManager) {
       const em = personaje._vrm.expressionManager;
-      em.setValue('happy', 0); em.setValue('sad', 0);
+      
+      // Reseteamos todas las caras
+      em.setValue('happy', 0); 
+      em.setValue('sad', 0);
+      em.setValue('sorrow', 0);
+      em.setValue('joy', 0);
+
       if (estado === 'feliz') {
-        if (em.getExpression('happy')) em.setValue('happy', 1); else if (em.getExpression('joy')) em.setValue('joy', 1);
+        if (em.getExpression('happy')) em.setValue('happy', 1); 
+        else if (em.getExpression('joy')) em.setValue('joy', 1);
       } else if (estado === 'triste') {
-        if (em.getExpression('sad')) em.setValue('sad', 1); else if (em.getExpression('sorrow')) em.setValue('sorrow', 1);
+        // BAJAMOS LA INTENSIDAD AL 0.4 (40%) para que no parezca lo que tu dijiste jajaja
+        if (em.getExpression('sad')) em.setValue('sad', 0.4); 
+        else if (em.getExpression('sorrow')) em.setValue('sorrow', 0.4);
       }
     }
   }
