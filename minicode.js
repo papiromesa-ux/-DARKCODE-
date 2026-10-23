@@ -36,14 +36,15 @@ class DarkcodeChibi3D extends HTMLElement {
         }
         .debug {
           position: absolute; bottom: 0; left: 0; width: 100%;
-          background: rgba(0,0,0,0.85); color: #00ff00;
-          font-family: monospace; font-size: 9px; text-align: center;
+          background: rgba(0,0,0,0.9); color: #00ff00;
+          font-family: monospace; font-size: 9px; text-align: left;
           z-index: 20; padding: 4px; line-height: 1.2;
           pointer-events: none;
+          white-space: pre-wrap;
         }
       </style>
       <div class="loader" id="mc-loader">CARGANDO...</div>
-      <div class="debug" id="mc-debug">Iniciando diagnóstico...</div>
+      <div class="debug" id="mc-debug">Iniciando...</div>
     `;
 
     this.iniciarThreeJS();
@@ -101,7 +102,6 @@ class DarkcodeChibi3D extends HTMLElement {
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
       vrm.scene.rotation.y = Math.PI; 
 
-      // Bajar brazos base
       if (vrm.humanoid) {
         const leftUpperArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
         const rightUpperArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
@@ -128,57 +128,59 @@ class DarkcodeChibi3D extends HTMLElement {
       this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
       this._camera.lookAt(0, size.y * 0.5, 0);
 
-      if (debugDiv) debugDiv.textContent = "VRM listo. Iniciando carga de FBX...";
+      if (debugDiv) debugDiv.textContent = "VRM listo. Probando neutral1...";
 
       try {
-        if (loaderDiv) loaderDiv.textContent = "CARGANDO ANIMACIONES...";
+        if (loaderDiv) loaderDiv.textContent = "PROBANDO ANIMACION...";
         this._mixer = new THREE.AnimationMixer(vrm.scene);
         
-        const { FBXLoader } = await import('https://esm.sh/three@0.160.0/examples/jsm/loaders/FBXLoader.js');
-        const { retargetAnimation } = await import('https://esm.sh/vrm-mixamo-retarget@1.0.3');
+        // Usamos CDN directo de jsdelivr en lugar de esm.sh
+        const { FBXLoader } = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/FBXLoader.js');
+        const { retargetAnimation } = await import('https://cdn.jsdelivr.net/npm/vrm-mixamo-retarget@1.0.3/dist/vrm-mixamo-retarget.esm.js');
         
         const fbxLoader = new FBXLoader();
 
-        const listaArchivos = [
-          'negativo1', 'negativo2', 
-          'neutral1', 'neutral2', 'neutral3', 'neutral4', 'neutral5'
-        ];
+        const nombre = 'neutral1';
+        let msg = "";
         
-        let reporteFinal = [];
+        try {
+          msg += `1. Bajando ${nombre}.fbx...\n`;
+          if (debugDiv) debugDiv.textContent = msg;
+          
+          const fbx = await fbxLoader.loadAsync(`./${nombre}.fbx`);
+          
+          msg += `2. FBX tiene ${fbx.animations.length} animaciones.\n`;
+          if (debugDiv) debugDiv.textContent = msg;
 
-        for (const nombre of listaArchivos) {
-          try {
-            if (debugDiv) debugDiv.textContent = `Bajando ${nombre}.fbx...`;
-            const fbx = await fbxLoader.loadAsync(`./${nombre}.fbx`);
-            
-            if (debugDiv) debugDiv.textContent = `Traduciendo ${nombre}.fbx...`;
-            const clip = retargetAnimation(fbx, vrm);
-            
-            if (clip && clip.tracks.length > 0) {
-              const action = this._mixer.clipAction(clip);
-              
-              if (nombre === 'neutral5') {
-                action.loop = THREE.LoopRepeat;
-                action.play(); // Pose base
-              } else {
-                action.loop = THREE.LoopOnce;
-                action.clampWhenFinished = true;
-              }
-              
-              this._acciones[nombre] = action;
-              reporteFinal.push(`${nombre}: OK (${clip.tracks.length} track)`);
-            } else {
-              reporteFinal.push(`${nombre}: VACIO`);
-            }
-          } catch (e) { 
-            reporteFinal.push(`${nombre}: FALLO`);
+          if (fbx.animations.length > 0) {
+             msg += `3. Track names: ${fbx.animations[0].tracks[0].name}\n`;
+             if (debugDiv) debugDiv.textContent = msg;
           }
-          // Pausa de 800ms para que te de tiempo de leer el letrero
-          await new Promise(r => setTimeout(r, 800)); 
-        }
-
-        if (debugDiv) {
-          debugDiv.innerHTML = reporteFinal.join(" | ");
+          
+          msg += `4. Haciendo retarget...\n`;
+          if (debugDiv) debugDiv.textContent = msg;
+          
+          const clip = retargetAnimation(fbx, vrm);
+          
+          if (clip) {
+             msg += `5. Retarget OK. Tracks: ${clip.tracks.length}\n`;
+             if (debugDiv) debugDiv.textContent = msg;
+             
+             if (clip.tracks.length > 0) {
+               const action = this._mixer.clipAction(clip);
+               action.loop = THREE.LoopRepeat;
+               action.play();
+               msg += `6. REPRODUCIENDO!\n`;
+               if (debugDiv) debugDiv.textContent = msg;
+             }
+          } else {
+             msg += `5. Retarget devolvio NULL.\n`;
+             if (debugDiv) debugDiv.textContent = msg;
+          }
+          
+        } catch (e) { 
+          msg += `ERROR: ${e.message}\n`;
+          if (debugDiv) debugDiv.textContent = msg;
         }
 
       } catch (e) {
@@ -205,28 +207,6 @@ class DarkcodeChibi3D extends HTMLElement {
     
     if (this._mixer) this._mixer.update(delta);
     if (this._vrm) this._vrm.update(delta);
-
-    // 3 SEGUNDOS DE ESPERA
-    const ahora = performance.now();
-    if (ahora - this._lastInteraction > 3000 && !this._isIdle) {
-      this._isIdle = true;
-      
-      const aburridos = Object.keys(this._acciones).filter(k => k.startsWith('neutral') && k !== 'neutral5');
-      
-      if (aburridos.length > 0) {
-        const randomKey = aburridos[Math.floor(Math.random() * aburridos.length)];
-        if(this._acciones['neutral5']) this._acciones['neutral5'].fadeOut(0.5);
-        this._acciones[randomKey].reset().fadeIn(0.5).play();
-        
-        setTimeout(() => {
-          if(this._acciones[randomKey]) this._acciones[randomKey].fadeOut(0.5);
-          if(this._acciones['neutral5']) this._acciones['neutral5'].reset().fadeIn(0.5).play();
-          this._isIdle = false;
-        }, 3000); 
-      } else {
-        this._isIdle = false;
-      }
-    }
     
     if (this._renderer && this._scene && this._camera) {
       this._renderer.render(this._scene, this._camera);
@@ -239,45 +219,5 @@ if (!customElements.get("darkcode-chibi")) {
 }
 
 window.actualizarMiniCode = function(estado) {
-  const personaje = document.getElementById("darkcode-chibi-quiz") || document.getElementById("darkcode-chibi-bienvenida");
-  if (!personaje || !personaje._vrm) return;
-
-  personaje._lastInteraction = performance.now();
-  personaje._isIdle = false;
-
-  if (personaje._mixer) personaje._mixer.stopAllAction();
-  if (personaje._resetTimeout) clearTimeout(personaje._resetTimeout);
-
-  if (estado === 'feliz') {
-    const vrm = personaje._vrm;
-    const em = vrm.expressionManager;
-    const head = vrm.humanoid ? vrm.humanoid.getNormalizedBoneNode('head') : null;
-    if (em && em.getExpression('happy')) em.setValue('happy', 0.8);
-    if (head) head.rotation.x = 0.1;
-    
-    setTimeout(() => {
-      if (em && em.getExpression('happy')) em.setValue('happy', 0);
-      if (head) head.rotation.x = 0;
-      if (personaje._acciones['neutral5']) personaje._acciones['neutral5'].reset().play();
-    }, 2000);
-
-  } else if (estado === 'triste') {
-    const opciones = [];
-    if (personaje._acciones['negativo1']) opciones.push('negativo1');
-    if (personaje._acciones['negativo2']) opciones.push('negativo2');
-
-    if (opciones.length > 0) {
-      const elegido = opciones[Math.floor(Math.random() * opciones.length)];
-      personaje._acciones[elegido].reset().play();
-    }
-  }
-
-  if (estado !== 'neutral') {
-    personaje._resetTimeout = setTimeout(() => {
-      if (personaje._mixer) personaje._mixer.stopAllAction();
-      if (personaje._acciones['neutral5']) personaje._acciones['neutral5'].reset().play();
-    }, 3000);
-  } else {
-    if (personaje._acciones['neutral5']) personaje._acciones['neutral5'].reset().play();
-  }
+  // Para esta prueba, no hacemos nada aqui
 };
