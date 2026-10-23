@@ -17,30 +17,47 @@ class DarkcodeChibi3D extends HTMLElement {
           position: relative;
           border-radius: 12px;
           overflow: hidden;
-          background: radial-gradient(circle at center, #1a0b2e 0%, #0d0614 100%);
+          background: #0d0614;
           border: 2px dashed red;
         }
         .loader {
           position: absolute; inset: 0;
           display: flex; align-items: center; justify-content: center;
-          color: #a855f7; font-family: monospace; font-size: 10px;
+          color: white; font-family: sans-serif; font-size: 13px; font-weight: bold;
           text-align: center; padding: 10px; z-index: 10;
         }
       </style>
-      <div class="loader" id="mc-loader">CONECTANDO A THREE.JS...</div>
+      <div class="loader" id="mc-loader">INICIANDO DESCARGA...</div>
     `;
 
     try {
-      const THREE = await import('https://esm.sh/three@0.160.0');
-      const { GLTFLoader } = await import('https://esm.sh/three@0.160.0/examples/jsm/loaders/GLTFLoader.js');
-      const { VRMLoaderPlugin, VRMUtils } = await import('https://esm.sh/@pixiv/three-vrm@3.0.0');
+      const l = this.shadowRoot.getElementById("mc-loader");
       
-      this.iniciarThreeJS(THREE, GLTFLoader, VRMLoaderPlugin, VRMUtils);
+      // Temporizador: Si en 5 segundos no carga, lanza error
+      const timeout = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Tiempo de espera agotado. Internet lento.")), 5000)
+      );
+
+      // Usamos unpkg que es más rápido para móviles a veces
+      const fetchLibraries = async () => {
+        const THREE = await import('https://unpkg.com/three@0.160.0/build/three.module.js');
+        const { GLTFLoader } = await import('https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js');
+        const { VRMLoaderPlugin, VRMUtils } = await import('https://unpkg.com/@pixiv/three-vrm@3.0.0/lib/three-vrm.module.js');
+        return { THREE, GLTFLoader, VRMLoaderPlugin, VRMUtils };
+      };
+
+      // Competimos entre la descarga y el temporizador
+      const libs = await Promise.race([fetchLibraries(), timeout]);
+      
+      l.textContent = "¡DESCARGADO! BUSCANDO VRM...";
+      this.iniciarThreeJS(libs.THREE, libs.GLTFLoader, libs.VRMLoaderPlugin, libs.VRMUtils);
+
     } catch (e) {
       const l = this.shadowRoot.getElementById("mc-loader");
       if (l) {
-        l.style.color = "red";
-        l.textContent = "ERROR DE RED: Tu internet bloquea los servidores 3D.";
+        l.style.backgroundColor = "red";
+        l.style.color = "white";
+        l.textContent = "ERROR DE RED: " + e.message;
       }
     }
   }
@@ -65,10 +82,6 @@ class DarkcodeChibi3D extends HTMLElement {
     const dirLight = new THREE.DirectionalLight(0xa855f7, 2.5);
     dirLight.position.set(2, 4, 3);
     this._scene.add(dirLight);
-
-    const rimLight = new THREE.DirectionalLight(0x00ffff, 2);
-    rimLight.position.set(-2, 2, -3);
-    this._scene.add(rimLight);
 
     const loaderDiv = this.shadowRoot.getElementById("mc-loader");
     if (loaderDiv) loaderDiv.textContent = "BUSCANDO MINICODE.VRM...";
@@ -100,8 +113,9 @@ class DarkcodeChibi3D extends HTMLElement {
     }, (error) => {
       console.error('Error VRM:', error);
       if (loaderDiv) {
-        loaderDiv.style.color = "red";
-        loaderDiv.textContent = "ERROR AL CARGAR VRM.";
+        loaderDiv.style.backgroundColor = "orange";
+        loaderDiv.style.color = "black";
+        loaderDiv.textContent = "ERROR AL CARGAR VRM. Revisa el archivo.";
       }
     });
 
