@@ -1,15 +1,12 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
-import { loadMixamoAnimation } from './mixamo.js';
 
 class Andrea3D extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
     this._vrm = null;
-    this._mixer = null;
     this._clock = new THREE.Clock();
   }
 
@@ -44,8 +41,6 @@ class Andrea3D extends HTMLElement {
     this._scene.add(this._floor);
 
     this._camera = new THREE.PerspectiveCamera(35, w / h, 0.1, 100);
-    this._camera.position.set(0, 1.0, 2.5); 
-    this._camera.lookAt(0, 1.0, 0);         
     
     this._renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     this._renderer.setSize(w, h);
@@ -70,7 +65,13 @@ class Andrea3D extends HTMLElement {
       const vrm = gltf.userData.vrm;
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
       vrm.scene.rotation.y = Math.PI; 
-      vrm.scene.position.set(0, 0, 0); 
+
+      if (vrm.humanoid) {
+        const leftArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
+        const rightArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
+        if (leftArm) leftArm.rotation.z = 1.2; 
+        if (rightArm) rightArm.rotation.z = -1.2;
+      }
 
       vrm.scene.traverse((obj) => {
         if (obj.isMesh) { obj.castShadow = true; obj.receiveShadow = true; }
@@ -78,35 +79,20 @@ class Andrea3D extends HTMLElement {
       
       this._scene.add(vrm.scene);
       this._vrm = vrm;
-      this._mixer = new THREE.AnimationMixer(vrm.scene);
 
-      if (loaderDiv) loaderDiv.textContent = "CARGANDO ANIMACION...";
-      const fbxLoader = new FBXLoader();
-      
-      try {
-        const fbx = await fbxLoader.loadAsync('./neutral5.fbx');
-        const clip = loadMixamoAnimation(fbx, vrm);
-        if (clip) {
-          clip.tracks = clip.tracks.filter(track => track.name.includes('quaternion'));
-          this._mixer.clipAction(clip).play(); 
-        }
-      } catch (e) {
-        if (vrm.humanoid) {
-          const leftArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
-          const rightArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
-          if (leftArm) leftArm.rotation.z = 1.2;
-          if (rightArm) rightArm.rotation.z = -1.2;
-        }
-      }
+      vrm.scene.updateMatrixWorld(true);
 
       const box = new THREE.Box3().setFromObject(vrm.scene);
       const size = box.getSize(new THREE.Vector3());
-      this._floor.position.y = box.min.y; 
-      this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
-      this._camera.lookAt(0, size.y * 0.5, 0);
+      const center = box.getCenter(new THREE.Vector3());
+      
+      this._floor.position.y = 0; 
+      vrm.scene.position.y = -box.min.y; 
+      
+      this._camera.position.set(center.x, size.y * 0.5, size.y * 2.2); 
+      this._camera.lookAt(center.x, size.y * 0.5, center.z);
 
       if (loaderDiv) loaderDiv.style.display = "none";
-      if (window.actualizarAndrea) window.actualizarAndrea(this.getAttribute("estado") || "neutral");
 
     } catch (error) {
       if (loaderDiv) { loaderDiv.textContent = "ERROR AL CARGAR A ANDREA"; }
@@ -118,8 +104,12 @@ class Andrea3D extends HTMLElement {
   _animate() {
     requestAnimationFrame(() => this._animate());
     const delta = this._clock.getDelta();
-    if (this._mixer) this._mixer.update(delta);
-    if (this._vrm) this._vrm.update(delta);
+    if (this._vrm) {
+      this._vrm.update(delta);
+      const time = performance.now();
+      const chest = this._vrm.humanoid ? this._vrm.humanoid.getNormalizedBoneNode('chest') : null;
+      if (chest) chest.rotation.x = Math.sin(time * 0.002) * 0.02;
+    }
     if (this._renderer) this._renderer.render(this._scene, this._camera);
   }
 }
