@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
+import { retargetAnimation } from 'vrm-mixamo-retarget';
 
 class DarkcodeChibi3D extends HTMLElement {
   constructor() {
@@ -34,17 +36,8 @@ class DarkcodeChibi3D extends HTMLElement {
           color: #a855f7; font-family: monospace; font-size: 11px; font-weight: bold;
           text-align: center; padding: 10px; z-index: 10;
         }
-        .debug {
-          position: absolute; bottom: 0; left: 0; width: 100%;
-          background: rgba(0,0,0,0.9); color: #00ff00;
-          font-family: monospace; font-size: 9px; text-align: left;
-          z-index: 20; padding: 4px; line-height: 1.2;
-          pointer-events: none;
-          white-space: pre-wrap;
-        }
       </style>
       <div class="loader" id="mc-loader">CARGANDO...</div>
-      <div class="debug" id="mc-debug">Iniciando...</div>
     `;
 
     this.iniciarThreeJS();
@@ -53,7 +46,6 @@ class DarkcodeChibi3D extends HTMLElement {
   async iniciarThreeJS() {
     const w = this.clientWidth || 170;
     const h = this.clientHeight || 220;
-    const debugDiv = this.shadowRoot.getElementById("mc-debug");
 
     this._scene = new THREE.Scene();
     
@@ -128,69 +120,47 @@ class DarkcodeChibi3D extends HTMLElement {
       this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
       this._camera.lookAt(0, size.y * 0.5, 0);
 
-      if (debugDiv) debugDiv.textContent = "VRM listo. Probando neutral1...";
+      if (loaderDiv) loaderDiv.textContent = "CARGANDO ANIMACIONES...";
+      this._mixer = new THREE.AnimationMixer(vrm.scene);
+      const fbxLoader = new FBXLoader();
 
-      try {
-        if (loaderDiv) loaderDiv.textContent = "PROBANDO ANIMACION...";
-        this._mixer = new THREE.AnimationMixer(vrm.scene);
-        
-        // Usamos CDN directo de jsdelivr en lugar de esm.sh
-        const { FBXLoader } = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/FBXLoader.js');
-        const { retargetAnimation } = await import('https://cdn.jsdelivr.net/npm/vrm-mixamo-retarget@1.0.3/dist/vrm-mixamo-retarget.esm.js');
-        
-        const fbxLoader = new FBXLoader();
-
-        const nombre = 'neutral1';
-        let msg = "";
-        
+      // Cargar Negativos
+      for (let i = 1; i <= 2; i++) {
         try {
-          msg += `1. Bajando ${nombre}.fbx...\n`;
-          if (debugDiv) debugDiv.textContent = msg;
-          
-          const fbx = await fbxLoader.loadAsync(`./${nombre}.fbx`);
-          
-          msg += `2. FBX tiene ${fbx.animations.length} animaciones.\n`;
-          if (debugDiv) debugDiv.textContent = msg;
-
-          if (fbx.animations.length > 0) {
-             msg += `3. Track names: ${fbx.animations[0].tracks[0].name}\n`;
-             if (debugDiv) debugDiv.textContent = msg;
-          }
-          
-          msg += `4. Haciendo retarget...\n`;
-          if (debugDiv) debugDiv.textContent = msg;
-          
+          const fbx = await fbxLoader.loadAsync(`./negativo${i}.fbx`);
           const clip = retargetAnimation(fbx, vrm);
-          
-          if (clip) {
-             msg += `5. Retarget OK. Tracks: ${clip.tracks.length}\n`;
-             if (debugDiv) debugDiv.textContent = msg;
-             
-             if (clip.tracks.length > 0) {
-               const action = this._mixer.clipAction(clip);
-               action.loop = THREE.LoopRepeat;
-               action.play();
-               msg += `6. REPRODUCIENDO!\n`;
-               if (debugDiv) debugDiv.textContent = msg;
-             }
-          } else {
-             msg += `5. Retarget devolvio NULL.\n`;
-             if (debugDiv) debugDiv.textContent = msg;
+          if (clip && clip.tracks.length > 0) {
+            const action = this._mixer.clipAction(clip);
+            action.loop = THREE.LoopOnce;
+            action.clampWhenFinished = true;
+            this._acciones[`negativo${i}`] = action;
           }
-          
-        } catch (e) { 
-          msg += `ERROR: ${e.message}\n`;
-          if (debugDiv) debugDiv.textContent = msg;
-        }
+        } catch (e) { console.log(`Error negativo${i}`); }
+      }
 
-      } catch (e) {
-        if (debugDiv) debugDiv.textContent = "Fallo importar libreria Mixamo.";
+      // Cargar Neutrales (1 al 5)
+      for (let i = 1; i <= 5; i++) {
+        try {
+          const fbx = await fbxLoader.loadAsync(`./neutral${i}.fbx`);
+          const clip = retargetAnimation(fbx, vrm);
+          if (clip && clip.tracks.length > 0) {
+            const action = this._mixer.clipAction(clip);
+            if(i === 5) {
+              action.loop = THREE.LoopRepeat;
+              action.play(); // Pose base
+            } else {
+              action.loop = THREE.LoopOnce;
+              action.clampWhenFinished = true;
+            }
+            this._acciones[`neutral${i}`] = action;
+          }
+        } catch (e) { console.log(`Error neutral${i}`); }
       }
 
       if (loaderDiv) loaderDiv.style.display = "none";
 
     } catch (error) {
-      if (debugDiv) debugDiv.textContent = "Fallo VRM.";
+      console.error('Error VRM:', error);
       if (loaderDiv) {
         loaderDiv.style.backgroundColor = "orange";
         loaderDiv.style.color = "black";
@@ -207,6 +177,27 @@ class DarkcodeChibi3D extends HTMLElement {
     
     if (this._mixer) this._mixer.update(delta);
     if (this._vrm) this._vrm.update(delta);
+
+    // 3 segundos para aburrirse
+    const ahora = performance.now();
+    if (ahora - this._lastInteraction > 3000 && !this._isIdle) {
+      this._isIdle = true;
+      const aburridos = Object.keys(this._acciones).filter(k => k.startsWith('neutral') && k !== 'neutral5');
+      
+      if (aburridos.length > 0) {
+        const randomKey = aburridos[Math.floor(Math.random() * aburridos.length)];
+        if(this._acciones['neutral5']) this._acciones['neutral5'].fadeOut(0.5);
+        this._acciones[randomKey].reset().fadeIn(0.5).play();
+        
+        setTimeout(() => {
+          if(this._acciones[randomKey]) this._acciones[randomKey].fadeOut(0.5);
+          if(this._acciones['neutral5']) this._acciones['neutral5'].reset().fadeIn(0.5).play();
+          this._isIdle = false;
+        }, 3000); 
+      } else {
+        this._isIdle = false;
+      }
+    }
     
     if (this._renderer && this._scene && this._camera) {
       this._renderer.render(this._scene, this._camera);
@@ -219,5 +210,73 @@ if (!customElements.get("darkcode-chibi")) {
 }
 
 window.actualizarMiniCode = function(estado) {
-  // Para esta prueba, no hacemos nada aqui
+  const personaje = document.getElementById("darkcode-chibi-quiz") || document.getElementById("darkcode-chibi-bienvenida");
+  if (!personaje || !personaje._vrm) return;
+
+  personaje._lastInteraction = performance.now();
+  personaje._isIdle = false;
+
+  const vrm = personaje._vrm;
+  const em = vrm.expressionManager;
+  const humanoid = vrm.humanoid;
+  const head = humanoid ? humanoid.getNormalizedBoneNode('head') : null;
+
+  const volverAlReposo = () => {
+    if (em) {
+      ['happy', 'sad', 'sorrow', 'joy', 'angry', 'relaxed', 'surprised', 'blink'].forEach(expr => {
+        if (em.getExpression(expr)) em.setValue(expr, 0);
+      });
+    }
+    if (head) head.rotation.set(0, 0, 0);
+    
+    if (personaje._mixer) {
+      personaje._mixer.stopAllAction();
+      if (personaje._acciones['neutral5']) {
+        personaje._acciones['neutral5'].reset().play();
+      }
+    }
+  };
+
+  if (personaje._mixer) personaje._mixer.stopAllAction();
+  if (personaje._resetTimeout) clearTimeout(personaje._resetTimeout);
+
+  if (estado === 'feliz') {
+    const reaccionesFeliz = [
+      () => {
+        if (em && em.getExpression('happy')) em.setValue('happy', 0.8);
+        if (head) head.rotation.x = 0.1;
+      },
+      () => {
+        if (em && em.getExpression('happy')) em.setValue('happy', 1);
+        if (head) { head.rotation.z = 0.15; head.rotation.x = -0.05; }
+      }
+    ];
+    const accionRandom = reaccionesFeliz[Math.floor(Math.random() * reaccionesFeliz.length)];
+    accionRandom();
+
+  } else if (estado === 'triste') {
+    const opciones = [];
+    if (personaje._acciones['negativo1']) opciones.push('negativo1');
+    if (personaje._acciones['negativo2']) opciones.push('negativo2');
+
+    if (opciones.length > 0) {
+      const elegido = opciones[Math.floor(Math.random() * opciones.length)];
+      personaje._acciones[elegido].reset().play();
+    } else {
+      let vueltas = 0;
+      const negar = setInterval(() => {
+        if (head) head.rotation.y = vueltas % 2 === 0 ? 0.15 : -0.15;
+        vueltas++;
+        if (vueltas > 3) { clearInterval(negar); if(head) head.rotation.y = 0; }
+      }, 200);
+    }
+  }
+
+  if (estado !== 'neutral') {
+    personaje._resetTimeout = setTimeout(() => {
+      volverAlReposo();
+    }, 3000);
+  } else {
+    volverAlReposo();
+  }
 };
