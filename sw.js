@@ -8,12 +8,13 @@ const LOCALES = [
   "./quiz.js", 
   "./manifest.json",
   "./pantalla_anti-trampa.html",
+  "./minicode.js",
   "./icon-48.png", "./icon-72.png", "./icon-96.png", "./icon-114.png", "./icon-192.png", "./icon-512.png",
   "./audio1.mp3", "./audio2.mp3", "./audio3.mp3", "./audio4.mp3", "./audio5.mp3", 
   "./audio6.mp3", "./audio7.mp3", "./audio8.mp3", "./audio9.mp3", "./audio10.mp3", 
   "./audio11.mp3", "./audio12.mp3", "./audio13.mp3", "./audio14.mp3", "./audio15.mp3",
   "./audioquiz1.mp3", "./audioquiz2.mp3" "./audiohtml.mp3", "./audiocss.mp3", "./audiojs.mp3", 
-  "./audiophp.mp3","./audioruby.mp3","./audiopy.mp3","./audioc.mp3","./audiocpp.mp3",
+  "./audiophp.mp3","./audioruby.mp3","./audiopy.mp3","./audioc.mp3","./audiocpp.mp3","./minicode.vrm",
 ];
 const NO_CACHEAR = [
   "googleapis.com", "gstatic.com", "firebaseapp.com", "firebaseio.com", 
