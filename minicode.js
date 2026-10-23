@@ -47,7 +47,6 @@ class DarkcodeChibi3D extends HTMLElement {
 
     this._scene = new THREE.Scene();
     
-    // Piso invisible para la sombra
     const planeGeometry = new THREE.PlaneGeometry(10, 10);
     const planeMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
     this._floor = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -93,6 +92,14 @@ class DarkcodeChibi3D extends HTMLElement {
       VRMUtils.removeUnnecessaryVertices(vrm.scene);
       vrm.scene.rotation.y = Math.PI; 
 
+      // Respaldo por si el neutral5 falla al cargar
+      if (vrm.humanoid) {
+        const leftUpperArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
+        const rightUpperArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
+        if (leftUpperArm) leftUpperArm.rotation.z = 1.2; 
+        if (rightUpperArm) rightUpperArm.rotation.z = -1.2;
+      }
+
       vrm.scene.traverse((obj) => {
         if (obj.isMesh) {
           obj.castShadow = true;
@@ -106,9 +113,8 @@ class DarkcodeChibi3D extends HTMLElement {
       const box = new THREE.Box3().setFromObject(vrm.scene);
       const size = box.getSize(new THREE.Vector3());
       
-      // ARREGLO DE FLOTACIÓN: Lo anclamos exactamente al piso
       this._floor.position.y = 0; 
-      vrm.scene.position.y = -box.min.y; // Sube o baja el modelo para que los pies toquen el 0
+      vrm.scene.position.y = -box.min.y; 
       
       this._camera.position.set(0, size.y * 0.5, size.y * 2.2); 
       this._camera.lookAt(0, size.y * 0.5, 0);
@@ -136,19 +142,19 @@ class DarkcodeChibi3D extends HTMLElement {
           } catch (e) { console.log(`Error negativo${i}.fbx`); }
         }
 
-        // 2. Cargar Neutrales
+        // 2. Cargar Neutrales (1 al 5)
         for (let i = 1; i <= 5; i++) {
           try {
             const fbx = await fbxLoader.loadAsync(`./neutral${i}.fbx`);
             const clip = retargetAnimation(fbx, vrm);
             if (clip) {
               const action = this._mixer.clipAction(clip);
-              if(i === 1) {
-                // El neutral1 será la pose base de reposo (en bucle)
+              if(i === 5) {
+                // NEUTRAL 5: Pose de reposo base (en bucle)
                 action.loop = THREE.LoopRepeat;
-                action.play(); // Se queda activo para siempre
+                action.play(); 
               } else {
-                // Los demás son de aburrimiento (se ejecutan una vez)
+                // NEUTRAL 1-4: Aburrimiento (solo una vez)
                 action.loop = THREE.LoopOnce;
                 action.clampWhenFinished = true;
               }
@@ -158,7 +164,7 @@ class DarkcodeChibi3D extends HTMLElement {
         }
 
       } catch (e) {
-        console.warn("Mixamo no cargó, usando pose estática.");
+        console.warn("Mixamo no cargó.");
       }
 
       if (loaderDiv) loaderDiv.style.display = "none";
@@ -182,26 +188,25 @@ class DarkcodeChibi3D extends HTMLElement {
     if (this._mixer) this._mixer.update(delta);
     if (this._vrm) this._vrm.update(delta);
 
-    // Lógica del temporizador (10 segundos para aburrirse)
+    // Aburrimiento después de 10 segundos
     const ahora = performance.now();
     if (ahora - this._lastInteraction > 10000 && !this._isIdle) {
       this._isIdle = true;
       
-      // Buscamos neutrales del 2 al 5 para aburrirse
-      const aburridos = Object.keys(this._acciones).filter(k => k.startsWith('neutral') && k !== 'neutral1');
+      // Buscamos los neutrales 1, 2, 3 o 4
+      const aburridos = Object.keys(this._acciones).filter(k => k.startsWith('neutral') && k !== 'neutral5');
       
       if (aburridos.length > 0) {
         const randomKey = aburridos[Math.floor(Math.random() * aburridos.length)];
-        // Hacemos un fade suave del neutral1 al aburrido
-        if(this._acciones['neutral1']) this._acciones['neutral1'].fadeOut(0.5);
+        if(this._acciones['neutral5']) this._acciones['neutral5'].fadeOut(0.5);
         this._acciones[randomKey].reset().fadeIn(0.5).play();
         
-        // Al terminar, volvemos al neutral1
+        // Volver a la pose de reposo (neutral5) después de 3 segundos
         setTimeout(() => {
           if(this._acciones[randomKey]) this._acciones[randomKey].fadeOut(0.5);
-          if(this._acciones['neutral1']) this._acciones['neutral1'].reset().fadeIn(0.5).play();
+          if(this._acciones['neutral5']) this._acciones['neutral5'].reset().fadeIn(0.5).play();
           this._isIdle = false;
-        }, 3000); // Duración de la animación de aburrimiento
+        }, 3000); 
       }
     }
     
@@ -216,7 +221,7 @@ if (!customElements.get("darkcode-chibi")) {
 }
 
 window.actualizarMiniCode = function(estado) {
-  const personaje = document.getElementById("darkcode-chibi-quiz");
+  const personaje = document.getElementById("darkcode-chibi-quiz") || document.getElementById("darkcode-chibi-bienvenida");
   if (!personaje || !personaje._vrm) return;
 
   personaje._lastInteraction = performance.now();
@@ -227,7 +232,6 @@ window.actualizarMiniCode = function(estado) {
   const humanoid = vrm.humanoid;
   const head = humanoid ? humanoid.getNormalizedBoneNode('head') : null;
 
-  // Función para volver a la pose de reposo
   const volverAlReposo = () => {
     if (em) {
       ['happy', 'sad', 'sorrow', 'joy', 'angry', 'relaxed', 'surprised', 'blink'].forEach(expr => {
@@ -238,14 +242,12 @@ window.actualizarMiniCode = function(estado) {
     
     if (personaje._mixer) {
       personaje._mixer.stopAllAction();
-      // Volver al idle natural
-      if (personaje._acciones['neutral1']) {
-        personaje._acciones['neutral1'].reset().play();
+      if (personaje._acciones['neutral5']) {
+        personaje._acciones['neutral5'].reset().play();
       }
     }
   };
 
-  // Detener acciones actuales antes de una nueva reacción
   if (personaje._mixer) personaje._mixer.stopAllAction();
   if (personaje._resetTimeout) clearTimeout(personaje._resetTimeout);
 
